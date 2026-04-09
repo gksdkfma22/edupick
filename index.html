@@ -63,68 +63,67 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .s-ic{position:absolute;left:12px;font-size:15px;pointer-events:none;}
 .s-cl{position:absolute;right:10px;font-size:15px;cursor:pointer;color:var(--muted);background:none;border:none;display:none;}
 
-/* 과목필터: top = 52(헤더)+52(검색) = 104 */
+/* 과목필터: top = 52+52 = 104 — 2열 겹침 완전 해결 */
 .fbar{position:fixed;top:104px;left:0;right:0;z-index:580;
-  background:var(--white);
-  display:flex;gap:0;padding:10px 6px 8px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid var(--border);height:82px;align-items:flex-start;}
+  background:#fff;
+  display:flex;gap:0;padding:10px 8px 10px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid #EAECF5;height:70px;align-items:center;}
 .fbar::-webkit-scrollbar{display:none;}
 
-/* 원형 아이콘 칩 — Learns 앱 스타일 */
+/* 원형 아이콘 칩 */
 .chip{
-  white-space:nowrap;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  min-width:60px;padding:0 4px;
+  display:flex;flex-direction:column;align-items:center;gap:5px;
+  min-width:62px;padding:0 5px;
   border:none;background:transparent;
   cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;
 }
 .chip .chip-ico{
-  width:48px;height:48px;border-radius:50%;
-  background:#F4F6FB;border:2.5px solid transparent;
+  width:44px;height:44px;border-radius:14px;
+  background:#F2F4FA;border:2.5px solid transparent;
   display:flex;align-items:center;justify-content:center;
-  font-size:22px;transition:.2s;
+  font-size:24px;transition:.2s;
 }
-.chip .chip-lbl{font-size:11px;font-weight:700;color:var(--sub);transition:.15s;}
-.chip.on .chip-ico{
-  background:#EEF4FF;border-color:var(--blue);
-  box-shadow:0 3px 12px rgba(10,61,145,.2);
-}
-.chip.on .chip-lbl{color:var(--blue);font-weight:900;}
-.chip:active .chip-ico{transform:scale(.9);}
-.chip.grade-on.초등 .chip-ico{background:#FFFBEB;border-color:#F59E0B;}
-.chip.grade-on.초등 .chip-lbl{color:#B45309;font-weight:900;}
-.chip.grade-on.중등 .chip-ico{background:#F5F3FF;border-color:#8B5CF6;}
-.chip.grade-on.중등 .chip-lbl{color:#6D28D9;font-weight:900;}
-.chip.grade-on.고등 .chip-ico{background:#FEF2F2;border-color:#EF4444;}
-.chip.grade-on.고등 .chip-lbl{color:#B91C1C;font-weight:900;}
+.chip .chip-lbl{font-size:11px;font-weight:700;color:#8A94A6;transition:.15s;white-space:nowrap;}
+.chip.on .chip-ico{background:#EBF3FF;border-color:#4A90E2;box-shadow:0 4px 12px rgba(74,144,226,.25);}
+.chip.on .chip-lbl{color:#2563EB;font-weight:900;}
+.chip:active .chip-ico{transform:scale(.88);}
+.chip.grade-on.초등 .chip-ico{background:#FFFBE6;border-color:#F6C90E;}
+.chip.grade-on.초등 .chip-lbl{color:#B07D00;font-weight:900;}
+.chip.grade-on.중등 .chip-ico{background:#F0EEFF;border-color:#9B7FE8;}
+.chip.grade-on.중등 .chip-lbl{color:#6D3FD6;font-weight:900;}
+.chip.grade-on.고등 .chip-ico{background:#FFF0F0;border-color:#F06060;}
+.chip.grade-on.고등 .chip-lbl{color:#C41A1A;font-weight:900;}
 
-/* 학급필터: top = 104+82 = 186 */
-.fbar2{position:fixed;top:186px;left:0;right:0;z-index:579;
-  background:var(--white);
-  display:flex;gap:0;padding:6px 6px 4px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid var(--border);height:58px;align-items:flex-start;}
+/* 학급필터: top = 104+86 = 190 */
+.fbar2{position:fixed;top:174px;left:0;right:0;z-index:579;
+  background:#F8F9FE;
+  display:flex;gap:0;padding:8px 10px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid #EAECF5;height:38px;align-items:center;}
 .fbar2::-webkit-scrollbar{display:none;}
 .fbar2-label{display:none;}
 
 .chip.sm{
-  min-width:56px;padding:0 4px;
-  display:flex;flex-direction:column;align-items:center;gap:3px;
-  border:none;background:transparent;font-family:inherit;cursor:pointer;flex-shrink:0;
+  min-width:70px;padding:0 6px;
+  display:flex;flex-direction:row;align-items:center;gap:5px;
+  border:none;font-family:inherit;cursor:pointer;flex-shrink:0;
+  background:#fff;border-radius:20px;height:36px;
+  border:1.5px solid #E0E4EF;
+  transition:.15s;margin-right:6px;
 }
 .chip.sm .chip-ico{
-  width:36px;height:36px;font-size:17px;border-radius:50%;
-  background:#F4F6FB;border:2.5px solid transparent;
-  display:flex;align-items:center;justify-content:center;transition:.2s;
+  width:20px;height:20px;font-size:14px;border-radius:0;
+  background:transparent;border:none;
+  display:flex;align-items:center;justify-content:center;
 }
-.chip.sm .chip-lbl{font-size:10px;font-weight:700;color:var(--sub);}
-.chip.sm.on .chip-ico{background:#EEF4FF;border-color:var(--blue);box-shadow:0 2px 8px rgba(10,61,145,.2);}
-.chip.sm.on .chip-lbl{color:var(--blue);font-weight:900;}
-.chip.sm.grade-on.초등 .chip-ico{background:#FFFBEB;border-color:#F59E0B;}
-.chip.sm.grade-on.초등 .chip-lbl{color:#B45309;font-weight:900;}
-.chip.sm.grade-on.중등 .chip-ico{background:#F5F3FF;border-color:#8B5CF6;}
-.chip.sm.grade-on.중등 .chip-lbl{color:#6D28D9;font-weight:900;}
-.chip.sm.grade-on.고등 .chip-ico{background:#FEF2F2;border-color:#EF4444;}
-.chip.sm.grade-on.고등 .chip-lbl{color:#B91C1C;font-weight:900;}
+.chip.sm .chip-lbl{font-size:12px;font-weight:700;color:#6B7280;}
+.chip.sm.on{background:#EBF3FF;border-color:#4A90E2;}
+.chip.sm.on .chip-lbl{color:#2563EB;font-weight:900;}
+.chip.sm.grade-on.초등{background:#FFFBE6;border-color:#F6C90E;}
+.chip.sm.grade-on.초등 .chip-lbl{color:#B07D00;font-weight:900;}
+.chip.sm.grade-on.중등{background:#F0EEFF;border-color:#9B7FE8;}
+.chip.sm.grade-on.중등 .chip-lbl{color:#6D3FD6;font-weight:900;}
+.chip.sm.grade-on.고등{background:#FFF0F0;border-color:#F06060;}
+.chip.sm.grade-on.고등 .chip-lbl{color:#C41A1A;font-weight:900;}
 
 /* 학급 뱃지 (카드·시트용) */
 .grade-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
@@ -133,31 +132,33 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .gb.중등{background:#EDE9FE;color:#6D28D9;}
 .gb.고등{background:#FEE2E2;color:#B91C1C;}
 
-/* vtabs: top = 186+58 = 244 — 알약형 탭 */
-.vtabs{position:fixed;top:244px;left:0;right:0;z-index:570;
-  background:var(--bg);padding:6px 14px;
-  display:flex;gap:8px;height:48px;align-items:center;
-  border-bottom:1px solid var(--border);}
+/* vtabs: top = 190+56 = 246 */
+.vtabs{position:fixed;top:212px;left:0;right:0;z-index:570;
+  background:#fff;padding:6px 14px;
+  display:flex;gap:8px;height:42px;align-items:center;
+  border-bottom:1px solid #EAECF5;
+  box-shadow:0 2px 8px rgba(0,0,0,.04);}
 .vtab{flex:1;text-align:center;font-size:13px;font-weight:800;
-  color:var(--sub);cursor:pointer;border:none;
-  background:var(--white);font-family:inherit;
+  color:#8A94A6;cursor:pointer;border:none;
+  background:#F2F4FA;font-family:inherit;
   border-radius:12px;height:36px;
   display:flex;align-items:center;justify-content:center;gap:5px;
-  transition:.15s;letter-spacing:-.3px;
-  box-shadow:0 1px 4px rgba(0,0,0,.06);}
-.vtab.on{color:#fff;background:var(--blue);box-shadow:0 3px 12px rgba(10,61,145,.3);}
+  transition:.2s;letter-spacing:-.3px;}
+.vtab.on{color:#fff;background:linear-gradient(135deg,#4A90E2,#2563EB);
+  box-shadow:0 4px 14px rgba(37,99,235,.35);}
 .vtab:active{opacity:.8;}
 
-/* 지도: top = 244+48 = 292 */
-#map-wrap{position:fixed;top:292px;left:0;right:0;bottom:64px;z-index:100;}
-#map{width:100%;height:calc(100% - 72px);}
+/* 지도: top = 246+48 = 294 — 밝은 지도 타일 적용 */
+#map-wrap{position:fixed;top:254px;left:0;right:0;bottom:64px;z-index:100;}
+#map{width:100%;height:100%;}
+/* 배너는 map-wrap 안에서 absolute로 하단에 위치 */
 .gps-fab{position:absolute;bottom:82px;right:14px;z-index:300;width:44px;height:44px;
-  border-radius:50%;background:var(--white);border:none;
-  box-shadow:0 3px 14px rgba(0,0,0,.18);font-size:20px;cursor:pointer;
+  border-radius:50%;background:#fff;border:none;
+  box-shadow:0 3px 14px rgba(0,0,0,.15);font-size:20px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;}
 
-/* 목록: top = 292 */
-#list-wrap{position:fixed;top:292px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
+/* 목록: top = 294 */
+#list-wrap{position:fixed;top:254px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
 
 /* ══ 지도 하단 배너 슬라이더 ══ */
 .map-banner-wrap{
@@ -240,60 +241,53 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .ad-inline h3{font-size:14px;font-weight:800;}
 .ad-inline p{font-size:12px;opacity:.85;margin-top:2px;}
 
-/* Academy card */
-.acard{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);margin-bottom:10px;padding:15px;box-shadow:var(--sh);opacity:0;transform:translateY(8px);animation:rise .26s ease forwards;position:relative;overflow:hidden;}
+/* Academy card — 썸네일 이미지 포함 새 레이아웃 */
+.acard{background:#fff;border-radius:18px;border:1px solid #EAECF5;
+  margin-bottom:10px;padding:0;
+  box-shadow:0 2px 12px rgba(0,0,0,.05);
+  opacity:0;transform:translateY(8px);animation:rise .26s ease forwards;
+  position:relative;overflow:hidden;}
+.acard.prem{border:2px solid #FF8C42;box-shadow:0 4px 20px rgba(255,140,66,.15);}
+.acard.prem::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(#FF6B2B,#FFAB5A);border-radius:4px 0 0 4px;z-index:1;}
+.acard.basic{border:2px solid #7CB9F4;box-shadow:0 3px 14px rgba(74,144,226,.1);}
+.acard.basic::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(#4A90E2,#70BAFF);border-radius:4px 0 0 4px;z-index:1;}
 
-/* 프리미엄 — 주황 강조 + 왼쪽 사이드 라인 */
-.acard.prem{
-  border:2px solid var(--orange);
-  background:linear-gradient(135deg,#FFF5F0 0%,#fff 50%);
-  box-shadow:0 4px 20px rgba(255,90,31,.2);
+/* 카드 내부 */
+.ac-inner{display:flex;align-items:flex-start;padding:14px 14px 0 18px;gap:12px;}
+.ac-thumb{
+  width:70px;height:70px;border-radius:12px;flex-shrink:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;font-size:28px;
+  border:1px solid #F0F2F8;
 }
-.acard.prem::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(var(--orange),#FF8A3D);border-radius:4px 0 0 4px;
-}
-
-/* 베이직 — 파란 강조 + 왼쪽 사이드 라인 */
-.acard.basic{
-  border:2px solid #93B8F5;
-  background:linear-gradient(135deg,#F0F5FF 0%,#fff 50%);
-  box-shadow:0 3px 14px rgba(10,61,145,.1);
-}
-.acard.basic::before{
-  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(var(--blue),var(--blue2));border-radius:4px 0 0 4px;
-}
-
-.ac-top{display:flex;align-items:flex-start;gap:11px;}
-.ac-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.ac-thumb img{width:100%;height:100%;object-fit:cover;}
+.ac-top{display:flex;align-items:flex-start;gap:0;flex:1;min-width:0;}
+.ac-ico{display:none;}
 .ac-info{flex:1;min-width:0;}
-.ac-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.ac-name{font-size:15px;font-weight:800;line-height:1.25;}
+.ac-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:2px;}
+.ac-name{font-size:15px;font-weight:800;line-height:1.25;color:#1A1A2E;}
 .ac-name mark{background:#FFF9C4;border-radius:3px;padding:0 1px;font-style:normal;}
-
-/* 플랜 태그 강화 */
-.plan-tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;flex-shrink:0;letter-spacing:-.2px;}
-.plan-tag.prem{background:linear-gradient(120deg,var(--orange),#FF8A3D);color:#fff;box-shadow:0 2px 6px rgba(255,90,31,.3);}
-.plan-tag.basic{background:linear-gradient(120deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 2px 6px rgba(10,61,145,.2);}
-.plan-tag.free{background:#F1F5F9;color:var(--muted);border:1px solid var(--border);}
-
-.ac-sub{font-size:12px;color:var(--sub);margin-top:3px;}
-/* 별점 */
+.plan-tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;flex-shrink:0;}
+.plan-tag.prem{background:linear-gradient(120deg,#FF6B2B,#FF9F5A);color:#fff;box-shadow:0 2px 6px rgba(255,107,43,.3);}
+.plan-tag.basic{background:linear-gradient(120deg,#4A90E2,#60AEFF);color:#fff;box-shadow:0 2px 6px rgba(74,144,226,.25);}
+.plan-tag.free{background:#F0F2F8;color:#8A94A6;border:1px solid #E0E4EF;}
+.ac-sub{font-size:12px;color:#8A94A6;margin-top:2px;}
 .ac-stars{display:flex;align-items:center;gap:4px;margin-top:4px;}
-.stars-ico{color:var(--yellow);font-size:12px;letter-spacing:-1px;}
-.stars-num{font-size:12px;font-weight:700;color:var(--text);}
-.stars-cnt{font-size:11px;color:var(--muted);}
-/* 찜 버튼 */
-.heart-btn{background:none;border:none;cursor:pointer;font-size:22px;flex-shrink:0;padding:2px;line-height:1;transition:transform .15s;}
+.stars-ico{color:#FBBF24;font-size:12px;letter-spacing:-1px;}
+.stars-num{font-size:12px;font-weight:700;color:#1A1A2E;}
+.stars-cnt{font-size:11px;color:#8A94A6;}
+.heart-btn{background:none;border:none;cursor:pointer;font-size:22px;flex-shrink:0;padding:2px;line-height:1;}
 .heart-btn.liked{animation:heartPop .3s ease;}
-
-.ac-foot{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.ac-price{color:var(--red);font-size:15px;font-weight:800;}
-.ac-dist{font-size:11px;color:var(--muted);margin-top:2px;}
-.ac-btn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1.5px solid var(--blue);background:transparent;color:var(--blue);}
-.ac-btn.p{background:linear-gradient(120deg,var(--orange),#FF8A3D);color:#fff;border:none;box-shadow:0 3px 10px rgba(255,90,31,.3);}
-.no-r{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;display:none;}
+.ac-foot{margin:10px 14px 14px 18px;padding-top:10px;border-top:1px solid #F0F2F8;
+  display:flex;align-items:center;justify-content:space-between;}
+.ac-price{color:#E53E3E;font-size:15px;font-weight:800;}
+.ac-dist{font-size:11px;color:#8A94A6;margin-top:2px;}
+.ac-btn{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;
+  cursor:pointer;border:1.5px solid #4A90E2;background:transparent;color:#4A90E2;}
+.ac-btn.p{background:linear-gradient(120deg,#FF6B2B,#FF9F5A);color:#fff;border:none;
+  box-shadow:0 3px 10px rgba(255,107,43,.25);}
+.no-r{text-align:center;padding:40px 20px;color:#8A94A6;font-size:14px;display:none;}
 
 /* Bottom nav */
 .bnav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:700;box-shadow:0 -4px 16px rgba(10,61,145,.07);}
@@ -486,7 +480,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .type-card:active{transform:scale(.98);}
 .type-card.u{border-color:var(--blue3);}
 .type-card.b{border-color:var(--orange2);}
-.ty-ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.ty-ico{width:48px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
 .ty-ico.u{background:var(--blue3);}
 .ty-ico.b{background:var(--orange2);}
 .ty-nm{font-size:16px;font-weight:800;margin-bottom:4px;}
@@ -1459,17 +1453,17 @@ async function fetchFromSheet(silent){
 /* ════ 샘플 데이터 (GAS_URL 미설정 시 표시) ════ */
 function getSampleData(){
   return [
-    {id:1, name:"탑클래스 영어학원",   city:"천안시 서북구", subject:"영어",   grade:["초등","중등","고등"], price:200000, plan:"premium", blog:"https://blog.naver.com", lat:36.8151, lng:127.1139,
+    {id:1, name:"탑클래스 영어학원",   city:"천안시 서북구", subject:"영어",   grade:["초등","중등","고등"], price:200000, plan:"premium", blog:"https://blog.naver.com", image:"", lat:36.8151, lng:127.1139,
       reviews:[{nick:"천안맘 김○○",stars:5,body:"선생님이 친절하고 아이가 정말 좋아해요!",date:"07.10",mine:true},{nick:"학부모 이○○",stars:4,body:"수업이 알차고 체계적입니다.",date:"07.05",mine:false}]},
-    {id:2, name:"수학의신 수학학원",   city:"천안시 동남구", subject:"수학",   grade:["중등","고등"],        price:180000, plan:"premium", blog:"https://blog.naver.com", lat:36.8080, lng:127.1477,
+    {id:2, name:"수학의신 수학학원",   city:"천안시 동남구", subject:"수학",   grade:["중등","고등"],        price:180000, plan:"premium", blog:"https://blog.naver.com", image:"", lat:36.8080, lng:127.1477,
       reviews:[{nick:"학부모 박○○",stars:5,body:"성적이 많이 올랐어요. 강추!",date:"07.08",mine:true}]},
-    {id:3, name:"한빛 국어논술학원",   city:"천안시 서북구", subject:"국어",   grade:["초등","중등"],        price:160000, plan:"basic",   blog:"", lat:36.8200, lng:127.1050, reviews:[]},
-    {id:4, name:"아트플러스 미술학원", city:"천안시 동남구", subject:"예체능", grade:["초등"],               price:150000, plan:"basic",   blog:"", lat:36.8050, lng:127.1500,
+    {id:3, name:"한빛 국어논술학원",   city:"천안시 서북구", subject:"국어",   grade:["초등","중등"],        price:160000, plan:"basic",   blog:"", image:"", lat:36.8200, lng:127.1050, reviews:[]},
+    {id:4, name:"아트플러스 미술학원", city:"천안시 동남구", subject:"예체능", grade:["초등"],               price:150000, plan:"basic",   blog:"", image:"", lat:36.8050, lng:127.1500,
       reviews:[{nick:"학부모 최○○",stars:4,body:"아이 눈높이에 맞게 잘 가르쳐요",date:"06.28",mine:true}]},
-    {id:5, name:"사이언스랩 과학학원", city:"천안시 서북구", subject:"과학",   grade:["중등","고등"],        price:190000, plan:"premium", blog:"https://blog.naver.com", lat:36.8180, lng:127.1200, reviews:[]},
-    {id:6, name:"그린영어 어학원",     city:"아산시",        subject:"영어",   grade:["초등"],               price:170000, plan:"free",    blog:"", lat:36.7898, lng:127.0020, reviews:[]},
-    {id:7, name:"매쓰킹 수학학원",     city:"아산시",        subject:"수학",   grade:["초등","중등"],        price:165000, plan:"free",    blog:"", lat:36.7810, lng:127.0100, reviews:[]},
-    {id:8, name:"리더스 국어학원",     city:"천안시 서북구", subject:"국어",   grade:["고등"],               price:155000, plan:"basic",   blog:"", lat:36.8300, lng:127.1300, reviews:[]},
+    {id:5, name:"사이언스랩 과학학원", city:"천안시 서북구", subject:"과학",   grade:["중등","고등"],        price:190000, plan:"premium", blog:"https://blog.naver.com", image:"", lat:36.8180, lng:127.1200, reviews:[]},
+    {id:6, name:"그린영어 어학원",     city:"아산시",        subject:"영어",   grade:["초등"],               price:170000, plan:"free",    blog:"", image:"", lat:36.7898, lng:127.0020, reviews:[]},
+    {id:7, name:"매쓰킹 수학학원",     city:"아산시",        subject:"수학",   grade:["초등","중등"],        price:165000, plan:"free",    blog:"", image:"", lat:36.7810, lng:127.0100, reviews:[]},
+    {id:8, name:"리더스 국어학원",     city:"천안시 서북구", subject:"국어",   grade:["고등"],               price:155000, plan:"basic",   blog:"", image:"", lat:36.8300, lng:127.1300, reviews:[]},
   ];
 }
 
@@ -1491,8 +1485,15 @@ function goBack(){
 
 /* ════ MAP ════ */
 const map=L.map('map',{zoomControl:false}).setView([36.80,127.10],12);
-L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+// 밝고 안정적인 타일
+L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© OpenStreetMap contributors',
+  maxZoom:19,
+  crossOrigin: true
+}).addTo(map);
 L.control.zoom({position:'topright'}).addTo(map);
+// 지도 크기 강제 재계산 (고정 레이아웃에서 필수)
+setTimeout(()=>map.invalidateSize(),300);
 
 function km(la1,ln1,la2,ln2){
   const R=6371,dL=(la2-la1)*Math.PI/180,dG=(ln2-ln1)*Math.PI/180;
@@ -1550,22 +1551,31 @@ function render(){
     const liked=wishSet.has(a.id);
     const planCls=a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
     const planLbl=a.plan==='premium'?'프리미엄':a.plan==='basic'?'베이직':'무료';
+    // 썸네일: 이미지 있으면 img, 없으면 과목 이모지
+    const thumbBg = {영어:"#E8F4FF",수학:"#FFF8E8",국어:"#E8FFF0",예체능:"#FFE8F8",과학:"#F0E8FF"};
+    const thumbHtml = a.image
+      ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.innerHTML='${ICONS[a.subject]||'📚'}';">`
+      : ICONS[a.subject]||'📚';
     const el=document.createElement('div');
     el.className=`acard ${planCls}`;
     el.style.animationDelay=(i*0.04)+'s';
     el.innerHTML=`
-      <div class="ac-top">
-        <div class="ac-ico" style="background:${COLORS[a.subject]||'#f3f4f6'}">${ICONS[a.subject]||'📚'}</div>
-        <div class="ac-info">
-          <div class="ac-name-row">
-            <div class="ac-name">${hl(a.name,kw)}</div>
-            <span class="plan-tag ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free'}">${planLbl}</span>
+      <div class="ac-inner">
+        <div class="ac-thumb" style="background:${thumbBg[a.subject]||'#F0F2F8'}">${thumbHtml}</div>
+        <div class="ac-top">
+          <div class="ac-info">
+            <div class="ac-name-row">
+              <div class="ac-name">${hl(a.name,kw)}</div>
+              <span class="plan-tag ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free'}">${planLbl}</span>
+            </div>
+            <div class="ac-sub">📍 ${a.city} · ${a.subject}</div>
+            ${gradeBadgesHtml(a.grade)}
+            ${a.reviews.length
+              ?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`
+              :`<div class="ac-stars"><span class="stars-cnt" style="font-size:11px;color:#C0C8D8">리뷰 없음</span></div>`}
           </div>
-          <div class="ac-sub">📍 ${a.city} · ${a.subject}</div>
-          ${gradeBadgesHtml(a.grade)}
-          ${a.reviews.length?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`:`<div class="ac-stars"><span class="stars-cnt" style="font-size:11px;color:var(--muted)">리뷰 없음</span></div>`}
+          <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart(${a.id},this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
         </div>
-        <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart(${a.id},this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
       </div>
       <div class="ac-foot">
         <div>
@@ -1622,7 +1632,7 @@ function switchView(v){
   document.getElementById('list-wrap').style.display=v==='list'?'block':'none';
   document.getElementById('vtmap').classList.toggle('on',v==='map');
   document.getElementById('vtlist').classList.toggle('on',v==='list');
-  if(v==='map') setTimeout(()=>map.invalidateSize(),50);
+  if(v==='map') setTimeout(()=>{ map.invalidateSize(); },100);
 }
 
 /* ════ GPS ════ */
