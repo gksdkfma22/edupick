@@ -1,0 +1,2064 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>에듀픽 — 우리동네 학원찾기</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<!-- 토스페이먼츠 SDK v1 (결제창 방식 — 현재 키로 바로 작동) -->
+<script src="https://js.tosspayments.com/v1/payment"></script>
+<style>
+:root{
+  --blue:#0A3D91;--blue2:#1658D6;--blue3:#E8F0FD;
+  --orange:#FF5A1F;--orange2:#FFF0EA;--orange3:#FF8A3D;
+  --green:#059669;--green2:#ECFDF5;
+  --red:#DC2626;--yellow:#FBBF24;
+  --bg:#F1F4FB;--white:#fff;
+  --text:#0F172A;--sub:#475569;--muted:#94A3B8;
+  --border:#E2E8F4;--radius:16px;
+  --sh:0 2px 16px rgba(10,61,145,.09);
+  --psh:0 6px 28px rgba(255,90,31,.22);
+  --bsh:0 8px 32px rgba(10,61,145,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg);color:var(--text);overflow:hidden;}
+.page{position:fixed;inset:0;overflow-y:auto;display:none;background:var(--bg);}
+.page.active{display:block;}
+.slide-in{animation:slideIn .22s cubic-bezier(.4,0,.2,1);}
+@keyframes slideIn{from{transform:translateX(20px);opacity:0}to{transform:none;opacity:1}}
+@keyframes rise{to{opacity:1;transform:translateY(0)}}
+@keyframes popIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes shUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.45)}100%{transform:scale(1)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ─── TOAST ─── */
+.toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);
+  background:#0F172A;color:#fff;padding:11px 22px;border-radius:12px;
+  font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:all .25s;white-space:nowrap;
+  box-shadow:0 4px 20px rgba(0,0,0,.25);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+/* ══════════════════════════════════
+   HOME PAGE
+══════════════════════════════════ */
+#page-home{padding-bottom:64px;}
+.hdr{position:fixed;top:0;left:0;right:0;z-index:600;height:52px;
+  background:var(--blue);display:flex;align-items:center;justify-content:space-between;padding:0 15px;
+  box-shadow:0 2px 16px rgba(10,61,145,.35);}
+.logo{font-size:22px;font-weight:900;color:#fff;letter-spacing:-1px;cursor:pointer;}
+.logo em{color:var(--orange);font-style:normal;}
+.hdr-r{display:flex;gap:7px;align-items:center;}
+.hbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);color:#fff;
+  border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.hbtn.o{background:var(--orange);border-color:var(--orange);}
+
+.sbar{position:fixed;top:52px;left:0;right:0;z-index:590;background:var(--white);padding:9px 14px;border-bottom:1px solid var(--border);height:52px;}
+.sw{position:relative;display:flex;align-items:center;}
+.si{width:100%;padding:9px 36px 9px 38px;border-radius:11px;border:1.5px solid var(--border);background:#F7F9FF;font-size:14px;font-family:inherit;color:var(--text);outline:none;}
+.si:focus{border-color:var(--blue2);}
+.si::placeholder{color:var(--muted);}
+.s-ic{position:absolute;left:12px;font-size:15px;pointer-events:none;}
+.s-cl{position:absolute;right:10px;font-size:15px;cursor:pointer;color:var(--muted);background:none;border:none;display:none;}
+
+/* 과목필터: top = 52(헤더)+52(검색) = 104 */
+.fbar{position:fixed;top:104px;left:0;right:0;z-index:580;background:var(--white);
+  display:flex;gap:7px;padding:7px 13px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--border);height:40px;align-items:center;}
+.fbar::-webkit-scrollbar{display:none;}
+.chip{white-space:nowrap;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);
+  background:var(--white);font-size:12px;font-weight:600;color:var(--sub);
+  cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;line-height:1;}
+.chip.on{background:var(--blue);color:#fff;border-color:var(--blue);}
+.chip.grade-on.초등{background:#F59E0B;border-color:#F59E0B;color:#fff;}
+.chip.grade-on.중등{background:#8B5CF6;border-color:#8B5CF6;color:#fff;}
+.chip.grade-on.고등{background:#EF4444;border-color:#EF4444;color:#fff;}
+
+/* 학급필터: top = 104+40 = 144 */
+.fbar2{position:fixed;top:144px;left:0;right:0;z-index:579;background:#F5F7FF;
+  display:flex;gap:6px;padding:5px 13px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--border);height:34px;align-items:center;}
+.fbar2::-webkit-scrollbar{display:none;}
+.fbar2-label{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-right:2px;}
+.chip.sm{padding:3px 10px;font-size:11px;border-radius:14px;}
+
+/* 학급 뱃지 (카드·시트용) */
+.grade-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
+.gb{font-size:10px;font-weight:800;padding:2px 7px;border-radius:5px;white-space:nowrap;}
+.gb.초등{background:#FEF3C7;color:#B45309;}
+.gb.중등{background:#EDE9FE;color:#6D28D9;}
+.gb.고등{background:#FEE2E2;color:#B91C1C;}
+
+/* vtabs: top = 144+34 = 178 */
+.vtabs{position:fixed;top:178px;left:0;right:0;z-index:570;background:var(--white);
+  display:flex;border-bottom:2px solid var(--border);height:36px;}
+.vtab{flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--muted);
+  cursor:pointer;border:none;background:none;font-family:inherit;
+  border-bottom:2px solid transparent;margin-bottom:-2px;
+  display:flex;align-items:center;justify-content:center;gap:4px;}
+.vtab.on{color:var(--blue);border-bottom-color:var(--blue);}
+
+/* 지도: top = 178+36 = 214, 하단 배너 72px + bnav 64px */
+#map-wrap{position:fixed;top:214px;left:0;right:0;bottom:64px;z-index:100;}
+#map{width:100%;height:calc(100% - 72px);}
+.gps-fab{position:absolute;bottom:82px;right:14px;z-index:300;width:44px;height:44px;
+  border-radius:50%;background:var(--white);border:none;
+  box-shadow:0 3px 14px rgba(0,0,0,.18);font-size:20px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;}
+
+/* 목록: top = 214 */
+#list-wrap{position:fixed;top:214px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
+
+/* ══ 지도 하단 배너 슬라이더 ══ */
+.map-banner-wrap{
+  position:absolute;bottom:0;left:0;right:0;z-index:200;height:72px;
+  background:var(--white);border-top:1px solid var(--border);overflow:hidden;
+}
+.map-banner-track{display:flex;height:100%;transition:transform .45s cubic-bezier(.4,0,.2,1);}
+.banner-slide{min-width:100%;height:72px;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;}
+.banner-slide img{width:100%;height:100%;object-fit:cover;}
+/* 기본 플레이스홀더 배너 */
+.banner-ph{width:100%;height:100%;display:flex;align-items:center;padding:0 18px;gap:14px;}
+.banner-ph.b1{background:linear-gradient(120deg,#0A3D91,#1658D6);}
+.banner-ph.b2{background:linear-gradient(120deg,var(--orange),#FF8A3D);}
+.banner-ph.b3{background:linear-gradient(120deg,#059669,#10B981);}
+.banner-ph-ico{font-size:32px;flex-shrink:0;}
+.banner-ph-txt h4{font-size:14px;font-weight:800;color:#fff;}
+.banner-ph-txt p{font-size:11px;color:rgba(255,255,255,.8);margin-top:2px;}
+.banner-ph-arr{margin-left:auto;font-size:20px;color:rgba(255,255,255,.7);flex-shrink:0;}
+.banner-ad-tag{position:absolute;top:5px;right:8px;background:rgba(0,0,0,.3);
+  color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.banner-dots{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
+  display:flex;gap:4px;pointer-events:none;}
+.bdot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);transition:.3s;}
+.bdot.on{background:#fff;width:14px;}
+
+/* ══ 결제 모달 ══ */
+.pay-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:flex-end;}
+.pay-ov.open{display:flex;}
+.pay-sheet{background:var(--white);width:100%;border-radius:22px 22px 0 0;
+  padding:20px 20px 50px;animation:shUp .25s cubic-bezier(.4,0,.2,1);
+  max-height:92vh;overflow-y:auto;}
+.pay-hdl{width:36px;height:4px;border-radius:2px;background:#D1D5DB;margin:0 auto 20px;}
+.pay-step-title{font-size:18px;font-weight:900;margin-bottom:4px;}
+.pay-step-sub{font-size:13px;color:var(--sub);margin-bottom:20px;}
+/* 플랜 선택 박스 */
+.pay-plan-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
+.pay-plan-item{border:2px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.15s;}
+.pay-plan-item.on{border-color:var(--blue);background:var(--blue3);}
+.ppi-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.ppi-radio.on{border-color:var(--blue);background:var(--blue);}
+.ppi-radio.on::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff;}
+.ppi-body{flex:1;}
+.ppi-name{font-size:14px;font-weight:800;}
+.ppi-feats{font-size:11px;color:var(--sub);margin-top:3px;line-height:1.5;}
+.ppi-price{font-size:16px;font-weight:900;color:var(--blue);flex-shrink:0;}
+/* 결제 수단 */
+.pay-method-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
+.pm-btn{padding:12px 8px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.15s;}
+.pm-btn.on{border-color:var(--blue);background:var(--blue3);}
+.pm-btn .pm-ico{font-size:22px;}
+.pm-btn .pm-lbl{font-size:11px;font-weight:700;color:var(--sub);}
+.pm-btn.on .pm-lbl{color:var(--blue);}
+/* 카드 입력 */
+.pay-card-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
+.pay-inp{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;color:var(--text);outline:none;}
+.pay-inp:focus{border-color:var(--blue2);}
+.pay-inp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+/* 금액 요약 */
+.pay-summary{background:var(--bg);border-radius:12px;padding:14px 16px;margin-bottom:18px;}
+.pay-sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:6px;}
+.pay-sum-row.total{font-size:15px;font-weight:900;color:var(--text);border-top:1px solid var(--border);padding-top:10px;margin-top:4px;margin-bottom:0;}
+.pay-sum-row.total span:last-child{color:var(--blue);}
+.pay-cta{width:100%;padding:15px;border-radius:13px;border:none;background:var(--blue);color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(10,61,145,.3);}
+.pay-cta:active{transform:scale(.98);}
+.pay-note{text-align:center;font-size:11px;color:var(--muted);margin-top:10px;line-height:1.7;}
+/* 성공 화면 */
+.pay-success{text-align:center;padding:10px 0 20px;}
+.pay-s-ico{font-size:60px;margin-bottom:16px;}
+.pay-s-title{font-size:20px;font-weight:900;margin-bottom:8px;}
+.pay-s-desc{font-size:14px;color:var(--sub);line-height:1.65;margin-bottom:24px;}
+.pay-s-box{background:var(--blue3);border-radius:12px;padding:14px 16px;margin-bottom:20px;text-align:left;}
+.pay-s-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
+.pay-s-row:last-child{margin-bottom:0;font-weight:800;}
+.pay-s-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;}
+.lstat{font-size:13px;color:var(--sub);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.lstat strong{color:var(--blue);font-weight:700;}
+.sort-btn{font-size:12px;color:var(--blue2);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
+
+.ad-inline{background:linear-gradient(120deg,var(--orange),var(--orange3));border-radius:var(--radius);padding:14px 18px;color:#fff;cursor:pointer;box-shadow:var(--psh);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.ad-inline h3{font-size:14px;font-weight:800;}
+.ad-inline p{font-size:12px;opacity:.85;margin-top:2px;}
+
+/* Academy card */
+.acard{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);margin-bottom:10px;padding:15px;box-shadow:var(--sh);opacity:0;transform:translateY(8px);animation:rise .26s ease forwards;}
+.acard.prem{border-color:var(--orange);background:linear-gradient(135deg,#FFF8F5,#fff);box-shadow:var(--psh);}
+.acard.basic{border-color:#C7D7F4;}
+.ac-top{display:flex;align-items:flex-start;gap:11px;}
+.ac-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.ac-info{flex:1;min-width:0;}
+.ac-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.ac-name{font-size:15px;font-weight:800;line-height:1.25;}
+.ac-name mark{background:#FFF9C4;border-radius:3px;padding:0 1px;font-style:normal;}
+.plan-tag{font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;flex-shrink:0;}
+.plan-tag.prem{background:var(--orange);color:#fff;}
+.plan-tag.basic{background:var(--blue3);color:var(--blue2);}
+.plan-tag.free{background:#F1F5F9;color:var(--muted);}
+.ac-sub{font-size:12px;color:var(--sub);margin-top:3px;}
+/* 별점 */
+.ac-stars{display:flex;align-items:center;gap:4px;margin-top:4px;}
+.stars-ico{color:var(--yellow);font-size:12px;letter-spacing:-1px;}
+.stars-num{font-size:12px;font-weight:700;color:var(--text);}
+.stars-cnt{font-size:11px;color:var(--muted);}
+/* 찜 버튼 */
+.heart-btn{background:none;border:none;cursor:pointer;font-size:22px;flex-shrink:0;padding:2px;line-height:1;transition:transform .15s;}
+.heart-btn.liked{animation:heartPop .3s ease;}
+
+.ac-foot{margin-top:12px;padding-top:11px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.ac-price{color:var(--red);font-size:15px;font-weight:800;}
+.ac-dist{font-size:11px;color:var(--muted);margin-top:2px;}
+.ac-btn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1.5px solid var(--blue);background:transparent;color:var(--blue);}
+.ac-btn.p{background:var(--blue);color:#fff;}
+.no-r{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;display:none;}
+
+/* Bottom nav */
+.bnav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:700;box-shadow:0 -4px 16px rgba(10,61,145,.07);}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;border:none;background:none;font-family:inherit;font-size:10px;font-weight:600;color:var(--muted);cursor:pointer;position:relative;}
+.nb.on{color:var(--blue);}
+.nb-ic{font-size:20px;}
+.nb-badge{position:absolute;top:8px;right:calc(50% - 16px);background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center;}
+
+/* map pins */
+.pin-wrap{cursor:pointer;}
+.pin{width:36px;height:36px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,0,0,.22);border:2.5px solid rgba(255,255,255,.9);}
+.pin span{transform:rotate(45deg);font-size:16px;display:block;}
+.pin.free{background:#94A3B8;}
+.pin.basic{background:var(--blue2);}
+.pin.prem{background:var(--orange);}
+
+/* ══ Detail Sheet ══ */
+.sh-ov{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:800;display:none;align-items:flex-end;}
+.sh-ov.open{display:flex;}
+.sheet{background:var(--white);width:100%;border-radius:22px 22px 0 0;padding:0 0 50px;animation:shUp .22s cubic-bezier(.4,0,.2,1);max-height:92vh;overflow-y:auto;}
+.sh-hdl{width:36px;height:4px;border-radius:2px;background:#D1D5DB;margin:14px auto 0;}
+.sh-hero{padding:18px 20px 0;}
+.sh-hero-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.sh-ico{width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.sh-nm{font-size:19px;font-weight:900;line-height:1.2;}
+.sh-plan-tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:7px;margin-top:4px;}
+.sh-plan-tag.prem{background:var(--orange);color:#fff;}
+.sh-plan-tag.basic{background:var(--blue3);color:var(--blue2);}
+.sh-plan-tag.free{background:#F1F5F9;color:var(--muted);}
+.sh-stars-row{display:flex;align-items:center;gap:6px;margin-bottom:14px;}
+.sh-stars{color:var(--yellow);font-size:18px;letter-spacing:-1px;}
+.sh-rat{font-size:15px;font-weight:800;}
+.sh-rcnt{font-size:13px;color:var(--muted);}
+/* heart in sheet */
+.sh-heart{background:none;border:none;font-size:28px;cursor:pointer;padding:0;}
+
+.sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px;margin-bottom:16px;}
+.sh-cell{background:var(--bg);border-radius:12px;padding:12px 14px;}
+.sh-lbl{font-size:11px;color:var(--muted);font-weight:600;}
+.sh-val{font-size:14px;font-weight:800;margin-top:3px;}
+.sh-val.r{color:var(--red);}
+
+/* Reviews in sheet */
+.sh-sec-title{font-size:14px;font-weight:800;padding:0 20px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.sh-sec-title button{font-size:12px;color:var(--blue2);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
+.review-card{margin:0 20px 10px;background:var(--bg);border-radius:12px;padding:13px 14px;}
+.rv-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;}
+.rv-author{font-size:13px;font-weight:700;}
+.rv-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.rv-actions{display:flex;gap:6px;flex-shrink:0;}
+.rv-act-btn{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;border:none;}
+.rv-act-btn.edit{background:var(--blue3);color:var(--blue2);}
+.rv-act-btn.del{background:#FEE2E2;color:var(--red);}
+.rv-mine-badge{font-size:10px;font-weight:800;background:var(--green2);color:var(--green);padding:2px 6px;border-radius:5px;margin-left:4px;vertical-align:middle;}
+.rv-stars{color:var(--yellow);font-size:13px;margin-bottom:5px;}
+.rv-body{font-size:13px;color:var(--sub);line-height:1.6;}
+.no-review{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
+
+.sh-cta-wrap{padding:0 20px;margin-top:4px;}
+.sh-cta{width:100%;padding:14px;border-radius:13px;border:none;background:var(--blue);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;}
+.sh-cta.o{background:var(--orange);}
+
+/* ══════════════════════════════════
+   찜 목록 PAGE
+══════════════════════════════════ */
+#page-wish{padding-bottom:64px;}
+.ph{background:var(--blue);padding:52px 18px 20px;color:#fff;}
+.ph h2{font-size:20px;font-weight:900;}
+.ph p{font-size:13px;opacity:.7;margin-top:4px;}
+.wish-list{padding:14px;}
+.wish-empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.wish-empty .wi-ico{font-size:48px;margin-bottom:14px;}
+.wish-empty p{font-size:14px;}
+.wish-empty button{margin-top:16px;padding:10px 22px;border-radius:10px;background:var(--blue);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+
+/* ══════════════════════════════════
+   LANDING PAGE
+══════════════════════════════════ */
+#page-landing{background:var(--white);}
+.lnav{position:fixed;top:0;left:0;right:0;z-index:600;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,30,91,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);}
+.lnav .logo{font-size:20px;}
+.lnav-r{display:flex;gap:8px;}
+.lnav-btn{padding:6px 13px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;}
+.lnav-btn.g{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;}
+.lnav-btn.s{background:var(--orange);color:#fff;}
+
+.hero{background:linear-gradient(160deg,#061E5B 0%,#0A3D91 55%,#1A5FD4 100%);padding:86px 24px 48px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");}
+.hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,90,31,.25);border:1px solid rgba(255,90,31,.4);border-radius:20px;padding:5px 14px;color:#FFB299;font-size:12px;font-weight:700;margin-bottom:18px;}
+.hero h1{font-size:30px;font-weight:900;color:#fff;line-height:1.25;letter-spacing:-1px;margin-bottom:12px;}
+.hero h1 em{color:var(--orange);font-style:normal;}
+.hero-sub{font-size:15px;color:rgba(255,255,255,.72);line-height:1.6;margin-bottom:28px;}
+.hero-btns{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto 28px;}
+.hcta{padding:15px;border-radius:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;}
+.hcta.pr{background:var(--orange);color:#fff;box-shadow:0 4px 20px rgba(255,90,31,.45);}
+.hcta.sc{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);}
+.hero-stats{display:flex;justify-content:center;gap:24px;}
+.hs{text-align:center;}
+.hs-n{font-size:22px;font-weight:900;color:#fff;}
+.hs-l{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
+
+.sp-bar{background:var(--blue3);padding:13px 18px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+.sp-bar::-webkit-scrollbar{display:none;}
+.sp-pill{white-space:nowrap;background:var(--white);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--blue);flex-shrink:0;box-shadow:0 1px 6px rgba(10,61,145,.1);}
+
+.section{padding:36px 22px;}
+.sec-tag{display:inline-block;background:var(--blue3);color:var(--blue2);font-size:11px;font-weight:800;padding:4px 10px;border-radius:6px;margin-bottom:10px;}
+.sec-title{font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1.3;margin-bottom:6px;}
+.sec-sub{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:24px;}
+
+.why-grid{display:flex;flex-direction:column;gap:12px;}
+.why-c{background:var(--white);border-radius:var(--radius);padding:18px;border:1.5px solid var(--border);box-shadow:var(--sh);display:flex;gap:14px;align-items:flex-start;}
+.why-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.why-t{font-size:15px;font-weight:800;margin-bottom:4px;}
+.why-d{font-size:13px;color:var(--sub);line-height:1.55;}
+
+/* PRICING */
+.pricing-sec{padding:0 0 36px;background:var(--bg);}
+.pricing-hdr{padding:36px 22px 20px;text-align:center;}
+.plan-cards{padding:0 16px;display:flex;flex-direction:column;gap:14px;}
+.pc{border-radius:20px;border:2px solid var(--border);background:var(--white);padding:22px 20px;position:relative;box-shadow:var(--sh);}
+.pc.hot{border-color:var(--orange);background:linear-gradient(160deg,#FFF8F5,var(--white) 60%);box-shadow:var(--psh);}
+.pc.pro{border-color:var(--blue);background:linear-gradient(160deg,#EEF4FF,var(--white) 60%);box-shadow:var(--bsh);}
+.pc-ribbon{position:absolute;top:-1px;right:22px;font-size:11px;font-weight:800;padding:5px 14px;border-radius:0 0 12px 12px;color:#fff;}
+.pc-ribbon.hot{background:var(--orange);}
+.pc-ribbon.pro{background:var(--blue);}
+.pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
+.pc-name{font-size:18px;font-weight:900;}
+.pc-tl{font-size:12px;color:var(--sub);margin-top:4px;}
+.pc-pn{font-size:26px;font-weight:900;}
+.pc.free-pc .pc-pn{color:var(--green);}
+.pc.hot .pc-pn{color:var(--orange);}
+.pc.pro .pc-pn{color:var(--blue);}
+.pc-pu{font-size:12px;color:var(--muted);margin-top:2px;text-align:right;}
+.pc-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
+.pf{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--sub);}
+.pf .ck{font-size:14px;flex-shrink:0;width:20px;text-align:center;}
+.pf.off{color:var(--muted);}
+.pc-btn{width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;transition:.15s;}
+.pc-btn:active{transform:scale(.97);}
+.pc-btn.gr{background:var(--bg);color:var(--sub);border:1.5px solid var(--border);}
+.pc-btn.oo{background:var(--orange);color:#fff;box-shadow:0 4px 16px rgba(255,90,31,.35);}
+.pc-btn.ob{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(10,61,145,.3);}
+
+.steps{display:flex;flex-direction:column;gap:0;}
+.step{display:flex;gap:16px;padding-bottom:24px;position:relative;}
+.step:not(:last-child)::before{content:'';position:absolute;left:19px;top:40px;bottom:0;width:2px;background:var(--border);}
+.step-num{width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;position:relative;z-index:1;}
+.step-t{font-size:15px;font-weight:800;margin-bottom:4px;padding-top:8px;}
+.step-d{font-size:13px;color:var(--sub);line-height:1.55;}
+
+.testi-cards{display:flex;flex-direction:column;gap:12px;}
+.tc{background:var(--white);border-radius:var(--radius);padding:18px;border:1.5px solid var(--border);box-shadow:var(--sh);}
+.tc-stars{color:var(--yellow);font-size:14px;margin-bottom:8px;}
+.tc-body{font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:12px;}
+.tc-auth{display:flex;align-items:center;gap:10px;}
+.tc-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.tc-nm{font-size:13px;font-weight:700;}
+.tc-rl{font-size:11px;color:var(--muted);}
+
+.faq-items{display:flex;flex-direction:column;gap:10px;}
+.faq-item{border-radius:12px;border:1.5px solid var(--border);overflow:hidden;}
+.faq-q{padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--white);}
+.faq-q .arr{color:var(--muted);transition:.2s;font-size:18px;}
+.faq-q.open .arr{transform:rotate(180deg);color:var(--blue);}
+.faq-a{font-size:13px;color:var(--sub);line-height:1.65;padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;}
+.faq-a.open{max-height:200px;padding:0 16px 14px;}
+
+.cta-bottom{padding:36px 22px;background:linear-gradient(135deg,#061E5B,var(--blue2));text-align:center;}
+.cta-bottom h2{font-size:22px;font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:-.5px;}
+.cta-bottom p{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:22px;}
+.cta-bottom-btn{display:block;width:100%;max-width:320px;margin:0 auto 10px;padding:15px;border-radius:13px;border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--orange);color:#fff;box-shadow:0 4px 20px rgba(255,90,31,.45);}
+.cta-note{font-size:12px;color:rgba(255,255,255,.5);margin-top:8px;}
+
+.footer{background:#061E5B;padding:24px 22px;text-align:center;}
+.footer .logo{font-size:20px;margin-bottom:10px;display:block;}
+.footer-links{display:flex;justify-content:center;gap:16px;margin-bottom:14px;}
+.footer-links a{font-size:12px;color:rgba(255,255,255,.45);text-decoration:none;}
+.footer-copy{font-size:11px;color:rgba(255,255,255,.3);}
+
+/* ══════════════════════════════════
+   회원유형 PAGE
+══════════════════════════════════ */
+.page-hdr{background:linear-gradient(135deg,var(--blue),var(--blue2));padding:50px 20px 24px;color:#fff;}
+.page-hdr-back{font-size:22px;cursor:pointer;margin-bottom:12px;display:inline-block;opacity:.8;}
+.page-hdr h2{font-size:22px;font-weight:900;letter-spacing:-.5px;}
+.page-hdr p{font-size:13px;opacity:.72;margin-top:5px;}
+.type-list{padding:20px 16px;display:flex;flex-direction:column;gap:13px;}
+.type-card{border-radius:var(--radius);border:2px solid var(--border);background:var(--white);padding:20px;cursor:pointer;box-shadow:var(--sh);display:flex;gap:14px;align-items:flex-start;transition:.18s;}
+.type-card:active{transform:scale(.98);}
+.type-card.u{border-color:var(--blue3);}
+.type-card.b{border-color:var(--orange2);}
+.ty-ico{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
+.ty-ico.u{background:var(--blue3);}
+.ty-ico.b{background:var(--orange2);}
+.ty-nm{font-size:16px;font-weight:800;margin-bottom:4px;}
+.ty-badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-bottom:7px;}
+.ty-badge.free{background:var(--green2);color:var(--green);}
+.ty-badge.paid{background:var(--orange2);color:var(--orange);}
+.ty-desc{font-size:13px;color:var(--sub);line-height:1.6;}
+.ty-arr{margin-top:10px;font-size:13px;font-weight:700;color:var(--blue2);}
+.login-row{text-align:center;padding:20px;font-size:13px;color:var(--muted);}
+.login-row span{color:var(--blue2);font-weight:700;cursor:pointer;}
+
+/* ══════════════════════════════════
+   FORM PAGES
+══════════════════════════════════ */
+.form-hdr{padding:50px 20px 26px;color:#fff;}
+.form-hdr.blue{background:linear-gradient(135deg,var(--blue),var(--blue2));}
+.form-hdr.orange{background:linear-gradient(135deg,#7C2D00,var(--orange));}
+.form-hdr-back{font-size:22px;cursor:pointer;margin-bottom:12px;display:inline-block;opacity:.8;}
+.form-hdr h2{font-size:22px;font-weight:900;}
+.form-hdr p{font-size:13px;opacity:.72;margin-top:5px;}
+.form-body{padding:22px 18px 50px;display:flex;flex-direction:column;gap:15px;}
+.fg{display:flex;flex-direction:column;gap:6px;}
+.fg label{font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.3px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;color:var(--text);outline:none;background:var(--white);}
+.fg input:focus,.fg select:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(22,88,214,.1);}
+.fg .hint{font-size:11px;color:var(--muted);}
+.plan-sum{background:var(--blue3);border-radius:12px;padding:14px 16px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
+.ps-l{font-size:13px;color:var(--sub);}
+.ps-pl{font-size:14px;font-weight:800;color:var(--blue);}
+.ps-pr{font-size:14px;font-weight:900;color:var(--blue);}
+.divr{display:flex;align-items:center;gap:10px;margin:4px 0;}
+.divr hr{flex:1;border:none;border-top:1px solid var(--border);}
+.divr span{font-size:12px;color:var(--muted);}
+.social-btn{width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;color:var(--text);}
+.sub-btn{width:100%;padding:15px;border-radius:13px;border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:4px;}
+.sub-btn.blue{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(10,61,145,.3);}
+.sub-btn.orange{background:var(--orange);color:#fff;box-shadow:0 4px 16px rgba(255,90,31,.3);}
+.sub-note{text-align:center;font-size:12px;color:var(--muted);}
+
+/* ══════════════════════════════════
+   플랜 PAGE
+══════════════════════════════════ */
+.plan-hdr{background:linear-gradient(150deg,#061E5B,var(--blue2));padding:50px 22px 28px;text-align:center;color:#fff;}
+.plan-hdr-back{font-size:22px;cursor:pointer;text-align:left;margin-bottom:14px;opacity:.8;}
+.plan-hdr h2{font-size:24px;font-weight:900;letter-spacing:-.5px;}
+.plan-hdr p{font-size:14px;opacity:.72;margin-top:6px;}
+.plan-body{padding:20px 16px 50px;display:flex;flex-direction:column;gap:14px;}
+
+/* ══════════════════════════════════
+   DASHBOARD PAGE
+══════════════════════════════════ */
+#page-dashboard{padding-bottom:80px;}
+.db-hdr{background:linear-gradient(135deg,var(--blue),var(--blue2));padding:48px 20px 22px;color:#fff;}
+.db-hdr-back{font-size:22px;cursor:pointer;margin-bottom:10px;display:inline-block;opacity:.8;}
+.db-plan-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:10px;}
+.db-acad-name{font-size:22px;font-weight:900;}
+.db-loc{font-size:13px;opacity:.7;margin-top:3px;}
+.db-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;}
+.ds{background:var(--white);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:var(--sh);}
+.ds-n{font-size:22px;font-weight:900;color:var(--blue);}
+.ds-l{font-size:11px;color:var(--muted);margin-top:3px;font-weight:600;}
+.up-banner{margin:0 14px 16px;background:linear-gradient(120deg,var(--blue),var(--blue2));border-radius:var(--radius);padding:14px 16px;color:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.up-banner h4{font-size:13px;font-weight:800;}
+.up-banner p{font-size:11px;opacity:.8;margin-top:2px;}
+.up-sm{background:#fff;color:var(--blue);font-size:11px;font-weight:800;padding:7px 12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;margin-left:10px;}
+.db-sec{padding:0 14px;margin-bottom:18px;}
+.db-sh{font-size:14px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.db-sh button{font-size:12px;font-weight:700;color:var(--blue2);background:none;border:none;cursor:pointer;font-family:inherit;}
+.pro-tag{font-size:10px;background:var(--orange2);color:var(--orange);padding:2px 7px;border-radius:6px;font-weight:800;margin-left:4px;}
+.info-card{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);padding:4px 16px;box-shadow:var(--sh);}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.ir:last-child{border-bottom:none;}
+.ir-l{font-size:13px;color:var(--sub);font-weight:600;}
+.ir-v{font-size:13px;font-weight:700;}
+.ir-e{font-size:12px;color:var(--blue2);font-weight:700;cursor:pointer;background:none;border:none;font-family:inherit;}
+.timetable{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--sh);}
+.tt-head{display:grid;grid-template-columns:44px repeat(5,1fr);background:var(--blue);color:#fff;font-size:11px;font-weight:700;}
+.tt-head div,.tt-row div{padding:7px 2px;text-align:center;}
+.tt-row{display:grid;grid-template-columns:44px repeat(5,1fr);font-size:11px;border-top:1px solid var(--border);}
+.tt-row .tt-t{font-weight:700;background:#F8FAFF;color:var(--text);}
+.tt-cls{background:var(--blue3);color:var(--blue);border-radius:5px;font-size:9px;font-weight:700;padding:3px 1px;margin:2px;}
+.news-c{background:var(--white);border-radius:12px;border:1.5px solid var(--border);padding:13px 15px;margin-bottom:9px;box-shadow:var(--sh);}
+.news-d{font-size:11px;color:var(--muted);margin-bottom:3px;}
+.news-t{font-size:14px;font-weight:700;}
+.rsv-c{background:var(--white);border-radius:12px;border:1.5px solid var(--border);padding:13px 15px;margin-bottom:9px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;}
+.rsv-nm{font-size:14px;font-weight:700;}
+.rsv-tm{font-size:12px;color:var(--sub);margin-top:2px;}
+.rsv-b{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;}
+.rsv-b.new{background:var(--orange2);color:var(--orange);}
+.rsv-b.done{background:var(--green2);color:var(--green);}
+.sns-r{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.sns-r:last-child{border-bottom:none;}
+.sns-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.sns-nm{font-size:14px;font-weight:700;flex:1;}
+.sns-st{font-size:11px;color:var(--muted);}
+.sns-btn{font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;}
+.sns-btn.on{background:var(--green2);color:var(--green);border:none;}
+.sns-btn.off{background:var(--bg);color:var(--sub);border:1px solid var(--border);}
+.locked{position:relative;}
+.lock-cover{position:absolute;inset:0;background:rgba(255,255,255,.9);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;backdrop-filter:blur(3px);}
+.lock-cover .lk-ic{font-size:26px;}
+.lock-cover p{font-size:13px;font-weight:700;color:var(--sub);}
+.lock-cover button{background:var(--orange);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+.db-bnav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:700;box-shadow:0 -4px 16px rgba(10,61,145,.07);}
+
+/* MODALS */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;display:none;align-items:center;justify-content:center;padding:20px;}
+.modal-ov.open{display:flex;}
+.modal-box{background:var(--white);border-radius:20px;padding:24px 22px;width:100%;max-width:360px;animation:popIn .2s ease;}
+.modal-title{font-size:17px;font-weight:800;margin-bottom:16px;}
+.mfg{display:flex;flex-direction:column;gap:6px;margin-bottom:13px;}
+.mfg label{font-size:12px;font-weight:700;color:var(--sub);}
+.mfg input,.mfg textarea,.mfg select{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;color:var(--text);outline:none;}
+.mfg textarea{resize:vertical;min-height:80px;}
+.mfg input:focus,.mfg textarea:focus{border-color:var(--blue2);}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns button{flex:1;padding:12px;border-radius:11px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;border:none;}
+.mb-cancel{background:var(--bg);color:var(--sub);}
+.mb-save{background:var(--blue);color:#fff;}
+
+/* Star rating input */
+.star-input{display:flex;gap:6px;font-size:28px;cursor:pointer;}
+.star-input span{color:#D1D5DB;transition:.1s;}
+.star-input span.on{color:var(--yellow);}
+</style>
+</head>
+<body>
+
+<!-- ════════════════ HOME ════════════════ -->
+<div class="page active" id="page-home">
+  <div class="hdr">
+    <div class="logo" onclick="go('page-landing')">에듀<em>픽</em></div>
+    <div class="hdr-r">
+      <button class="hbtn" onclick="go('page-type')">로그인</button>
+      <button class="hbtn o" onclick="go('page-landing')">학원등록</button>
+    </div>
+  </div>
+  <div class="sbar">
+    <div class="sw">
+      <span class="s-ic">🔍</span>
+      <input class="si" id="search" type="text" placeholder="학원명 또는 과목 검색…" oninput="onSearch()" autocomplete="off">
+      <button class="s-cl" id="s-cl" onclick="clearSearch()">✕</button>
+    </div>
+  </div>
+  <!-- 과목 필터 -->
+  <div class="fbar" style="top:104px;">
+    <button class="chip on" onclick="setFilter('전체',this)">전체</button>
+    <button class="chip" onclick="setFilter('영어',this)">🔤 영어</button>
+    <button class="chip" onclick="setFilter('수학',this)">📐 수학</button>
+    <button class="chip" onclick="setFilter('국어',this)">📖 국어</button>
+    <button class="chip" onclick="setFilter('예체능',this)">🎨 예체능</button>
+    <button class="chip" onclick="setFilter('과학',this)">🔬 과학</button>
+  </div>
+  <!-- 학급 필터 -->
+  <div class="fbar2">
+    <span class="fbar2-label">학급</span>
+    <button class="chip sm on" id="gchip-전체" onclick="setGrade('전체',this)">전체</button>
+    <button class="chip sm" id="gchip-초등" onclick="setGrade('초등',this)">🟡 초등</button>
+    <button class="chip sm" id="gchip-중등" onclick="setGrade('중등',this)">🟣 중등</button>
+    <button class="chip sm" id="gchip-고등" onclick="setGrade('고등',this)">🔴 고등</button>
+  </div>
+  <div class="vtabs">
+    <button class="vtab on" id="vtmap" onclick="switchView('map')">🗺 지도</button>
+    <button class="vtab"   id="vtlist" onclick="switchView('list')">☰ 목록</button>
+  </div>
+  <div id="map-wrap">
+    <div id="map"></div>
+    <button class="gps-fab" onclick="getGPS()">🛰</button>
+    <!-- 지도 하단 배너 슬라이더 -->
+    <div class="map-banner-wrap" id="map-banner">
+      <div class="map-banner-track" id="banner-track">
+        <!-- 배너 1: 학원 등록 유도 (기본) -->
+        <div class="banner-slide" onclick="go('page-landing')">
+          <div class="banner-ph b1">
+            <div class="banner-ph-ico">🏫</div>
+            <div class="banner-ph-txt">
+              <h4>우리 학원 지금 무료 등록!</h4>
+              <p>지도에 바로 노출 · 월 33,000원부터</p>
+            </div>
+            <div class="banner-ph-arr">→</div>
+          </div>
+        </div>
+        <!-- 배너 2: 유료 광고 슬롯 예시 -->
+        <div class="banner-slide" onclick="showToast('광고 배너 클릭')">
+          <div class="banner-ph b2">
+            <div class="banner-ph-ico">⭐</div>
+            <div class="banner-ph-txt">
+              <h4>광고 배너 슬롯 (유료)</h4>
+              <p>이 자리에 학원 광고를 등록하세요</p>
+            </div>
+            <div class="banner-ph-arr">→</div>
+          </div>
+          <div class="banner-ad-tag">AD</div>
+        </div>
+        <!-- 배너 3: 유료 광고 슬롯 2 -->
+        <div class="banner-slide" onclick="showToast('광고 배너 클릭')">
+          <div class="banner-ph b3">
+            <div class="banner-ph-ico">📚</div>
+            <div class="banner-ph-txt">
+              <h4>광고 배너 슬롯 2 (유료)</h4>
+              <p>클릭당 노출 · 월정액 배너 모두 가능</p>
+            </div>
+            <div class="banner-ph-arr">→</div>
+          </div>
+          <div class="banner-ad-tag">AD</div>
+        </div>
+      </div>
+      <!-- 인디케이터 닷 -->
+      <div class="banner-dots" id="banner-dots"></div>
+    </div>
+  </div>
+  <div id="list-wrap">
+    <div class="lstat">총 <strong id="cnt">0</strong>개 학원 <button class="sort-btn" onclick="toggleSort()">⇅ <span id="sort-lbl">가까운순</span></button></div>
+    <div class="ad-inline" onclick="go('page-landing')">
+      <div><h3>🏫 우리 학원 무료 등록</h3><p>지도에 바로 노출 · 지금 무료로 시작</p></div>
+      <div>→</div>
+    </div>
+    <!-- 로딩 스피너 -->
+    <div id="loading-state" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:50px 20px;gap:14px;">
+      <div style="width:40px;height:40px;border:4px solid var(--border);border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+      <div style="font-size:13px;color:var(--muted);font-weight:600;">학원 정보를 불러오는 중…</div>
+    </div>
+    <div id="list"></div>
+    <div class="no-r" id="no-r">😅 검색 결과가 없어요</div>
+  </div>
+  <nav class="bnav">
+    <button class="nb on"><span class="nb-ic">🏠</span>홈</button>
+    <button class="nb" id="wish-nav-btn" onclick="goWish()"><span class="nb-ic">❤️</span>찜목록<span class="nb-badge" id="wish-badge" style="display:none">0</span></button>
+    <button class="nb" onclick="go('page-type')"><span class="nb-ic">👤</span>MY</button>
+  </nav>
+</div>
+
+<!-- Detail Sheet -->
+<div class="sh-ov" id="sh-ov" onclick="closeSheet(event)">
+  <div class="sheet" id="sheet-content">
+    <div class="sh-hdl"></div>
+    <div class="sh-hero">
+      <div class="sh-hero-top">
+        <div class="sh-ico" id="sh-ico"></div>
+        <div style="flex:1">
+          <div class="sh-nm" id="sh-nm"></div>
+          <div class="sh-plan-tag" id="sh-plan-tag"></div>
+        </div>
+        <button class="sh-heart" id="sh-heart" onclick="toggleHeartSheet()">🤍</button>
+      </div>
+      <div class="sh-stars-row">
+        <div class="sh-stars" id="sh-stars"></div>
+        <div class="sh-rat" id="sh-rat"></div>
+        <div class="sh-rcnt" id="sh-rcnt"></div>
+      </div>
+    </div>
+    <div class="sh-grid">
+      <div class="sh-cell"><div class="sh-lbl">과목</div><div class="sh-val" id="sh-subj"></div></div>
+      <div class="sh-cell"><div class="sh-lbl">월 수강료</div><div class="sh-val r" id="sh-price"></div></div>
+      <div class="sh-cell"><div class="sh-lbl">거리</div><div class="sh-val" id="sh-dist"></div></div>
+      <div class="sh-cell"><div class="sh-lbl">위치</div><div class="sh-val" id="sh-city" style="font-size:12px"></div></div>
+    </div>
+    <!-- 학급 뱃지 -->
+    <div id="sh-grade-badges" style="padding:0 20px;margin-bottom:14px;"></div>
+    <div class="sh-sec-title">💬 학부모 리뷰 <button onclick="openReviewModal()">리뷰 작성</button></div>
+    <div id="sh-reviews"></div>
+    <div class="sh-cta-wrap">
+      <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
+    </div>
+  </div>
+</div>
+
+<!-- Review Write / Edit Modal -->
+<div class="modal-ov" id="modal-review" onclick="closeModal('review',event)">
+  <div class="modal-box">
+    <div class="modal-title" id="rv-modal-title">✍️ 리뷰 작성</div>
+    <div class="mfg">
+      <label>별점</label>
+      <div class="star-input" id="star-input">
+        <span onclick="setStarRating(1)">★</span>
+        <span onclick="setStarRating(2)">★</span>
+        <span onclick="setStarRating(3)">★</span>
+        <span onclick="setStarRating(4)">★</span>
+        <span onclick="setStarRating(5)">★</span>
+      </div>
+    </div>
+    <div class="mfg"><label>닉네임</label><input type="text" id="rv-nick" placeholder="예) 천안맘 김○○"></div>
+    <div class="mfg"><label>리뷰 내용</label><textarea id="rv-body" placeholder="학원에 대한 솔직한 후기를 남겨주세요…"></textarea></div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('review')">취소</button>
+      <button class="mb-save" id="rv-submit-btn" onclick="submitReview()">등록</button>
+    </div>
+  </div>
+</div>
+
+<!-- Info Edit Modal -->
+<div class="modal-ov" id="modal-info" onclick="closeModal('info',event)">
+  <div class="modal-box">
+    <div class="modal-title">📋 학원 정보 수정</div>
+    <div class="mfg"><label>학원명</label><input type="text" id="mi-name" value="탑클래스 영어학원"></div>
+    <div class="mfg"><label>월 수강료</label><input type="text" value="200,000"></div>
+    <div class="mfg"><label>연락처</label><input type="tel" value="010-1234-5678"></div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('info')">취소</button>
+      <button class="mb-save" onclick="saveInfo()">저장</button>
+    </div>
+  </div>
+</div>
+<div class="modal-ov" id="modal-timetable" onclick="closeModal('timetable',event)">
+  <div class="modal-box">
+    <div class="modal-title">🗓 시간표 추가</div>
+    <div class="mfg"><label>반 이름</label><input type="text" placeholder="예) 중등 심화반"></div>
+    <div class="mfg"><label>요일</label><input type="text" placeholder="월, 수, 금"></div>
+    <div class="mfg"><label>시간</label><input type="text" placeholder="16:00 ~ 18:00"></div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('timetable')">취소</button>
+      <button class="mb-save" onclick="showToast('시간표를 저장했습니다');closeModal('timetable')">저장</button>
+    </div>
+  </div>
+</div>
+<div class="modal-ov" id="modal-news" onclick="closeModal('news',event)">
+  <div class="modal-box">
+    <div class="modal-title">📢 소식 작성</div>
+    <div class="mfg"><label>제목</label><input type="text" placeholder="공지 제목을 입력하세요"></div>
+    <div class="mfg"><label>내용</label><textarea placeholder="내용을 입력하세요…"></textarea></div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('news')">취소</button>
+      <button class="mb-save" onclick="showToast('소식을 게시했습니다');closeModal('news')">게시</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ════════════════ 결제 모달 ════════════════ -->
+<div class="pay-ov" id="pay-ov" onclick="closePayModal(event)">
+  <div class="pay-sheet">
+    <div class="pay-hdl"></div>
+
+    <!-- STEP 1: 플랜 선택 -->
+    <div id="pay-step1">
+      <div class="pay-step-title">💳 플랜 선택 및 결제</div>
+      <div class="pay-step-sub">구독은 언제든 취소 가능 · 약정 없음</div>
+      <div class="pay-plan-list">
+        <!-- 무료 -->
+        <div class="pay-plan-item" id="ppi-free" onclick="selectPayPlan('free')">
+          <div class="ppi-radio" id="ppr-free"></div>
+          <div class="ppi-body">
+            <div class="ppi-name">🆓 무료 플랜</div>
+            <div class="ppi-feats">지도 핀 표시만 · 회색 핀</div>
+          </div>
+          <div class="ppi-price" style="color:var(--green)">무료</div>
+        </div>
+        <!-- 베이직 -->
+        <div class="pay-plan-item on" id="ppi-basic" onclick="selectPayPlan('basic')">
+          <div class="ppi-radio on" id="ppr-basic"></div>
+          <div class="ppi-body">
+            <div class="ppi-name">🗺 베이직</div>
+            <div class="ppi-feats">지도 파란 핀 · 소식·시간표·사진 등록 · 블로그 연동</div>
+          </div>
+          <div class="ppi-price">33,000원</div>
+        </div>
+        <!-- 프리미엄 -->
+        <div class="pay-plan-item" id="ppi-premium" onclick="selectPayPlan('premium')">
+          <div class="ppi-radio" id="ppr-premium"></div>
+          <div class="ppi-body">
+            <div class="ppi-name">⭐ 프리미엄</div>
+            <div class="ppi-feats">상단 고정 · SNS 자동연동 · 상담예약 · SMS알림</div>
+          </div>
+          <div class="ppi-price" style="color:var(--orange)">55,000원</div>
+        </div>
+      </div>
+      <button class="pay-cta" onclick="goPayStep(2)" id="pay-next-btn">다음 — 결제 수단 선택</button>
+      <div class="pay-note">VAT 포함 · 매월 자동 결제 · 언제든 해지 가능</div>
+    </div>
+
+    <!-- STEP 2: 결제 수단 선택 (결제창 방식) -->
+    <div id="pay-step2" style="display:none">
+      <div class="pay-step-title">결제 수단 선택</div>
+      <div class="pay-step-sub" id="pay2-sub">베이직 플랜 · 월 33,000원</div>
+
+      <!-- 결제 수단 버튼 -->
+      <div class="pay-method-list" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;">
+        <button class="pm-btn on" id="pm-card"  onclick="selectPayMethod('card')">
+          <span class="pm-ico">💳</span><span class="pm-lbl">신용·체크카드</span>
+        </button>
+        <button class="pm-btn" id="pm-toss" onclick="selectPayMethod('toss')">
+          <span class="pm-ico">🔵</span><span class="pm-lbl">토스페이</span>
+        </button>
+        <button class="pm-btn" id="pm-naver" onclick="selectPayMethod('naver')">
+          <span class="pm-ico">🟢</span><span class="pm-lbl">네이버페이</span>
+        </button>
+        <button class="pm-btn" id="pm-kakao" onclick="selectPayMethod('kakao')">
+          <span class="pm-ico">🟡</span><span class="pm-lbl">카카오페이</span>
+        </button>
+        <button class="pm-btn" id="pm-bank" onclick="selectPayMethod('bank')">
+          <span class="pm-ico">🏦</span><span class="pm-lbl">계좌이체</span>
+        </button>
+        <button class="pm-btn" id="pm-phone" onclick="selectPayMethod('phone')">
+          <span class="pm-ico">📱</span><span class="pm-lbl">휴대폰</span>
+        </button>
+      </div>
+
+      <!-- 선택된 결제수단 안내 -->
+      <div id="pay-method-info" style="background:var(--blue3);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+        <span id="pmi-ico" style="font-size:24px;">💳</span>
+        <div>
+          <div style="font-size:14px;font-weight:700;" id="pmi-name">신용·체크카드</div>
+          <div style="font-size:12px;color:var(--sub);margin-top:2px;" id="pmi-desc">결제하기 버튼을 누르면 토스 결제창이 열립니다</div>
+        </div>
+      </div>
+
+      <!-- 금액 요약 -->
+      <div class="pay-summary">
+        <div class="pay-sum-row"><span>플랜</span><span id="sum-plan">베이직</span></div>
+        <div class="pay-sum-row"><span>월 구독료</span><span id="sum-price">33,000원</span></div>
+        <div class="pay-sum-row"><span>VAT</span><span>포함</span></div>
+        <div class="pay-sum-row total"><span>결제 금액</span><span id="sum-total">33,000원</span></div>
+      </div>
+
+      <button class="pay-cta" onclick="processPayment()" id="pay-confirm-btn">결제하기</button>
+      <div class="pay-note">
+        결제 정보는 암호화되어 안전하게 처리됩니다<br>
+        구독은 마이페이지에서 언제든 해지 가능합니다
+      </div>
+    </div>
+
+    <!-- STEP 3: 결제 완료 -->
+    <div id="pay-step3" style="display:none">
+      <div class="pay-success">
+        <div class="pay-s-ico">🎉</div>
+        <div class="pay-s-title">결제 완료!</div>
+        <div class="pay-s-desc">에듀픽 <strong id="suc-plan">베이직</strong> 플랜이<br>성공적으로 시작되었습니다</div>
+        <div class="pay-s-box">
+          <div class="pay-s-row"><span>플랜</span><span id="suc-plan2">🗺 베이직</span></div>
+          <div class="pay-s-row"><span>결제 금액</span><span id="suc-price">33,000원/월</span></div>
+          <div class="pay-s-row"><span>다음 결제일</span><span id="suc-next">2025.08.09</span></div>
+          <div class="pay-s-row"><span>결제 수단</span><span id="suc-method">신용카드</span></div>
+        </div>
+        <button class="pay-s-btn" onclick="completePay()">대시보드로 이동</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ 찜 목록 ════════════════ -->
+<div class="page" id="page-wish">
+  <div class="ph">
+    <h2>❤️ 찜한 학원</h2>
+    <p>관심 있는 학원을 모아봤어요</p>
+  </div>
+  <div class="wish-list" id="wish-list"></div>
+  <nav class="bnav">
+    <button class="nb" onclick="go('page-home')"><span class="nb-ic">🏠</span>홈</button>
+    <button class="nb on"><span class="nb-ic">❤️</span>찜목록</button>
+    <button class="nb" onclick="go('page-type')"><span class="nb-ic">👤</span>MY</button>
+  </nav>
+</div>
+
+<!-- ════════════════ LANDING ════════════════ -->
+<div class="page" id="page-landing">
+  <div class="lnav">
+    <div class="logo" onclick="go('page-home')">에듀<em>픽</em></div>
+    <div class="lnav-r">
+      <button class="lnav-btn g" onclick="go('page-type')">로그인</button>
+      <button class="lnav-btn s" onclick="go('page-plan')">학원 등록</button>
+    </div>
+  </div>
+  <div class="hero">
+    <div class="hero-tag">🗺 위치 기반 학원 플랫폼</div>
+    <h1>우리 학원을<br><em>지도 위에</em> 올려보세요</h1>
+    <p class="hero-sub">에듀픽에 등록하면 근처 학부모가<br>지도에서 바로 우리 학원을 찾아옵니다</p>
+    <div class="hero-btns">
+      <button class="hcta pr" onclick="go('page-plan')">🏫 지금 학원 등록하기 — 무료 시작 가능</button>
+      <button class="hcta sc" onclick="go('page-home')">🔍 학원 검색해보기</button>
+    </div>
+    <div class="hero-stats">
+      <div class="hs"><div class="hs-n">1,240+</div><div class="hs-l">등록 학원</div></div>
+      <div class="hs"><div class="hs-n">8,500+</div><div class="hs-l">학부모 회원</div></div>
+      <div class="hs"><div class="hs-n">4.8★</div><div class="hs-l">평균 만족도</div></div>
+    </div>
+  </div>
+  <div class="sp-bar">
+    <div class="sp-pill">✅ 천안 서북구 38개 학원</div>
+    <div class="sp-pill">✅ 아산시 21개 학원</div>
+    <div class="sp-pill">✅ 세종시 17개 학원</div>
+    <div class="sp-pill">⭐ 별점 리뷰 시스템</div>
+    <div class="sp-pill">❤️ 찜하기 기능</div>
+  </div>
+  <div class="section" style="background:var(--white);">
+    <div class="sec-tag">WHY 에듀픽</div>
+    <div class="sec-title">학부모는 지도로 찾고<br>원장님은 직접 관리해요</div>
+    <div class="sec-sub">블로그·SNS를 따로 운영할 필요 없이 에듀픽 하나로 해결하세요</div>
+    <div class="why-grid">
+      <div class="why-c"><div class="why-ico" style="background:#EEF4FF">📍</div><div><div class="why-t">지도 기반 노출</div><div class="why-d">학부모가 GPS로 근처 학원을 검색할 때 내 학원이 핀으로 표시됩니다</div></div></div>
+      <div class="why-c"><div class="why-ico" style="background:#FFF3E0">⭐</div><div><div class="why-t">학부모 리뷰·별점</div><div class="why-d">실제 학부모 후기와 별점이 쌓여 신뢰도가 높아집니다</div></div></div>
+      <div class="why-c"><div class="why-ico" style="background:#FDE8F4">📸</div><div><div class="why-t">SNS 자동 연동</div><div class="why-d">인스타·블로그 최신 글이 학원 페이지에 자동 반영됩니다 (프리미엄)</div></div></div>
+      <div class="why-c"><div class="why-ico" style="background:#ECFDF5">📅</div><div><div class="why-t">온라인 상담 예약</div><div class="why-d">학부모가 앱에서 상담 예약, SMS 알림까지 자동 발송됩니다 (프리미엄)</div></div></div>
+    </div>
+  </div>
+
+  <!-- PRICING — 3단계 -->
+  <div class="pricing-sec">
+    <div class="pricing-hdr">
+      <div class="sec-tag" style="background:var(--white);color:var(--blue2)">PRICING</div>
+      <div class="sec-title">3단계 요금제</div>
+      <div class="sec-sub" style="margin-bottom:0">무료로 시작하고, 필요할 때 업그레이드</div>
+    </div>
+    <div class="plan-cards">
+      <!-- FREE -->
+      <div class="pc free-pc">
+        <div class="pc-head">
+          <div><div class="pc-name">🆓 무료</div><div class="pc-tl">지도에 학원 표시만</div></div>
+          <div><div class="pc-pn">0원</div><div class="pc-pu">영구 무료</div></div>
+        </div>
+        <div class="pc-feats">
+          <div class="pf"><span class="ck">✅</span>지도에 핀 노출 (회색 핀)</div>
+          <div class="pf"><span class="ck">✅</span>학원명·과목·위치 표시</div>
+          <div class="pf off"><span class="ck">❌</span>소식·공지 게시</div>
+          <div class="pf off"><span class="ck">❌</span>사진·소개 등록</div>
+          <div class="pf off"><span class="ck">❌</span>SNS 연동</div>
+          <div class="pf off"><span class="ck">❌</span>상담 예약</div>
+        </div>
+        <button class="pc-btn gr" onclick="selectPlan('free')">무료로 시작하기</button>
+      </div>
+      <!-- BASIC -->
+      <div class="pc hot">
+        <div class="pc-ribbon hot">인기</div>
+        <div class="pc-head">
+          <div><div class="pc-name">🗺 베이직</div><div class="pc-tl">지도 + 정보·소식 관리</div></div>
+          <div><div class="pc-pn">33,000</div><div class="pc-pu">원/월 (VAT포함)</div></div>
+        </div>
+        <div class="pc-feats">
+          <div class="pf"><span class="ck">✅</span>지도 핀 노출 (파란 핀)</div>
+          <div class="pf"><span class="ck">✅</span>학원 소개·사진 등록</div>
+          <div class="pf"><span class="ck">✅</span>시간표 직접 등록</div>
+          <div class="pf"><span class="ck">✅</span>소식·공지 게시</div>
+          <div class="pf"><span class="ck">✅</span>블로그 URL 연동</div>
+          <div class="pf off"><span class="ck">❌</span>SNS 자동 연동</div>
+          <div class="pf off"><span class="ck">❌</span>상담 예약 시스템</div>
+          <div class="pf off"><span class="ck">❌</span>상단 고정 노출</div>
+        </div>
+        <button class="pc-btn oo" onclick="selectPlan('basic')">베이직 시작하기</button>
+      </div>
+      <!-- PREMIUM -->
+      <div class="pc pro">
+        <div class="pc-ribbon pro">추천</div>
+        <div class="pc-head">
+          <div><div class="pc-name">⭐ 프리미엄</div><div class="pc-tl">전체 기능 + 상단 고정</div></div>
+          <div><div class="pc-pn">55,000</div><div class="pc-pu">원/월 (VAT포함)</div></div>
+        </div>
+        <div class="pc-feats">
+          <div class="pf"><span class="ck">✅</span>베이직 전체 포함</div>
+          <div class="pf"><span class="ck">✅</span>🔶 주황 핀 + 상단 고정 노출</div>
+          <div class="pf"><span class="ck">✅</span>네이버 블로그 자동 연동</div>
+          <div class="pf"><span class="ck">✅</span>인스타그램 피드 연동</div>
+          <div class="pf"><span class="ck">✅</span>유튜브 채널 연동</div>
+          <div class="pf"><span class="ck">✅</span>온라인 상담 예약 시스템</div>
+          <div class="pf"><span class="ck">✅</span>예약 알림 SMS 자동 발송</div>
+        </div>
+        <button class="pc-btn ob" onclick="selectPlan('premium')">프리미엄 시작하기</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" style="background:var(--white);">
+    <div class="sec-tag">HOW IT WORKS</div>
+    <div class="sec-title" style="margin-bottom:22px">등록까지 딱 3단계</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div><div class="step-t">플랜 선택 & 가입</div><div class="step-d">무료부터 시작하고 원할 때 업그레이드할 수 있습니다.</div></div></div>
+      <div class="step"><div class="step-num">2</div><div><div class="step-t">학원 정보 등록</div><div class="step-d">대시보드에서 사진, 시간표, 소식을 직접 등록하세요.</div></div></div>
+      <div class="step"><div class="step-num">3</div><div><div class="step-t">지도에 바로 노출!</div><div class="step-d">근처 학부모 앱에 학원 핀이 표시되고 리뷰가 쌓입니다.</div></div></div>
+    </div>
+  </div>
+
+  <div class="section" style="background:var(--bg);">
+    <div class="sec-tag">REVIEWS</div>
+    <div class="sec-title" style="margin-bottom:18px">원장님들의 후기</div>
+    <div class="testi-cards">
+      <div class="tc"><div class="tc-stars">★★★★★</div><div class="tc-body">등록 다음날 바로 상담 문의가 왔어요. 지도 핀 하나로 이렇게 효과가 좋을 줄 몰랐어요.</div><div class="tc-auth"><div class="tc-av" style="background:#EEF4FF">👩</div><div><div class="tc-nm">김○○ 원장님</div><div class="tc-rl">천안 · 영어학원</div></div></div></div>
+      <div class="tc"><div class="tc-stars">★★★★★</div><div class="tc-body">학부모 리뷰가 쌓이니까 신뢰도가 확 올랐어요. 리뷰 별점이 4.9점이라 자랑스럽습니다.</div><div class="tc-auth"><div class="tc-av" style="background:#FFF3E0">👨</div><div><div class="tc-nm">이○○ 원장님</div><div class="tc-rl">아산 · 수학학원</div></div></div></div>
+    </div>
+  </div>
+
+  <div class="section" style="background:var(--white);">
+    <div class="sec-tag">FAQ</div>
+    <div class="sec-title" style="margin-bottom:18px">자주 묻는 질문</div>
+    <div class="faq-items">
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>무료 플랜도 지도에 표시되나요?</span><span class="arr">⌄</span></div><div class="faq-a">네, 무료 플랜도 지도에 회색 핀으로 표시됩니다. 다만 소식 게시, 사진 등록 등의 기능은 베이직 이상에서 사용 가능합니다.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>약정 기간이 있나요?</span><span class="arr">⌄</span></div><div class="faq-a">월 단위 구독이라 언제든지 해지 가능합니다. 약정이나 위약금이 없습니다.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>리뷰는 누가 쓸 수 있나요?</span><span class="arr">⌄</span></div><div class="faq-a">일반 회원(학부모·학생)으로 가입한 분이라면 누구나 리뷰를 작성할 수 있습니다. 리뷰는 학원 상세 페이지에 바로 노출됩니다.</div></div>
+      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>베이직에서 프리미엄으로 업그레이드하면?</span><span class="arr">⌄</span></div><div class="faq-a">대시보드에서 바로 업그레이드 가능합니다. 기존 등록 정보는 모두 유지되며, 업그레이드 즉시 주황 핀으로 상단에 고정 노출됩니다.</div></div>
+    </div>
+  </div>
+
+  <div class="cta-bottom">
+    <h2>지금 무료로 등록하고<br>첫 문의를 받아보세요</h2>
+    <p>무료 플랜으로 시작 · 언제든 업그레이드</p>
+    <button class="cta-bottom-btn" onclick="go('page-plan')">🏫 학원 무료 등록 시작하기</button>
+    <div class="cta-note">✓ 가입 5분 · 즉시 지도 노출 · 약정 없음</div>
+  </div>
+  <div class="footer">
+    <div class="logo" style="color:#fff;margin-bottom:10px;">에듀<em>픽</em></div>
+    <div class="footer-links"><a href="#">이용약관</a><a href="#">개인정보처리방침</a><a href="#">고객센터</a></div>
+    <div class="footer-copy">© 2025 에듀픽. All rights reserved.</div>
+  </div>
+</div>
+
+<!-- ════════════════ 회원유형 ════════════════ -->
+<div class="page" id="page-type">
+  <div class="page-hdr">
+    <span class="page-hdr-back" onclick="goBack()">←</span>
+    <h2>가입 유형 선택</h2>
+    <p>어떤 목적으로 이용하실 건가요?</p>
+  </div>
+  <div class="type-list">
+    <div class="type-card u" onclick="go('page-user-signup')">
+      <div class="ty-ico u">👨‍👩‍👧</div>
+      <div>
+        <div class="ty-nm">일반 회원 (학부모·학생)</div>
+        <span class="ty-badge free">무료</span>
+        <div class="ty-desc">학원 검색, 찜하기, 리뷰 작성, 온라인 상담 신청을 이용할 수 있습니다.</div>
+        <div class="ty-arr">무료 가입하기 →</div>
+      </div>
+    </div>
+    <div class="type-card b" onclick="go('page-plan')">
+      <div class="ty-ico b">🏫</div>
+      <div>
+        <div class="ty-nm">사업자 회원 (원장님)</div>
+        <span class="ty-badge paid">무료~월 55,000원</span>
+        <div class="ty-desc">지도 노출부터 시작해 소식 등록, SNS 연동, 상담 예약까지 플랜에 따라 이용하세요.</div>
+        <div class="ty-arr" style="color:var(--orange)">플랜 선택하기 →</div>
+      </div>
+    </div>
+  </div>
+  <div class="login-row">이미 계정이 있으신가요? <span onclick="loginDemo()">로그인</span></div>
+</div>
+
+<!-- ════════════════ 일반 가입 ════════════════ -->
+<div class="page" id="page-user-signup">
+  <div class="form-hdr blue">
+    <span class="form-hdr-back" onclick="go('page-type')">←</span>
+    <h2>일반 회원가입</h2>
+    <p>무료로 학원 찾기, 찜하기, 리뷰 작성까지</p>
+  </div>
+  <div class="form-body">
+    <div class="fg"><label>이름</label><input type="text" placeholder="홍길동"></div>
+    <div class="fg"><label>이메일</label><input type="email" placeholder="example@email.com"></div>
+    <div class="fg"><label>비밀번호</label><input type="password" placeholder="8자 이상"><div class="hint">영문, 숫자 포함 8자 이상</div></div>
+    <div class="fg"><label>자녀 학년</label>
+      <select>
+        <option value="">선택하세요</option>
+        <optgroup label="초등"><option>초등 1학년</option><option>초등 2학년</option><option>초등 3학년</option><option>초등 4학년</option><option>초등 5학년</option><option>초등 6학년</option></optgroup>
+        <optgroup label="중학교"><option>중 1학년</option><option>중 2학년</option><option>중 3학년</option></optgroup>
+        <optgroup label="고등학교"><option>고 1학년</option><option>고 2학년</option><option>고 3학년</option></optgroup>
+      </select>
+    </div>
+    <div class="fg"><label>관심 지역</label>
+      <select><option value="">선택</option><option>천안시 서북구</option><option>천안시 동남구</option><option>아산시</option><option>세종시</option><option>공주시</option><option>청주시</option></select>
+    </div>
+    <button class="sub-btn blue" onclick="completeUserSignup()">무료로 가입하기</button>
+    <div class="divr"><hr><span>또는</span><hr></div>
+    <button class="social-btn" onclick="showToast('카카오 로그인 준비 중')">🟡 카카오로 시작하기</button>
+    <button class="social-btn" onclick="showToast('네이버 로그인 준비 중')">🟢 네이버로 시작하기</button>
+  </div>
+</div>
+
+<!-- ════════════════ 플랜 선택 ════════════════ -->
+<div class="page" id="page-plan">
+  <div class="plan-hdr">
+    <div class="plan-hdr-back" onclick="goBack()">←</div>
+    <h2>사업자 플랜 선택</h2>
+    <p>무료로 시작하고 원할 때 업그레이드하세요</p>
+  </div>
+  <div class="plan-body">
+    <!-- FREE -->
+    <div class="pc free-pc">
+      <div class="pc-head">
+        <div><div class="pc-name">🆓 무료 플랜</div><div class="pc-tl">지도에 학원 핀만 노출</div></div>
+        <div><div class="pc-pn">0원</div><div class="pc-pu">영구 무료</div></div>
+      </div>
+      <div class="pc-feats">
+        <div class="pf"><span class="ck">✅</span>지도에 핀 노출 (회색 핀)</div>
+        <div class="pf"><span class="ck">✅</span>학원명·과목·위치 표시</div>
+        <div class="pf off"><span class="ck">❌</span>소식·공지·사진 등록 불가</div>
+        <div class="pf off"><span class="ck">❌</span>SNS 연동 불가</div>
+      </div>
+      <button class="pc-btn gr" onclick="selectPlan('free')">무료로 시작하기</button>
+    </div>
+    <!-- BASIC -->
+    <div class="pc hot">
+      <div class="pc-ribbon hot">인기</div>
+      <div class="pc-head">
+        <div><div class="pc-name">🗺 베이직</div><div class="pc-tl">지도 + 정보·소식 직접 관리</div></div>
+        <div><div class="pc-pn">33,000</div><div class="pc-pu">원/월</div></div>
+      </div>
+      <div class="pc-feats">
+        <div class="pf"><span class="ck">✅</span>지도 핀 노출 (파란 핀)</div>
+        <div class="pf"><span class="ck">✅</span>학원 소개·사진 등록</div>
+        <div class="pf"><span class="ck">✅</span>시간표 등록</div>
+        <div class="pf"><span class="ck">✅</span>소식·공지 게시</div>
+        <div class="pf"><span class="ck">✅</span>블로그 URL 연동</div>
+        <div class="pf off"><span class="ck">❌</span>SNS 자동 연동 / 예약 / 상단 고정</div>
+      </div>
+      <button class="pc-btn oo" onclick="selectPlan('basic');openPayModal('basic')">베이직 선택 · 결제하기</button>
+    </div>
+    <!-- PREMIUM -->
+    <div class="pc pro">
+      <div class="pc-ribbon pro">추천</div>
+      <div class="pc-head">
+        <div><div class="pc-name">⭐ 프리미엄</div><div class="pc-tl">전체 기능 + 상단 고정</div></div>
+        <div><div class="pc-pn">55,000</div><div class="pc-pu">원/월</div></div>
+      </div>
+      <div class="pc-feats">
+        <div class="pf"><span class="ck">✅</span>베이직 전체 포함</div>
+        <div class="pf"><span class="ck">✅</span>🔶 주황 핀 + 검색 상단 고정</div>
+        <div class="pf"><span class="ck">✅</span>네이버 블로그 자동 연동</div>
+        <div class="pf"><span class="ck">✅</span>인스타그램 피드 연동</div>
+        <div class="pf"><span class="ck">✅</span>유튜브 채널 연동</div>
+        <div class="pf"><span class="ck">✅</span>온라인 상담 예약 시스템</div>
+        <div class="pf"><span class="ck">✅</span>예약 알림 SMS 자동 발송</div>
+      </div>
+      <button class="pc-btn ob" onclick="selectPlan('premium');openPayModal('premium')">프리미엄 선택 · 결제하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════ 사업자 가입 폼 ════════════════ -->
+<div class="page" id="page-biz-signup">
+  <div class="form-hdr orange">
+    <span class="form-hdr-back" onclick="go('page-plan')">←</span>
+    <h2 id="biz-hdr-title">베이직 플랜 가입</h2>
+    <p id="biz-hdr-sub">학원 정보를 입력하고 바로 노출을 시작하세요</p>
+  </div>
+  <div class="form-body">
+    <div class="plan-sum" id="plan-sum">
+      <div><div class="ps-l">선택하신 플랜</div><div class="ps-pl" id="ps-pn">베이직</div></div>
+      <div class="ps-pr" id="ps-pr">33,000원/월</div>
+    </div>
+    <div class="fg"><label>학원명</label><input type="text" id="biz-name" placeholder="예) 탑클래스 영어학원"></div>
+    <div class="fg"><label>대표자명</label><input type="text" placeholder="홍길동"></div>
+    <div class="fg"><label>사업자등록번호 (선택)</label><input type="text" placeholder="000-00-00000"><div class="hint">개인 교습소도 등록 가능합니다</div></div>
+    <div class="fg"><label>연락처</label><input type="tel" placeholder="010-0000-0000"></div>
+    <div class="fg"><label>이메일</label><input type="email" placeholder="example@email.com"></div>
+    <div class="fg"><label>학원 주소</label><input type="text" id="biz-addr" placeholder="천안시 서북구 …"></div>
+    <div class="fg"><label>주요 과목</label>
+      <select id="biz-subj"><option>영어</option><option>수학</option><option>국어</option><option>예체능</option><option>과학</option></select>
+    </div>
+    <div class="fg"><label>월 수강료</label><input type="text" placeholder="예) 180,000"></div>
+    <div class="fg"><label>비밀번호</label><input type="password" placeholder="8자 이상"></div>
+    <button class="sub-btn orange" onclick="completeBizSignupAndPay()">가입 완료 · 결제하기</button>
+    <div class="sub-note">가입 후 결제 화면으로 이동합니다</div>
+  </div>
+</div>
+
+<!-- ════════════════ 대시보드 ════════════════ -->
+<div class="page" id="page-dashboard">
+  <div class="db-hdr">
+    <span class="db-hdr-back" onclick="go('page-home')">← 홈으로</span>
+    <div class="db-plan-pill" id="db-plan-pill">🗺 베이직 플랜</div>
+    <div class="db-acad-name" id="db-acad-name">내 학원</div>
+    <div class="db-loc" id="db-loc">📍 천안시 서북구</div>
+  </div>
+  <div class="db-stats">
+    <div class="ds"><div class="ds-n">128</div><div class="ds-l">이번달 조회</div></div>
+    <div class="ds"><div class="ds-n">34</div><div class="ds-l">찜한 학부모</div></div>
+    <div class="ds"><div class="ds-n" id="db-review-cnt">3</div><div class="ds-l">받은 리뷰</div></div>
+  </div>
+  <div class="up-banner" id="up-banner" style="display:none" onclick="openPayModal('premium')">
+    <div><h4>🚀 프리미엄으로 업그레이드</h4><p>SNS 연동 · 상담예약 · 상단 고정 노출</p></div>
+    <button class="up-sm">월 55,000원</button>
+  </div>
+  <div class="db-sec">
+    <div class="db-sh">📋 학원 정보 <button onclick="openModal('info')">수정</button></div>
+    <div class="info-card">
+      <div class="ir"><span class="ir-l">학원명</span><span class="ir-v" id="di-name">내 학원</span></div>
+      <div class="ir"><span class="ir-l">과목</span><span class="ir-v" id="di-subj">영어</span></div>
+      <div class="ir"><span class="ir-l">월 수강료</span><span class="ir-v" style="color:var(--red)">200,000원</span></div>
+      <div class="ir"><span class="ir-l">연락처</span><span class="ir-v">010-1234-5678</span></div>
+      <div class="ir"><span class="ir-l">블로그 URL</span><button class="ir-e" onclick="showToast('블로그 URL을 수정했습니다')">변경</button></div>
+    </div>
+  </div>
+  <div class="db-sec" id="db-sec-timetable">
+    <div class="db-sh">🗓 시간표 <button onclick="openModal('timetable')">수정</button></div>
+    <div class="timetable">
+      <div class="tt-head"><div>시간</div><div>월</div><div>화</div><div>수</div><div>목</div><div>금</div></div>
+      <div class="tt-row"><div class="tt-t">14:00</div><div><div class="tt-cls">초등A</div></div><div></div><div><div class="tt-cls">초등A</div></div><div></div><div><div class="tt-cls">초등A</div></div></div>
+      <div class="tt-row"><div class="tt-t">16:00</div><div><div class="tt-cls">중등B</div></div><div><div class="tt-cls">중등B</div></div><div></div><div><div class="tt-cls">중등B</div></div><div></div></div>
+      <div class="tt-row"><div class="tt-t">18:00</div><div></div><div><div class="tt-cls">고등C</div></div><div><div class="tt-cls">고등C</div></div><div></div><div><div class="tt-cls">고등C</div></div></div>
+    </div>
+  </div>
+  <div class="db-sec" id="db-sec-news">
+    <div class="db-sh">📢 소식·공지 <button onclick="openModal('news')">+ 작성</button></div>
+    <div class="news-c"><div class="news-d">2025.07.10</div><div class="news-t">여름방학 특강 모집 안내 (7/21~8/16)</div></div>
+    <div class="news-c"><div class="news-d">2025.07.01</div><div class="news-t">7월 원비 납부 안내</div></div>
+  </div>
+  <!-- 리뷰 현황 (모든 플랜) -->
+  <div class="db-sec">
+    <div class="db-sh">⭐ 받은 리뷰</div>
+    <div class="info-card">
+      <div class="ir"><span class="ir-l">평균 별점</span><span class="ir-v" style="color:var(--yellow)">★ 4.7</span></div>
+      <div class="ir"><span class="ir-l">전체 리뷰 수</span><span class="ir-v">3개</span></div>
+      <div class="ir"><span class="ir-l">최근 리뷰</span><span class="ir-v" style="font-size:12px;color:var(--sub)">"선생님이 친절하고 아이가 좋아해요"</span></div>
+    </div>
+  </div>
+  <!-- SNS (프리미엄 전용) -->
+  <div class="db-sec">
+    <div class="db-sh">🔗 SNS 연동 <span class="pro-tag">프리미엄</span></div>
+    <div class="info-card locked" id="sns-sec">
+      <div class="sns-r"><div class="sns-ic" style="background:#E8F4FD">📝</div><div><div class="sns-nm">네이버 블로그</div><div class="sns-st">미연동</div></div><button class="sns-btn off">연동하기</button></div>
+      <div class="sns-r"><div class="sns-ic" style="background:#FDE8F4">📸</div><div><div class="sns-nm">인스타그램</div><div class="sns-st">미연동</div></div><button class="sns-btn off">연동하기</button></div>
+      <div class="sns-r"><div class="sns-ic" style="background:#FFE8E8">▶️</div><div><div class="sns-nm">유튜브</div><div class="sns-st">미연동</div></div><button class="sns-btn off">연동하기</button></div>
+    </div>
+  </div>
+  <!-- 예약 (프리미엄 전용) -->
+  <div class="db-sec">
+    <div class="db-sh">📅 상담 예약 <span class="pro-tag">프리미엄</span></div>
+    <div class="locked" id="rsv-sec" style="min-height:120px;">
+      <div class="rsv-c"><div><div class="rsv-nm">김○○ 학부모</div><div class="rsv-tm">07.15 오후 2시</div></div><span class="rsv-b new">신규</span></div>
+      <div class="rsv-c"><div><div class="rsv-nm">이○○ 학부모</div><div class="rsv-tm">07.12 오전 11시</div></div><span class="rsv-b done">완료</span></div>
+    </div>
+  </div>
+  <nav class="db-bnav bnav">
+    <button class="nb on"><span class="nb-ic">📊</span>대시보드</button>
+    <button class="nb" onclick="showToast('통계 준비 중')"><span class="nb-ic">📈</span>통계</button>
+    <button class="nb" onclick="go('page-plan')"><span class="nb-ic">💳</span>플랜</button>
+    <button class="nb" onclick="showToast('설정 준비 중')"><span class="nb-ic">⚙️</span>설정</button>
+  </nav>
+</div>
+
+<script>
+/* ══════════════════════════════════════════════════════
+   ✅ 구글 시트 연동 설정
+   STEP 1: 아래 GAS_URL 에 Apps Script 배포 URL을 붙여넣으세요
+   STEP 2: 저장 후 Netlify/GitHub Pages에 업로드하면 끝!
+══════════════════════════════════════════════════════ */
+const GAS_URL = '여기에_Apps_Script_URL_붙여넣기';
+//  예시: 'https://script.google.com/macros/s/AKfycb.../exec'
+
+/* ════ 상수 ════ */
+const ICONS  = {영어:"🔤",수학:"📐",국어:"📖",예체능:"🎨",과학:"🔬"};
+const COLORS = {영어:"#DBEAFE",수학:"#FEF3C7",국어:"#D1FAE5",예체능:"#FCE7F3",과학:"#EDE9FE"};
+const PLAN_LABELS = {free:"무료",basic:"베이직",premium:"⭐ 프리미엄"};
+const CACHE_KEY  = 'edupick_data';
+const CACHE_TTL  = 5 * 60 * 1000; // 5분 캐시
+
+/* ════ STATE ════ */
+let DATA = [];                       // 구글 시트에서 불러온 학원 목록
+let curFilter="전체", curSearch="", sortMode="dist", curGrade="전체";
+let userLat=36.8151, userLng=127.1139;
+let markers=[], userMarker=null;
+let sheetAcademy=null;
+let wishSet=new Set();
+let selectedPlan="free";
+let currentRating=0;
+let pageHistory=[];
+
+/* ════ 로딩 UI ════ */
+function showLoading(){
+  document.getElementById('list').innerHTML='';
+  document.getElementById('loading-state').style.display='flex';
+  document.getElementById('no-r').style.display='none';
+}
+function hideLoading(){ document.getElementById('loading-state').style.display='none'; }
+function showError(msg){
+  hideLoading();
+  document.getElementById('list').innerHTML=`
+    <div style="text-align:center;padding:40px 20px;color:var(--muted);">
+      <div style="font-size:40px;margin-bottom:12px">⚠️</div>
+      <div style="font-size:14px;font-weight:700;margin-bottom:8px">데이터를 불러오지 못했어요</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:18px">${msg}</div>
+      <button onclick="loadData()" style="padding:10px 22px;border-radius:10px;background:var(--blue);color:#fff;border:none;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;">다시 시도</button>
+    </div>`;
+}
+
+/* ════ 구글 시트 데이터 로딩 ════ */
+async function loadData(){
+  // 1. 캐시 확인 (5분 이내면 재사용)
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if(cached){
+      const {ts, data} = JSON.parse(cached);
+      if(Date.now() - ts < CACHE_TTL){
+        DATA = data;
+        hideLoading();
+        render();
+        // 백그라운드에서 최신 데이터 갱신
+        fetchFromSheet(true);
+        return;
+      }
+    }
+  } catch(e){}
+
+  // 2. URL 미설정 시 샘플 데이터로 동작
+  if(!GAS_URL || GAS_URL.includes('여기에')){
+    DATA = getSampleData();
+    hideLoading();
+    render();
+    showToast('⚠️ 샘플 데이터 표시 중 — GAS_URL을 설정해 주세요');
+    return;
+  }
+
+  showLoading();
+  await fetchFromSheet(false);
+}
+
+async function fetchFromSheet(silent){
+  if(!GAS_URL || GAS_URL.includes('여기에')) return;
+  try {
+    const res = await fetch(GAS_URL + '?t=' + Date.now()); // 캐시 버스팅
+    if(!res.ok) throw new Error('HTTP ' + res.status);
+    const raw = await res.json();
+
+    // 각 행에 id·reviews 자동 부여
+    DATA = raw.map((r, i) => {
+      // grade: "초등,중등" 형태 → 배열 파싱
+      let grade = r.grade || r.grades || '';
+      if(typeof grade === 'string'){
+        grade = grade.split(',').map(g=>g.trim()).filter(Boolean);
+      }
+      if(!Array.isArray(grade) || !grade.length) grade = ['초등','중등','고등'];
+      return {
+        id:      r.id      || (i + 1),
+        name:    String(r.name    || '').trim(),
+        city:    String(r.city    || '').trim(),
+        subject: String(r.subject || '영어').trim(),
+        grade,
+        price:   Number(r.price)  || 0,
+        plan:    String(r.plan    || 'free').trim().toLowerCase(),
+        blog:    String(r.blog    || '').trim(),
+        lat:     Number(r.lat)    || 0,
+        lng:     Number(r.lng)    || 0,
+        reviews: r.reviews        || [],
+      };
+    }).filter(r => r.name && r.lat && r.lng);
+
+    // localStorage 캐시 저장
+    try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), data: DATA})); } catch(e){}
+
+    if(!silent){ hideLoading(); render(); }
+    else { render(); } // 백그라운드 갱신
+
+  } catch(err){
+    if(!silent){
+      showError('구글 시트 연결 실패<br><small>' + err.message + '</small>');
+    }
+    // 캐시라도 있으면 사용
+    try {
+      const cached = localStorage.getItem(CACHE_KEY);
+      if(cached){ DATA = JSON.parse(cached).data; render(); }
+    } catch(e){}
+  }
+}
+
+/* ════ 샘플 데이터 (GAS_URL 미설정 시 표시) ════ */
+function getSampleData(){
+  return [
+    {id:1, name:"탑클래스 영어학원",   city:"천안시 서북구", subject:"영어",   grade:["초등","중등","고등"], price:200000, plan:"premium", blog:"https://blog.naver.com", lat:36.8151, lng:127.1139,
+      reviews:[{nick:"천안맘 김○○",stars:5,body:"선생님이 친절하고 아이가 정말 좋아해요!",date:"07.10",mine:true},{nick:"학부모 이○○",stars:4,body:"수업이 알차고 체계적입니다.",date:"07.05",mine:false}]},
+    {id:2, name:"수학의신 수학학원",   city:"천안시 동남구", subject:"수학",   grade:["중등","고등"],        price:180000, plan:"premium", blog:"https://blog.naver.com", lat:36.8080, lng:127.1477,
+      reviews:[{nick:"학부모 박○○",stars:5,body:"성적이 많이 올랐어요. 강추!",date:"07.08",mine:true}]},
+    {id:3, name:"한빛 국어논술학원",   city:"천안시 서북구", subject:"국어",   grade:["초등","중등"],        price:160000, plan:"basic",   blog:"", lat:36.8200, lng:127.1050, reviews:[]},
+    {id:4, name:"아트플러스 미술학원", city:"천안시 동남구", subject:"예체능", grade:["초등"],               price:150000, plan:"basic",   blog:"", lat:36.8050, lng:127.1500,
+      reviews:[{nick:"학부모 최○○",stars:4,body:"아이 눈높이에 맞게 잘 가르쳐요",date:"06.28",mine:true}]},
+    {id:5, name:"사이언스랩 과학학원", city:"천안시 서북구", subject:"과학",   grade:["중등","고등"],        price:190000, plan:"premium", blog:"https://blog.naver.com", lat:36.8180, lng:127.1200, reviews:[]},
+    {id:6, name:"그린영어 어학원",     city:"아산시",        subject:"영어",   grade:["초등"],               price:170000, plan:"free",    blog:"", lat:36.7898, lng:127.0020, reviews:[]},
+    {id:7, name:"매쓰킹 수학학원",     city:"아산시",        subject:"수학",   grade:["초등","중등"],        price:165000, plan:"free",    blog:"", lat:36.7810, lng:127.0100, reviews:[]},
+    {id:8, name:"리더스 국어학원",     city:"천안시 서북구", subject:"국어",   grade:["고등"],               price:155000, plan:"basic",   blog:"", lat:36.8300, lng:127.1300, reviews:[]},
+  ];
+}
+
+/* ════ ROUTER ════ */
+function go(id){
+  const cur=document.querySelector('.page.active');
+  if(cur) pageHistory.push(cur.id);
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  const next=document.getElementById(id);
+  next.classList.add('active');
+  next.scrollTop=0;
+  if(id==='page-home') setTimeout(()=>map.invalidateSize(),80);
+  if(id==='page-wish') renderWishList();
+}
+function goBack(){
+  const prev=pageHistory.pop();
+  go(prev||'page-home');
+}
+
+/* ════ MAP ════ */
+const map=L.map('map',{zoomControl:false}).setView([36.80,127.10],12);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'© OpenStreetMap',maxZoom:19}).addTo(map);
+L.control.zoom({position:'topright'}).addTo(map);
+
+function km(la1,ln1,la2,ln2){
+  const R=6371,dL=(la2-la1)*Math.PI/180,dG=(ln2-ln1)*Math.PI/180;
+  const a=Math.sin(dL/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dG/2)**2;
+  return +(R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a))).toFixed(1);
+}
+function makeIcon(a){
+  const cls=a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free';
+  return L.divIcon({html:`<div class="pin ${cls}"><span>${ICONS[a.subject]||'📚'}</span></div>`,className:'pin-wrap',iconSize:[36,36],iconAnchor:[18,36],popupAnchor:[0,-40]});
+}
+function hl(t,kw){
+  if(!kw) return t;
+  return t.replace(new RegExp(`(${kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')})`, 'gi'),'<mark>$1</mark>');
+}
+function avgStars(reviews){
+  if(!reviews.length) return 0;
+  return (reviews.reduce((s,r)=>s+r.stars,0)/reviews.length).toFixed(1);
+}
+function starsHtml(n){
+  const full=Math.round(n);
+  return '★'.repeat(full)+'☆'.repeat(5-full);
+}
+
+/* ════ RENDER ════ */
+function gradeBadgesHtml(grades){
+  if(!grades||!grades.length) return '';
+  return `<div class="grade-badges">${grades.map(g=>`<span class="gb ${g}">${g}</span>`).join('')}</div>`;
+}
+
+function render(){
+  const kw=curSearch.trim().toLowerCase();
+  let items=DATA
+    .filter(a=>curFilter==='전체'||a.subject===curFilter)
+    .filter(a=>curGrade==='전체'||(a.grade&&a.grade.includes(curGrade)))
+    .filter(a=>!kw||a.name.toLowerCase().includes(kw)||a.subject.includes(kw)||(a.grade&&a.grade.some(g=>g.includes(kw))))
+    .map(a=>({...a,distKm:km(userLat,userLng,a.lat,a.lng),avg:parseFloat(avgStars(a.reviews))||0}));
+
+  // 정렬: 프리미엄 항상 상단, 그 다음 선택 정렬
+  items.sort((a,b)=>{
+    if(a.plan==='premium'&&b.plan!=='premium') return -1;
+    if(b.plan==='premium'&&a.plan!=='premium') return 1;
+    if(sortMode==='dist') return a.distKm-b.distKm;
+    if(sortMode==='rating') return b.avg-a.avg;
+    return 0;
+  });
+
+  document.getElementById('cnt').textContent=items.length;
+  document.getElementById('no-r').style.display=(!items.length)?'block':'none';
+
+  // List
+  const listEl=document.getElementById('list');
+  listEl.innerHTML='';
+  items.forEach((a,i)=>{
+    const avg=avgStars(a.reviews);
+    const liked=wishSet.has(a.id);
+    const planCls=a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
+    const planLbl=a.plan==='premium'?'프리미엄':a.plan==='basic'?'베이직':'무료';
+    const el=document.createElement('div');
+    el.className=`acard ${planCls}`;
+    el.style.animationDelay=(i*0.04)+'s';
+    el.innerHTML=`
+      <div class="ac-top">
+        <div class="ac-ico" style="background:${COLORS[a.subject]||'#f3f4f6'}">${ICONS[a.subject]||'📚'}</div>
+        <div class="ac-info">
+          <div class="ac-name-row">
+            <div class="ac-name">${hl(a.name,kw)}</div>
+            <span class="plan-tag ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free'}">${planLbl}</span>
+          </div>
+          <div class="ac-sub">📍 ${a.city} · ${a.subject}</div>
+          ${gradeBadgesHtml(a.grade)}
+          ${a.reviews.length?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`:`<div class="ac-stars"><span class="stars-cnt" style="font-size:11px;color:var(--muted)">리뷰 없음</span></div>`}
+        </div>
+        <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart(${a.id},this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
+      </div>
+      <div class="ac-foot">
+        <div>
+          <div class="ac-price">월 ${a.price.toLocaleString('ko-KR')}원</div>
+          <div class="ac-dist">${a.distKm}km 거리</div>
+        </div>
+        <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="openSheet(${a.id})">상세보기</button>
+      </div>`;
+    listEl.appendChild(el);
+  });
+
+  // Map pins
+  markers.forEach(m=>map.removeLayer(m));
+  markers=[];
+  items.forEach(a=>{
+    const m=L.marker([a.lat,a.lng],{icon:makeIcon(a)}).addTo(map)
+      .bindPopup(`<b>${a.name}</b><br>${(a.grade||[]).join('·')} · ${a.subject} · 월 ${a.price.toLocaleString('ko-KR')}원`,{maxWidth:200})
+      .on('click',()=>openSheet(a.id));
+    markers.push(m);
+  });
+}
+
+/* ════ FILTER / SEARCH / SORT ════ */
+function setFilter(cat,btn){
+  curFilter=cat;
+  document.querySelectorAll('.fbar .chip').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+function setGrade(grade, btn){
+  curGrade=grade;
+  // 학급 칩 색상 처리
+  document.querySelectorAll('.fbar2 .chip').forEach(b=>{
+    b.classList.remove('on','grade-on','초등','중등','고등');
+  });
+  if(grade==='전체'){
+    btn.classList.add('on');
+  } else {
+    btn.classList.add('grade-on', grade);
+  }
+  render();
+}
+function onSearch(){const v=document.getElementById('search').value;curSearch=v;document.getElementById('s-cl').style.display=v?'block':'none';render();}
+function clearSearch(){document.getElementById('search').value='';curSearch='';document.getElementById('s-cl').style.display='none';render();}
+function toggleSort(){
+  sortMode=sortMode==='dist'?'rating':'dist';
+  document.getElementById('sort-lbl').textContent=sortMode==='dist'?'가까운순':'별점순';
+  render();
+}
+
+/* ════ VIEW SWITCH ════ */
+function switchView(v){
+  document.getElementById('map-wrap').style.display=v==='map'?'block':'none';
+  document.getElementById('list-wrap').style.display=v==='list'?'block':'none';
+  document.getElementById('vtmap').classList.toggle('on',v==='map');
+  document.getElementById('vtlist').classList.toggle('on',v==='list');
+  if(v==='map') setTimeout(()=>map.invalidateSize(),50);
+}
+
+/* ════ GPS ════ */
+function getGPS(){
+  if(!navigator.geolocation){alert('GPS를 지원하지 않는 기기입니다.');return;}
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userLat=pos.coords.latitude;userLng=pos.coords.longitude;
+    if(userMarker) map.removeLayer(userMarker);
+    userMarker=L.circleMarker([userLat,userLng],{radius:10,fillColor:'#10B981',color:'#fff',weight:3,fillOpacity:1}).addTo(map).bindPopup('📍 내 위치');
+    map.setView([userLat,userLng],14);render();
+  },()=>alert('위치 권한을 허용해 주세요.'));
+}
+
+/* ════ 찜 기능 ════ */
+function toggleHeart(id, btn){
+  if(wishSet.has(id)){
+    wishSet.delete(id);
+    btn.textContent='🤍'; btn.style.color='#CBD5E1'; btn.classList.remove('liked');
+    showToast('찜을 취소했습니다');
+  } else {
+    wishSet.add(id);
+    btn.textContent='❤️'; btn.style.color='#EF4444'; btn.classList.add('liked');
+    btn.style.animation='none'; void btn.offsetWidth; btn.style.animation='heartPop .3s ease';
+    showToast('❤️ 찜 목록에 추가했습니다');
+  }
+  updateWishBadge();
+  // 시트가 열려있으면 하트 동기화
+  if(sheetAcademy && sheetAcademy.id===id){
+    const sh=document.getElementById('sh-heart');
+    sh.textContent=wishSet.has(id)?'❤️':'🤍';
+  }
+}
+function toggleHeartSheet(){
+  const id=sheetAcademy?.id; if(!id) return;
+  // 찜 카드 버튼 찾기
+  const cards=document.querySelectorAll('.acard');
+  let found=null;
+  cards.forEach(c=>{
+    const hb=c.querySelector('.heart-btn');
+    if(hb && c.querySelector('.ac-btn')?.getAttribute('onclick')===`openSheet(${id})`) found=hb;
+  });
+  if(found) found.click();
+  else {
+    // 목록에 안보이는 상태면 직접 처리
+    if(wishSet.has(id)){wishSet.delete(id);document.getElementById('sh-heart').textContent='🤍';showToast('찜을 취소했습니다');}
+    else{wishSet.add(id);document.getElementById('sh-heart').textContent='❤️';showToast('❤️ 찜 목록에 추가했습니다');}
+    updateWishBadge();
+  }
+}
+function updateWishBadge(){
+  const cnt=wishSet.size;
+  const badge=document.getElementById('wish-badge');
+  badge.style.display=cnt?'block':'none';
+  badge.textContent=cnt;
+}
+function goWish(){
+  if(wishSet.size===0){showToast('찜한 학원이 없어요 ❤️');return;}
+  go('page-wish');
+}
+function renderWishList(){
+  const el=document.getElementById('wish-list');
+  if(wishSet.size===0){
+    el.innerHTML=`<div class="wish-empty"><div class="wi-ico">🤍</div><p>아직 찜한 학원이 없어요</p><button onclick="go('page-home')">학원 둘러보기</button></div>`;
+    return;
+  }
+  el.innerHTML='';
+  DATA.filter(a=>wishSet.has(a.id)).forEach(a=>{
+    const avg=avgStars(a.reviews);
+    const div=document.createElement('div');
+    div.className=`acard ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':''}`;
+    div.style.opacity='1';div.style.transform='none';
+    div.innerHTML=`
+      <div class="ac-top">
+        <div class="ac-ico" style="background:${COLORS[a.subject]||'#f3f4f6'}">${ICONS[a.subject]||'📚'}</div>
+        <div class="ac-info">
+          <div class="ac-name-row"><div class="ac-name">${a.name}</div></div>
+          <div class="ac-sub">📍 ${a.city} · ${a.subject}</div>
+          ${a.reviews.length?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span></div>`:''}
+        </div>
+        <button class="heart-btn liked" onclick="removeWish(${a.id},this)" style="color:#EF4444">❤️</button>
+      </div>
+      <div class="ac-foot">
+        <div><div class="ac-price">월 ${a.price.toLocaleString('ko-KR')}원</div><div class="ac-dist">${km(userLat,userLng,a.lat,a.lng)}km 거리</div></div>
+        <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="go('page-home');setTimeout(()=>openSheet(${a.id}),200)">상세보기</button>
+      </div>`;
+    el.appendChild(div);
+  });
+}
+function removeWish(id,btn){
+  wishSet.delete(id);
+  updateWishBadge();
+  renderWishList();
+  showToast('찜을 취소했습니다');
+  render();
+}
+
+/* ════ DETAIL SHEET ════ */
+function openSheet(id){
+  const a=DATA.find(x=>x.id===id); if(!a) return;
+  sheetAcademy=a;
+  const d=km(userLat,userLng,a.lat,a.lng);
+  const avg=avgStars(a.reviews);
+  document.getElementById('sh-ico').style.background=COLORS[a.subject]||'#f3f4f6';
+  document.getElementById('sh-ico').textContent=ICONS[a.subject]||'📚';
+  document.getElementById('sh-nm').textContent=a.name;
+  // plan tag
+  const pt=document.getElementById('sh-plan-tag');
+  pt.textContent=PLAN_LABELS[a.plan]||'';
+  pt.className='sh-plan-tag '+(a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free');
+  // stars
+  document.getElementById('sh-stars').textContent=avg>0?starsHtml(avg):'☆☆☆☆☆';
+  document.getElementById('sh-rat').textContent=avg>0?avg:'';
+  document.getElementById('sh-rcnt').textContent=a.reviews.length?`(${a.reviews.length}건)`:'리뷰 없음';
+  // grid
+  document.getElementById('sh-subj').textContent=a.subject;
+  document.getElementById('sh-price').textContent=a.price.toLocaleString('ko-KR')+'원';
+  document.getElementById('sh-dist').textContent=d+'km';
+  document.getElementById('sh-city').textContent=a.city;
+  // 학급 뱃지
+  document.getElementById('sh-grade-badges').innerHTML=gradeBadgesHtml(a.grade);
+  // heart
+  document.getElementById('sh-heart').textContent=wishSet.has(a.id)?'❤️':'🤍';
+  // reviews
+  const rv=document.getElementById('sh-reviews');
+  if(a.reviews.length){
+    rv.innerHTML=a.reviews.map((r,idx)=>`
+      <div class="review-card">
+        <div class="rv-top">
+          <div>
+            <span class="rv-author">${r.nick}${r.mine?'<span class="rv-mine-badge">내 리뷰</span>':''}</span>
+            <div class="rv-date">${r.date}</div>
+          </div>
+          ${r.mine?`<div class="rv-actions">
+            <button class="rv-act-btn edit" onclick="editReview(${a.id},${idx})">수정</button>
+            <button class="rv-act-btn del"  onclick="deleteReview(${a.id},${idx})">삭제</button>
+          </div>`:''}
+        </div>
+        <div class="rv-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+        <div class="rv-body">${r.body}</div>
+      </div>`).join('');
+  } else {
+    rv.innerHTML='<div class="no-review">아직 리뷰가 없어요. 첫 리뷰를 남겨보세요!</div>';
+  }
+  // CTA
+  const cta=document.getElementById('sh-cta');
+  if(a.plan==='premium'&&a.blog){cta.textContent='블로그 / 상세보기';cta.className='sh-cta o';}
+  else if(a.plan==='basic'){cta.textContent='학원 문의하기';cta.className='sh-cta';}
+  else{cta.textContent='정보 준비 중';cta.className='sh-cta';}
+  document.getElementById('sh-ov').classList.add('open');
+}
+function ctaClick(){
+  if(sheetAcademy?.plan==='premium'&&sheetAcademy?.blog) window.open(sheetAcademy.blog,'_blank');
+  else showToast('학원에 직접 문의해 주세요');
+}
+function closeSheet(e){if(e.target.id==='sh-ov') e.target.classList.remove('open');}
+
+/* ════ REVIEW ════ */
+let editingReviewIdx = null; // null=신규, 숫자=수정 중인 인덱스
+
+function openReviewModal(){
+  editingReviewIdx = null;
+  currentRating = 0;
+  setStarRating(0);
+  document.getElementById('rv-nick').value = '';
+  document.getElementById('rv-body').value = '';
+  document.getElementById('rv-modal-title').textContent = '✍️ 리뷰 작성';
+  document.getElementById('rv-submit-btn').textContent = '등록';
+  openModal('review');
+}
+
+function editReview(academyId, idx){
+  const a = DATA.find(x=>x.id===academyId); if(!a) return;
+  const r = a.reviews[idx]; if(!r) return;
+  editingReviewIdx = idx;
+  currentRating = r.stars;
+  setStarRating(r.stars);
+  document.getElementById('rv-nick').value = r.nick;
+  document.getElementById('rv-body').value = r.body;
+  document.getElementById('rv-modal-title').textContent = '✏️ 리뷰 수정';
+  document.getElementById('rv-submit-btn').textContent = '수정 완료';
+  openModal('review');
+}
+
+function deleteReview(academyId, idx){
+  if(!confirm('이 리뷰를 삭제할까요?')) return;
+  const a = DATA.find(x=>x.id===academyId); if(!a) return;
+  a.reviews.splice(idx, 1);
+  openSheet(a.id);
+  render();
+  showToast('🗑 리뷰가 삭제됐습니다');
+}
+
+function setStarRating(n){
+  currentRating = n;
+  document.querySelectorAll('#star-input span').forEach((s,i)=>{ s.classList.toggle('on', i<n); });
+}
+
+function submitReview(){
+  if(!currentRating){ showToast('별점을 선택해주세요'); return; }
+  const nick = document.getElementById('rv-nick').value.trim() || '익명';
+  const body = document.getElementById('rv-body').value.trim();
+  if(!body){ showToast('리뷰 내용을 입력해주세요'); return; }
+  if(!sheetAcademy){ closeModal('review'); return; }
+  const a = DATA.find(x=>x.id===sheetAcademy.id);
+  if(!a) return;
+
+  const today = new Date().toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace('. ','.');
+
+  if(editingReviewIdx !== null){
+    // 수정 모드
+    a.reviews[editingReviewIdx] = { nick, stars: currentRating, body, date: today, mine: true };
+    showToast('✅ 리뷰가 수정됐습니다!');
+  } else {
+    // 신규 등록
+    a.reviews.unshift({ nick, stars: currentRating, body, date: today, mine: true });
+    showToast('✅ 리뷰가 등록됐습니다!');
+  }
+  closeModal('review');
+  openSheet(a.id);
+  render();
+}
+
+/* ════ PLAN ════ */
+const planInfo={
+  free:   {title:'무료 플랜 가입',        sub:'지도에 학원 핀만 노출됩니다',     pn:'🆓 무료', pr:'무료'},
+  basic:  {title:'베이직 플랜 가입',       sub:'지도 + 정보·소식 직접 관리',      pn:'🗺 베이직', pr:'33,000원/월'},
+  premium:{title:'프리미엄 플랜 가입',     sub:'전체 기능 + 상단 고정 노출',      pn:'⭐ 프리미엄', pr:'55,000원/월'},
+};
+function selectPlan(plan){
+  selectedPlan=plan;
+  const info=planInfo[plan];
+  document.getElementById('biz-hdr-title').textContent=info.title;
+  document.getElementById('biz-hdr-sub').textContent=info.sub;
+  document.getElementById('ps-pn').textContent=info.pn;
+  document.getElementById('ps-pr').textContent=info.pr;
+  go('page-biz-signup');
+}
+
+function completeBizSignupAndPay(){
+  // 학원 정보 먼저 저장
+  const name = document.getElementById('biz-name').value || '내 학원';
+  const addr = document.getElementById('biz-addr').value || '천안시';
+  const subj = document.getElementById('biz-subj').value;
+  document.getElementById('db-acad-name').textContent = name;
+  document.getElementById('di-name').textContent = name;
+  document.getElementById('di-subj').textContent = subj;
+  document.getElementById('db-loc').textContent = '📍 ' + addr;
+  // 결제 모달 열기
+  openPayModal(selectedPlan);
+}
+
+function completeBizSignup(){
+  const name=document.getElementById('biz-name').value||'내 학원';
+  const addr=document.getElementById('biz-addr').value||'천안시';
+  const subj=document.getElementById('biz-subj').value;
+  document.getElementById('db-acad-name').textContent=name;
+  document.getElementById('di-name').textContent=name;
+  document.getElementById('di-subj').textContent=subj;
+  document.getElementById('db-loc').textContent='📍 '+addr;
+  const pills={free:'🆓 무료 플랜',basic:'🗺 베이직 플랜',premium:'⭐ 프리미엄 플랜'};
+  document.getElementById('db-plan-pill').textContent=pills[selectedPlan];
+  const isBasic=selectedPlan==='free'||selectedPlan==='basic';
+  // 베이직/무료: 소식·시간표 가능 여부
+  const timetableOk=selectedPlan!=='free';
+  const newsOk=selectedPlan!=='free';
+  document.getElementById('db-sec-timetable').style.display=timetableOk?'block':'none';
+  document.getElementById('db-sec-news').style.display=newsOk?'block':'none';
+  document.getElementById('up-banner').style.display=isBasic?'flex':'none';
+  if(selectedPlan==='premium'){unlockSection('sns-sec');unlockSection('rsv-sec');}
+  else{lockSection('sns-sec');lockSection('rsv-sec');}
+  showToast('🎉 가입 완료! 대시보드에 오신 걸 환영합니다');
+  go('page-dashboard');
+}
+
+function lockSection(id){
+  const el=document.getElementById(id);if(!el||el.querySelector('.lock-cover'))return;
+  el.classList.add('locked');
+  const c=document.createElement('div');c.className='lock-cover';
+  c.innerHTML=`<div class="lk-ic">🔒</div><p>프리미엄 전용</p><button onclick="go('page-plan')">업그레이드</button>`;
+  el.appendChild(c);
+}
+function unlockSection(id){
+  const el=document.getElementById(id);if(!el)return;
+  el.classList.remove('locked');el.querySelectorAll('.lock-cover').forEach(c=>c.remove());
+}
+
+function completeUserSignup(){showToast('🎉 가입 완료! 환영합니다');go('page-home');}
+function loginDemo(){showToast('로그인 후 대시보드로 이동합니다');setTimeout(()=>go('page-dashboard'),800);}
+
+/* ════ MODALS ════ */
+function openModal(t){document.getElementById('modal-'+t).classList.add('open');}
+function closeModal(t,e){if(!e||e.target===document.getElementById('modal-'+t))document.getElementById('modal-'+t).classList.remove('open');}
+function saveInfo(){
+  const n=document.getElementById('mi-name').value;
+  document.getElementById('di-name').textContent=n;
+  document.getElementById('db-acad-name').textContent=n;
+  showToast('학원 정보를 저장했습니다');closeModal('info');
+}
+
+/* ════ FAQ ════ */
+function toggleFaq(el){
+  const a=el.nextElementSibling,open=a.classList.contains('open');
+  document.querySelectorAll('.faq-q').forEach(q=>{q.classList.remove('open');q.nextElementSibling.classList.remove('open');});
+  if(!open){el.classList.add('open');a.classList.add('open');}
+}
+
+/* ════ TOAST ════ */
+let tt;
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
+
+/* ════ INIT ════ */
+loadData();
+initBanner();
+checkPaymentResult(); // 결제 완료 후 리다이렉트 처리
+
+/* ════ 배너 슬라이더 ════ */
+function initBanner(){
+  const track = document.getElementById('banner-track');
+  const dotsEl = document.getElementById('banner-dots');
+  if(!track) return;
+  const slides = track.querySelectorAll('.banner-slide');
+  const total = slides.length;
+  let cur = 0;
+
+  // 닷 생성
+  dotsEl.innerHTML = Array.from({length:total}, (_,i) =>
+    `<div class="bdot${i===0?' on':''}"></div>`).join('');
+
+  function goSlide(n){
+    cur = (n + total) % total;
+    track.style.transform = `translateX(-${cur * 100}%)`;
+    dotsEl.querySelectorAll('.bdot').forEach((d,i) => d.classList.toggle('on', i===cur));
+  }
+
+  // 자동 슬라이드 3초
+  let timer = setInterval(() => goSlide(cur + 1), 3000);
+
+  // 터치 스와이프
+  let startX = 0;
+  track.addEventListener('touchstart', e => { startX = e.touches[0].clientX; clearInterval(timer); }, {passive:true});
+  track.addEventListener('touchend', e => {
+    const dx = e.changedTouches[0].clientX - startX;
+    if(Math.abs(dx) > 40) goSlide(dx < 0 ? cur+1 : cur-1);
+    timer = setInterval(() => goSlide(cur + 1), 3000);
+  }, {passive:true});
+}
+
+/* ════════════════════════════════════════════
+   토스페이먼츠 결제창(v1) 실제 연동
+   ✅ 지금 받으신 test_ck_ 키로 바로 작동
+   실제 오픈 시: TOSS_CLIENT_KEY 를 라이브 키로만 교체
+════════════════════════════════════════════ */
+const TOSS_CLIENT_KEY = 'test_ck_eqRGgYO1r5g9qB7jWLaa3QnN2Eya';
+const SITE_URL        = 'https://edupick-cheonan.netlify.app';
+
+let payPlan   = 'basic';
+let payMethod = 'card';
+let tossInst  = null; // TossPayments 인스턴스
+
+const PAY_PLANS = {
+  free:    { name:'무료 플랜',     price:0,     label:'무료',        icon:'🆓' },
+  basic:   { name:'베이직 플랜',   price:33000, label:'33,000원/월', icon:'🗺' },
+  premium: { name:'프리미엄 플랜', price:55000, label:'55,000원/월', icon:'⭐' },
+};
+
+const METHOD_INFO = {
+  card:  { name:'신용·체크카드', ico:'💳', toss:'카드',     desc:'결제창에서 카드를 선택합니다' },
+  toss:  { name:'토스페이',      ico:'🔵', toss:'토스페이', desc:'토스 앱으로 간편 결제합니다' },
+  naver: { name:'네이버페이',    ico:'🟢', toss:'네이버페이',desc:'네이버페이로 결제합니다' },
+  kakao: { name:'카카오페이',    ico:'🟡', toss:'카카오페이',desc:'카카오페이로 결제합니다' },
+  bank:  { name:'계좌이체',      ico:'🏦', toss:'계좌이체', desc:'은행 계좌이체로 결제합니다' },
+  phone: { name:'휴대폰결제',    ico:'📱', toss:'휴대폰',   desc:'휴대폰 소액결제로 진행합니다' },
+};
+
+/* 결제 모달 열기 */
+function openPayModal(plan){
+  payPlan = plan || 'basic';
+  selectPayPlan(payPlan);
+  selectPayMethod('card');
+  document.getElementById('pay-step1').style.display = 'block';
+  document.getElementById('pay-step2').style.display = 'none';
+  document.getElementById('pay-step3').style.display = 'none';
+  document.getElementById('pay-ov').classList.add('open');
+
+  // TossPayments 인스턴스 미리 생성
+  try { tossInst = TossPayments(TOSS_CLIENT_KEY); } catch(e){ tossInst = null; }
+}
+
+function closePayModal(e){
+  if(e && e.target.id !== 'pay-ov') return;
+  document.getElementById('pay-ov').classList.remove('open');
+}
+
+/* 플랜 선택 */
+function selectPayPlan(plan){
+  payPlan = plan;
+  ['free','basic','premium'].forEach(p=>{
+    document.getElementById('ppi-'+p)?.classList.toggle('on', p===plan);
+    document.getElementById('ppr-'+p)?.classList.toggle('on', p===plan);
+  });
+  const info = PAY_PLANS[plan];
+  const btn  = document.getElementById('pay-next-btn');
+  if(plan==='free'){
+    btn.textContent      = '무료로 시작하기';
+    btn.style.background = 'var(--green)';
+  } else {
+    btn.textContent      = `다음 — ${info.label} 결제`;
+    btn.style.background = '';
+  }
+}
+
+/* 결제 수단 선택 */
+function selectPayMethod(m){
+  payMethod = m;
+  Object.keys(METHOD_INFO).forEach(k=>{
+    document.getElementById('pm-'+k)?.classList.toggle('on', k===m);
+  });
+  const mi = METHOD_INFO[m];
+  document.getElementById('pmi-ico').textContent  = mi.ico;
+  document.getElementById('pmi-name').textContent = mi.name;
+  document.getElementById('pmi-desc').textContent = mi.desc;
+}
+
+/* STEP 전환 */
+function goPayStep(n){
+  if(n===2 && payPlan==='free'){ completeFreeSignup(); return; }
+  document.getElementById('pay-step1').style.display = n===1 ? 'block':'none';
+  document.getElementById('pay-step2').style.display = n===2 ? 'block':'none';
+  document.getElementById('pay-step3').style.display = n===3 ? 'block':'none';
+  if(n===2) updatePaySummary();
+}
+
+function updatePaySummary(){
+  const info = PAY_PLANS[payPlan];
+  document.getElementById('pay2-sub').textContent  = `${info.icon} ${info.name} · 월 ${info.label}`;
+  document.getElementById('sum-plan').textContent  = info.name;
+  document.getElementById('sum-price').textContent = info.price ? info.price.toLocaleString('ko-KR')+'원' : '무료';
+  document.getElementById('sum-total').textContent = info.price ? info.price.toLocaleString('ko-KR')+'원' : '무료';
+}
+
+/* ✅ 실제 결제 요청 — 토스페이먼츠 결제창 v1 */
+async function processPayment(){
+  const plan = PAY_PLANS[payPlan];
+  if(!plan.price){ completeFreeSignup(); return; }
+
+  if(!tossInst){
+    try { tossInst = TossPayments(TOSS_CLIENT_KEY); }
+    catch(e){ showToast('결제 모듈 로딩 실패. 페이지를 새로고침 해주세요.'); return; }
+  }
+
+  const btn = document.getElementById('pay-confirm-btn');
+  btn.textContent = '결제창 열는 중...';
+  btn.disabled    = true;
+
+  const orderId   = 'EDUPICK-' + Date.now() + '-' + Math.random().toString(36).slice(2,6).toUpperCase();
+  const orderName = `에듀픽 ${plan.name} 월 구독`;
+  const mi        = METHOD_INFO[payMethod];
+
+  try {
+    await tossInst.requestPayment(mi.toss, {
+      amount:       plan.price,
+      orderId,
+      orderName,
+      customerName: '에듀픽 원장님',
+      successUrl:   SITE_URL + '/?payment=success&plan=' + payPlan + '&orderId=' + orderId + '&amount=' + plan.price,
+      failUrl:      SITE_URL + '/?payment=fail',
+    });
+    // 결제창이 팝업 → 완료 시 successUrl로 리다이렉트됨
+  } catch(err){
+    btn.textContent = '결제하기';
+    btn.disabled    = false;
+    if(err.code === 'USER_CANCEL'){
+      showToast('결제를 취소했습니다');
+    } else {
+      showToast('결제 오류: ' + (err.message || '다시 시도해주세요'));
+      console.error('[토스 결제 오류]', err);
+    }
+  }
+}
+
+/* 결제 완료 후 URL 파라미터 처리 */
+function checkPaymentResult(){
+  const p = new URLSearchParams(window.location.search);
+  if(!p.get('payment')) return;
+
+  if(p.get('payment') === 'success'){
+    payPlan = p.get('plan') || 'basic';
+    const info    = PAY_PLANS[payPlan] || PAY_PLANS.basic;
+    const next    = new Date(); next.setMonth(next.getMonth()+1);
+    const nextStr = next.toLocaleDateString('ko-KR',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\.\s?/g,'.').replace(/\.$/,'');
+
+    document.getElementById('suc-plan').textContent  = info.name;
+    document.getElementById('suc-plan2').textContent = `${info.icon} ${info.name}`;
+    document.getElementById('suc-price').textContent = info.price.toLocaleString('ko-KR')+'원/월';
+    document.getElementById('suc-next').textContent  = nextStr;
+    document.getElementById('suc-method').textContent= METHOD_INFO[payMethod]?.name || '카드';
+
+    document.getElementById('pay-step1').style.display = 'none';
+    document.getElementById('pay-step2').style.display = 'none';
+    document.getElementById('pay-step3').style.display = 'block';
+    document.getElementById('pay-ov').classList.add('open');
+
+  } else if(p.get('payment') === 'fail'){
+    showToast('결제에 실패했습니다. 다시 시도해주세요.');
+  }
+
+  // URL 파라미터 제거
+  window.history.replaceState({}, '', window.location.pathname);
+}
+
+function completeFreeSignup(){
+  document.getElementById('pay-ov').classList.remove('open');
+  showToast('🆓 무료 플랜으로 시작합니다!');
+  setTimeout(()=> go('page-dashboard'), 600);
+}
+
+function completePay(){
+  document.getElementById('pay-ov').classList.remove('open');
+  selectedPlan = payPlan;
+  showToast(`🎉 ${PAY_PLANS[payPlan]?.name} 시작!`);
+  const pills = { free:'🆓 무료 플랜', basic:'🗺 베이직 플랜', premium:'⭐ 프리미엄 플랜' };
+  document.getElementById('db-plan-pill').textContent = pills[payPlan] || '';
+  const isBasic = payPlan==='free'||payPlan==='basic';
+  document.getElementById('up-banner').style.display = isBasic ? 'flex':'none';
+  if(payPlan==='premium'){ unlockSection('sns-sec'); unlockSection('rsv-sec'); }
+  else { lockSection('sns-sec'); lockSection('rsv-sec'); }
+  setTimeout(()=> go('page-dashboard'), 400);
+}
+</script>
+</body>
+</html>
