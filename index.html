@@ -63,11 +63,11 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .s-ic{position:absolute;left:12px;font-size:15px;pointer-events:none;}
 .s-cl{position:absolute;right:10px;font-size:15px;cursor:pointer;color:var(--muted);background:none;border:none;display:none;}
 
-/* 과목필터: top = 52+52 = 104 — 2열 겹침 완전 해결 */
+/* 과목필터: top=104, h=82 */
 .fbar{position:fixed;top:104px;left:0;right:0;z-index:580;
   background:#fff;
-  display:flex;gap:0;padding:10px 8px 10px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid #EAECF5;height:70px;align-items:center;}
+  display:flex;gap:0;padding:8px 6px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid #F0F1F6;height:82px;align-items:center;}
 .fbar::-webkit-scrollbar{display:none;}
 
 /* 원형 아이콘 칩 */
@@ -78,10 +78,10 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;
 }
 .chip .chip-ico{
-  width:44px;height:44px;border-radius:14px;
-  background:#F2F4FA;border:2.5px solid transparent;
+  width:54px;height:54px;border-radius:16px;
+  background:#F4F6FB;border:2px solid transparent;
   display:flex;align-items:center;justify-content:center;
-  font-size:24px;transition:.2s;
+  font-size:28px;transition:.2s;
 }
 .chip .chip-lbl{font-size:11px;font-weight:700;color:#8A94A6;transition:.15s;white-space:nowrap;}
 .chip.on .chip-ico{background:#EBF3FF;border-color:#4A90E2;box-shadow:0 4px 12px rgba(74,144,226,.25);}
@@ -95,35 +95,29 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .chip.grade-on.고등 .chip-lbl{color:#C41A1A;font-weight:900;}
 
 /* 학급필터: top = 104+86 = 190 */
-.fbar2{position:fixed;top:174px;left:0;right:0;z-index:579;
-  background:#F8F9FE;
-  display:flex;gap:0;padding:8px 10px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid #EAECF5;height:38px;align-items:center;}
+.fbar2{position:fixed;top:186px;left:0;right:0;z-index:579;
+  background:#fff;
+  display:flex;gap:8px;padding:6px 14px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid #F0F1F6;height:40px;align-items:center;}
 .fbar2::-webkit-scrollbar{display:none;}
 .fbar2-label{display:none;}
 
 .chip.sm{
-  min-width:70px;padding:0 6px;
-  display:flex;flex-direction:row;align-items:center;gap:5px;
+  padding:0 14px;height:26px;
+  display:flex;flex-direction:row;align-items:center;
   border:none;font-family:inherit;cursor:pointer;flex-shrink:0;
-  background:#fff;border-radius:20px;height:36px;
-  border:1.5px solid #E0E4EF;
-  transition:.15s;margin-right:6px;
+  background:#F4F6FB;border-radius:13px;transition:.15s;
 }
-.chip.sm .chip-ico{
-  width:20px;height:20px;font-size:14px;border-radius:0;
-  background:transparent;border:none;
-  display:flex;align-items:center;justify-content:center;
-}
-.chip.sm .chip-lbl{font-size:12px;font-weight:700;color:#6B7280;}
-.chip.sm.on{background:#EBF3FF;border-color:#4A90E2;}
-.chip.sm.on .chip-lbl{color:#2563EB;font-weight:900;}
-.chip.sm.grade-on.초등{background:#FFFBE6;border-color:#F6C90E;}
-.chip.sm.grade-on.초등 .chip-lbl{color:#B07D00;font-weight:900;}
-.chip.sm.grade-on.중등{background:#F0EEFF;border-color:#9B7FE8;}
-.chip.sm.grade-on.중등 .chip-lbl{color:#6D3FD6;font-weight:900;}
-.chip.sm.grade-on.고등{background:#FFF0F0;border-color:#F06060;}
-.chip.sm.grade-on.고등 .chip-lbl{color:#C41A1A;font-weight:900;}
+.chip.sm .chip-ico{display:none;}
+.chip.sm .chip-lbl{font-size:12px;font-weight:700;color:#6B7280;white-space:nowrap;}
+.chip.sm.on{background:#2563EB;}
+.chip.sm.on .chip-lbl{color:#fff;font-weight:800;}
+.chip.sm.grade-on.초등{background:#F59E0B;}
+.chip.sm.grade-on.초등 .chip-lbl{color:#fff;font-weight:800;}
+.chip.sm.grade-on.중등{background:#8B5CF6;}
+.chip.sm.grade-on.중등 .chip-lbl{color:#fff;font-weight:800;}
+.chip.sm.grade-on.고등{background:#EF4444;}
+.chip.sm.grade-on.고등 .chip-lbl{color:#fff;font-weight:800;}
 
 /* 학급 뱃지 (카드·시트용) */
 .grade-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
@@ -133,7 +127,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .gb.고등{background:#FEE2E2;color:#B91C1C;}
 
 /* vtabs: top = 190+56 = 246 */
-.vtabs{position:fixed;top:212px;left:0;right:0;z-index:570;
+.vtabs{position:fixed;top:226px;left:0;right:0;z-index:570;
   background:#fff;padding:6px 14px;
   display:flex;gap:8px;height:42px;align-items:center;
   border-bottom:1px solid #EAECF5;
@@ -149,7 +143,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .vtab:active{opacity:.8;}
 
 /* 지도: top = 246+48 = 294 — 밝은 지도 타일 적용 */
-#map-wrap{position:fixed;top:254px;left:0;right:0;bottom:64px;z-index:100;}
+#map-wrap{position:fixed;top:268px;left:0;right:0;bottom:64px;z-index:100;}
 #map{width:100%;height:100%;}
 /* 배너는 map-wrap 안에서 absolute로 하단에 위치 */
 .gps-fab{position:absolute;bottom:82px;right:14px;z-index:300;width:44px;height:44px;
@@ -158,7 +152,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   display:flex;align-items:center;justify-content:center;}
 
 /* 목록: top = 294 */
-#list-wrap{position:fixed;top:254px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
+#list-wrap{position:fixed;top:268px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
 
 /* ══ 지도 하단 배너 슬라이더 ══ */
 .map-banner-wrap{
