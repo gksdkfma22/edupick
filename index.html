@@ -64,25 +64,67 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .s-cl{position:absolute;right:10px;font-size:15px;cursor:pointer;color:var(--muted);background:none;border:none;display:none;}
 
 /* 과목필터: top = 52(헤더)+52(검색) = 104 */
-.fbar{position:fixed;top:104px;left:0;right:0;z-index:580;background:var(--white);
-  display:flex;gap:7px;padding:7px 13px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid var(--border);height:40px;align-items:center;}
+.fbar{position:fixed;top:104px;left:0;right:0;z-index:580;
+  background:var(--white);
+  display:flex;gap:0;padding:10px 6px 8px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--border);height:82px;align-items:flex-start;}
 .fbar::-webkit-scrollbar{display:none;}
-.chip{white-space:nowrap;padding:5px 12px;border-radius:20px;border:1.5px solid var(--border);
-  background:var(--white);font-size:12px;font-weight:600;color:var(--sub);
-  cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;line-height:1;}
-.chip.on{background:var(--blue);color:#fff;border-color:var(--blue);}
-.chip.grade-on.초등{background:#F59E0B;border-color:#F59E0B;color:#fff;}
-.chip.grade-on.중등{background:#8B5CF6;border-color:#8B5CF6;color:#fff;}
-.chip.grade-on.고등{background:#EF4444;border-color:#EF4444;color:#fff;}
 
-/* 학급필터: top = 104+40 = 144 */
-.fbar2{position:fixed;top:144px;left:0;right:0;z-index:579;background:#F5F7FF;
-  display:flex;gap:6px;padding:5px 13px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid var(--border);height:34px;align-items:center;}
+/* 원형 아이콘 칩 — Learns 앱 스타일 */
+.chip{
+  white-space:nowrap;
+  display:flex;flex-direction:column;align-items:center;gap:4px;
+  min-width:60px;padding:0 4px;
+  border:none;background:transparent;
+  cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;
+}
+.chip .chip-ico{
+  width:48px;height:48px;border-radius:50%;
+  background:#F4F6FB;border:2.5px solid transparent;
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;transition:.2s;
+}
+.chip .chip-lbl{font-size:11px;font-weight:700;color:var(--sub);transition:.15s;}
+.chip.on .chip-ico{
+  background:#EEF4FF;border-color:var(--blue);
+  box-shadow:0 3px 12px rgba(10,61,145,.2);
+}
+.chip.on .chip-lbl{color:var(--blue);font-weight:900;}
+.chip:active .chip-ico{transform:scale(.9);}
+.chip.grade-on.초등 .chip-ico{background:#FFFBEB;border-color:#F59E0B;}
+.chip.grade-on.초등 .chip-lbl{color:#B45309;font-weight:900;}
+.chip.grade-on.중등 .chip-ico{background:#F5F3FF;border-color:#8B5CF6;}
+.chip.grade-on.중등 .chip-lbl{color:#6D28D9;font-weight:900;}
+.chip.grade-on.고등 .chip-ico{background:#FEF2F2;border-color:#EF4444;}
+.chip.grade-on.고등 .chip-lbl{color:#B91C1C;font-weight:900;}
+
+/* 학급필터: top = 104+82 = 186 */
+.fbar2{position:fixed;top:186px;left:0;right:0;z-index:579;
+  background:var(--white);
+  display:flex;gap:0;padding:6px 6px 4px;overflow-x:auto;scrollbar-width:none;
+  border-bottom:1px solid var(--border);height:58px;align-items:flex-start;}
 .fbar2::-webkit-scrollbar{display:none;}
-.fbar2-label{font-size:10px;font-weight:800;color:var(--muted);white-space:nowrap;flex-shrink:0;margin-right:2px;}
-.chip.sm{padding:3px 10px;font-size:11px;border-radius:14px;}
+.fbar2-label{display:none;}
+
+.chip.sm{
+  min-width:56px;padding:0 4px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  border:none;background:transparent;font-family:inherit;cursor:pointer;flex-shrink:0;
+}
+.chip.sm .chip-ico{
+  width:36px;height:36px;font-size:17px;border-radius:50%;
+  background:#F4F6FB;border:2.5px solid transparent;
+  display:flex;align-items:center;justify-content:center;transition:.2s;
+}
+.chip.sm .chip-lbl{font-size:10px;font-weight:700;color:var(--sub);}
+.chip.sm.on .chip-ico{background:#EEF4FF;border-color:var(--blue);box-shadow:0 2px 8px rgba(10,61,145,.2);}
+.chip.sm.on .chip-lbl{color:var(--blue);font-weight:900;}
+.chip.sm.grade-on.초등 .chip-ico{background:#FFFBEB;border-color:#F59E0B;}
+.chip.sm.grade-on.초등 .chip-lbl{color:#B45309;font-weight:900;}
+.chip.sm.grade-on.중등 .chip-ico{background:#F5F3FF;border-color:#8B5CF6;}
+.chip.sm.grade-on.중등 .chip-lbl{color:#6D28D9;font-weight:900;}
+.chip.sm.grade-on.고등 .chip-ico{background:#FEF2F2;border-color:#EF4444;}
+.chip.sm.grade-on.고등 .chip-lbl{color:#B91C1C;font-weight:900;}
 
 /* 학급 뱃지 (카드·시트용) */
 .grade-badges{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px;}
@@ -91,25 +133,31 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .gb.중등{background:#EDE9FE;color:#6D28D9;}
 .gb.고등{background:#FEE2E2;color:#B91C1C;}
 
-/* vtabs: top = 144+34 = 178 */
-.vtabs{position:fixed;top:178px;left:0;right:0;z-index:570;background:var(--white);
-  display:flex;border-bottom:2px solid var(--border);height:36px;}
-.vtab{flex:1;text-align:center;font-size:13px;font-weight:700;color:var(--muted);
-  cursor:pointer;border:none;background:none;font-family:inherit;
-  border-bottom:2px solid transparent;margin-bottom:-2px;
-  display:flex;align-items:center;justify-content:center;gap:4px;}
-.vtab.on{color:var(--blue);border-bottom-color:var(--blue);}
+/* vtabs: top = 186+58 = 244 — 알약형 탭 */
+.vtabs{position:fixed;top:244px;left:0;right:0;z-index:570;
+  background:var(--bg);padding:6px 14px;
+  display:flex;gap:8px;height:48px;align-items:center;
+  border-bottom:1px solid var(--border);}
+.vtab{flex:1;text-align:center;font-size:13px;font-weight:800;
+  color:var(--sub);cursor:pointer;border:none;
+  background:var(--white);font-family:inherit;
+  border-radius:12px;height:36px;
+  display:flex;align-items:center;justify-content:center;gap:5px;
+  transition:.15s;letter-spacing:-.3px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);}
+.vtab.on{color:#fff;background:var(--blue);box-shadow:0 3px 12px rgba(10,61,145,.3);}
+.vtab:active{opacity:.8;}
 
-/* 지도: top = 178+36 = 214, 하단 배너 72px + bnav 64px */
-#map-wrap{position:fixed;top:214px;left:0;right:0;bottom:64px;z-index:100;}
+/* 지도: top = 244+48 = 292 */
+#map-wrap{position:fixed;top:292px;left:0;right:0;bottom:64px;z-index:100;}
 #map{width:100%;height:calc(100% - 72px);}
 .gps-fab{position:absolute;bottom:82px;right:14px;z-index:300;width:44px;height:44px;
   border-radius:50%;background:var(--white);border:none;
   box-shadow:0 3px 14px rgba(0,0,0,.18);font-size:20px;cursor:pointer;
   display:flex;align-items:center;justify-content:center;}
 
-/* 목록: top = 214 */
-#list-wrap{position:fixed;top:214px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
+/* 목록: top = 292 */
+#list-wrap{position:fixed;top:292px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
 
 /* ══ 지도 하단 배너 슬라이더 ══ */
 .map-banner-wrap{
@@ -193,19 +241,43 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .ad-inline p{font-size:12px;opacity:.85;margin-top:2px;}
 
 /* Academy card */
-.acard{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);margin-bottom:10px;padding:15px;box-shadow:var(--sh);opacity:0;transform:translateY(8px);animation:rise .26s ease forwards;}
-.acard.prem{border-color:var(--orange);background:linear-gradient(135deg,#FFF8F5,#fff);box-shadow:var(--psh);}
-.acard.basic{border-color:#C7D7F4;}
+.acard{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);margin-bottom:10px;padding:15px;box-shadow:var(--sh);opacity:0;transform:translateY(8px);animation:rise .26s ease forwards;position:relative;overflow:hidden;}
+
+/* 프리미엄 — 주황 강조 + 왼쪽 사이드 라인 */
+.acard.prem{
+  border:2px solid var(--orange);
+  background:linear-gradient(135deg,#FFF5F0 0%,#fff 50%);
+  box-shadow:0 4px 20px rgba(255,90,31,.2);
+}
+.acard.prem::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(var(--orange),#FF8A3D);border-radius:4px 0 0 4px;
+}
+
+/* 베이직 — 파란 강조 + 왼쪽 사이드 라인 */
+.acard.basic{
+  border:2px solid #93B8F5;
+  background:linear-gradient(135deg,#F0F5FF 0%,#fff 50%);
+  box-shadow:0 3px 14px rgba(10,61,145,.1);
+}
+.acard.basic::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(var(--blue),var(--blue2));border-radius:4px 0 0 4px;
+}
+
 .ac-top{display:flex;align-items:flex-start;gap:11px;}
 .ac-ico{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .ac-info{flex:1;min-width:0;}
 .ac-name-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 .ac-name{font-size:15px;font-weight:800;line-height:1.25;}
 .ac-name mark{background:#FFF9C4;border-radius:3px;padding:0 1px;font-style:normal;}
-.plan-tag{font-size:9px;font-weight:800;padding:2px 6px;border-radius:5px;flex-shrink:0;}
-.plan-tag.prem{background:var(--orange);color:#fff;}
-.plan-tag.basic{background:var(--blue3);color:var(--blue2);}
-.plan-tag.free{background:#F1F5F9;color:var(--muted);}
+
+/* 플랜 태그 강화 */
+.plan-tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:6px;flex-shrink:0;letter-spacing:-.2px;}
+.plan-tag.prem{background:linear-gradient(120deg,var(--orange),#FF8A3D);color:#fff;box-shadow:0 2px 6px rgba(255,90,31,.3);}
+.plan-tag.basic{background:linear-gradient(120deg,var(--blue),var(--blue2));color:#fff;box-shadow:0 2px 6px rgba(10,61,145,.2);}
+.plan-tag.free{background:#F1F5F9;color:var(--muted);border:1px solid var(--border);}
+
 .ac-sub{font-size:12px;color:var(--sub);margin-top:3px;}
 /* 별점 */
 .ac-stars{display:flex;align-items:center;gap:4px;margin-top:4px;}
@@ -220,7 +292,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .ac-price{color:var(--red);font-size:15px;font-weight:800;}
 .ac-dist{font-size:11px;color:var(--muted);margin-top:2px;}
 .ac-btn{padding:8px 16px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;cursor:pointer;border:1.5px solid var(--blue);background:transparent;color:var(--blue);}
-.ac-btn.p{background:var(--blue);color:#fff;}
+.ac-btn.p{background:linear-gradient(120deg,var(--orange),#FF8A3D);color:#fff;border:none;box-shadow:0 3px 10px rgba(255,90,31,.3);}
 .no-r{text-align:center;padding:40px 20px;color:var(--muted);font-size:14px;display:none;}
 
 /* Bottom nav */
@@ -561,20 +633,40 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
   <!-- 과목 필터 -->
   <div class="fbar" style="top:104px;">
-    <button class="chip on" onclick="setFilter('전체',this)">전체</button>
-    <button class="chip" onclick="setFilter('영어',this)">🔤 영어</button>
-    <button class="chip" onclick="setFilter('수학',this)">📐 수학</button>
-    <button class="chip" onclick="setFilter('국어',this)">📖 국어</button>
-    <button class="chip" onclick="setFilter('예체능',this)">🎨 예체능</button>
-    <button class="chip" onclick="setFilter('과학',this)">🔬 과학</button>
+    <button class="chip on" onclick="setFilter('전체',this)">
+      <div class="chip-ico">🏫</div><div class="chip-lbl">전체</div>
+    </button>
+    <button class="chip" onclick="setFilter('영어',this)">
+      <div class="chip-ico">🔤</div><div class="chip-lbl">영어</div>
+    </button>
+    <button class="chip" onclick="setFilter('수학',this)">
+      <div class="chip-ico">📐</div><div class="chip-lbl">수학</div>
+    </button>
+    <button class="chip" onclick="setFilter('국어',this)">
+      <div class="chip-ico">📖</div><div class="chip-lbl">국어</div>
+    </button>
+    <button class="chip" onclick="setFilter('예체능',this)">
+      <div class="chip-ico">🎨</div><div class="chip-lbl">예체능</div>
+    </button>
+    <button class="chip" onclick="setFilter('과학',this)">
+      <div class="chip-ico">🔬</div><div class="chip-lbl">과학</div>
+    </button>
   </div>
   <!-- 학급 필터 -->
   <div class="fbar2">
     <span class="fbar2-label">학급</span>
-    <button class="chip sm on" id="gchip-전체" onclick="setGrade('전체',this)">전체</button>
-    <button class="chip sm" id="gchip-초등" onclick="setGrade('초등',this)">🟡 초등</button>
-    <button class="chip sm" id="gchip-중등" onclick="setGrade('중등',this)">🟣 중등</button>
-    <button class="chip sm" id="gchip-고등" onclick="setGrade('고등',this)">🔴 고등</button>
+    <button class="chip sm on" id="gchip-전체" onclick="setGrade('전체',this)">
+      <div class="chip-ico">📋</div><div class="chip-lbl">전체</div>
+    </button>
+    <button class="chip sm" id="gchip-초등" onclick="setGrade('초등',this)">
+      <div class="chip-ico">🟡</div><div class="chip-lbl">초등</div>
+    </button>
+    <button class="chip sm" id="gchip-중등" onclick="setGrade('중등',this)">
+      <div class="chip-ico">🟣</div><div class="chip-lbl">중등</div>
+    </button>
+    <button class="chip sm" id="gchip-고등" onclick="setGrade('고등',this)">
+      <div class="chip-ico">🔴</div><div class="chip-lbl">고등</div>
+    </button>
   </div>
   <div class="vtabs">
     <button class="vtab on" id="vtmap" onclick="switchView('map')">🗺 지도</button>
