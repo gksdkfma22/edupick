@@ -1275,6 +1275,17 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <button class="mb-cancel" onclick="document.getElementById('login-modal-ov').classList.remove('open')">취소</button>
       <button class="mb-save" onclick="doLogin()">로그인</button>
     </div>
+    <div style="margin-top:10px;">
+      <button onclick="loginWithKakao()" style="
+        width:100%;padding:12px;border-radius:12px;border:none;
+        background:#FEE500;color:#191919;
+        font-size:14px;font-weight:800;cursor:pointer;
+        font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;
+      ">
+        <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" style="width:20px;height:20px;">
+        카카오로 로그인
+      </button>
+    </div>
   </div>
 </div>
 
@@ -1302,7 +1313,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     </div>
     <button class="sub-btn blue" onclick="completeUserSignup()">무료로 가입하기</button>
     <div class="divr"><hr><span>또는</span><hr></div>
-    <button class="social-btn" onclick="showToast('카카오 로그인 준비 중')">🟡 카카오로 시작하기</button>
+    <button class="social-btn" onclick="loginWithKakao()">🟡 카카오로 시작하기</button>
     <button class="social-btn" onclick="showToast('네이버 로그인 준비 중')">🟢 네이버로 시작하기</button>
   </div>
 </div>
@@ -1911,6 +1922,13 @@ function initKakaoMap(){
   } catch(e){
     console.error('카카오맵 초기화 실패:', e);
   }
+
+  // 카카오 로그인 SDK 초기화
+  try {
+    if(window.Kakao && !Kakao.isInitialized()){
+      Kakao.init('167db07829b0a947b7be0215070ffff6');
+    }
+  } catch(e){ console.warn('Kakao SDK 초기화 실패:', e); }
 }
 
 function km(la1,ln1,la2,ln2){
@@ -2605,6 +2623,66 @@ function showAdminDetail(id){
 신청일: ${a.created_at?.slice(0,10)}
 상태: ${a.is_active ? '승인됨' : '대기중'}
   `.trim());
+}
+
+
+/* ════ 카카오 소셜 로그인 ════ */
+function loginWithKakao(){
+  if(!window.Kakao || !Kakao.isInitialized()){
+    showToast('카카오 SDK 로딩 중... 잠시 후 다시 시도해주세요');
+    return;
+  }
+  Kakao.Auth.login({
+    success: async function(authObj){
+      // 카카오 사용자 정보 가져오기
+      Kakao.API.request({
+        url: '/v2/user/me',
+        success: async function(res){
+          const kakaoId    = res.id;
+          const nickname   = res.kakao_account?.profile?.nickname || '카카오유저';
+          const email      = res.kakao_account?.email || (kakaoId + '@kakao.edupick');
+          const profileImg = res.kakao_account?.profile?.profile_image_url || '';
+
+          // Supabase에 카카오 유저 저장/로그인
+          if(sb){
+            try {
+              // 이메일로 로그인 시도
+              const { error: loginErr } = await sb.auth.signInWithPassword({
+                email, password: 'kakao_' + kakaoId
+              });
+
+              if(loginErr){
+                // 없으면 새로 가입
+                const { error: signupErr } = await sb.auth.signUp({
+                  email, password: 'kakao_' + kakaoId,
+                  options:{ data:{ role:'user', nickname, profile_img: profileImg, kakao_id: kakaoId } }
+                });
+                if(signupErr) throw signupErr;
+                // 가입 후 로그인
+                await sb.auth.signInWithPassword({ email, password: 'kakao_' + kakaoId });
+              }
+            } catch(e){
+              console.error('Supabase 연동 오류:', e);
+            }
+          }
+
+          // 로그인 완료 처리
+          currentUser = currentUser || { email, user_metadata:{ nickname } };
+          updateHeaderUI();
+          document.getElementById('login-modal-ov').classList.remove('open');
+          showToast('🟡 ' + nickname + '님 로그인 완료!');
+        },
+        fail: function(err){
+          showToast('카카오 정보 가져오기 실패');
+          console.error(err);
+        }
+      });
+    },
+    fail: function(err){
+      showToast('카카오 로그인 취소');
+      console.error(err);
+    }
+  });
 }
 
 function openLoginModal(){
