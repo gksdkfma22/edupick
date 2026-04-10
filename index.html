@@ -2634,7 +2634,8 @@ async function loginWithKakao(){
     const { error } = await sb.auth.signInWithOAuth({
       provider: 'kakao',
       options: {
-        redirectTo: 'https://edu-pick.co.kr'
+        redirectTo: 'https://edu-pick.co.kr',
+        scopes: 'profile_nickname profile_image'
       }
     });
     if(error) throw error;
