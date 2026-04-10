@@ -34,6 +34,34 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 @keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.45)}100%{transform:scale(1)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
+
+/* ══ 비로그인 블러 처리 ══ */
+.blur-wrap{position:relative;}
+.blur-content{transition:.3s;}
+.blur-content.blurred{filter:blur(6px);user-select:none;pointer-events:none;}
+.blur-overlay{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:10px;z-index:10;
+}
+.blur-overlay-box{
+  background:#fff;border-radius:16px;padding:18px 22px;text-align:center;
+  box-shadow:0 8px 32px rgba(0,0,0,.15);max-width:260px;
+}
+.blur-overlay-box .bl-ico{font-size:32px;margin-bottom:8px;}
+.blur-overlay-box h4{font-size:15px;font-weight:800;color:#1A1A2E;margin-bottom:6px;}
+.blur-overlay-box p{font-size:12px;color:#8A94A6;line-height:1.6;margin-bottom:14px;}
+.blur-overlay-box .bl-btn{
+  width:100%;padding:11px;border-radius:11px;border:none;
+  background:#176ED3;color:#fff;font-size:14px;font-weight:800;
+  cursor:pointer;font-family:inherit;
+}
+.blur-overlay-box .bl-btn2{
+  width:100%;padding:9px;border-radius:11px;border:1.5px solid #E0E4EF;
+  background:#fff;color:#6B7280;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:inherit;margin-top:6px;
+}
+
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);
   background:#0F172A;color:#fff;padding:11px 22px;border-radius:12px;
@@ -798,18 +826,33 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         <div class="sh-rcnt" id="sh-rcnt"></div>
       </div>
     </div>
-    <div class="sh-grid">
-      <div class="sh-cell"><div class="sh-lbl">과목</div><div class="sh-val" id="sh-subj"></div></div>
-      <div class="sh-cell"><div class="sh-lbl">월 수강료</div><div class="sh-val r" id="sh-price"></div></div>
-      <div class="sh-cell"><div class="sh-lbl">거리</div><div class="sh-val" id="sh-dist"></div></div>
-      <div class="sh-cell"><div class="sh-lbl">위치</div><div class="sh-val" id="sh-city" style="font-size:12px"></div></div>
-    </div>
-    <!-- 학급 뱃지 -->
-    <div id="sh-grade-badges" style="padding:0 20px;margin-bottom:14px;"></div>
-    <div class="sh-sec-title">💬 학부모 리뷰 <button onclick="openReviewModal()">리뷰 작성</button></div>
-    <div id="sh-reviews"></div>
-    <div class="sh-cta-wrap">
-      <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
+    <!-- 비로그인 블러 영역 -->
+    <div class="blur-wrap" id="sh-blur-wrap">
+      <div class="blur-content" id="sh-blur-content">
+        <div class="sh-grid">
+          <div class="sh-cell"><div class="sh-lbl">과목</div><div class="sh-val" id="sh-subj"></div></div>
+          <div class="sh-cell"><div class="sh-lbl">월 수강료</div><div class="sh-val r" id="sh-price"></div></div>
+          <div class="sh-cell"><div class="sh-lbl">거리</div><div class="sh-val" id="sh-dist"></div></div>
+          <div class="sh-cell"><div class="sh-lbl">위치</div><div class="sh-val" id="sh-city" style="font-size:12px"></div></div>
+        </div>
+        <!-- 학급 뱃지 -->
+        <div id="sh-grade-badges" style="padding:0 20px;margin-bottom:14px;"></div>
+        <div class="sh-sec-title">💬 학부모 리뷰 <button onclick="openReviewModal()">리뷰 작성</button></div>
+        <div id="sh-reviews"></div>
+        <div class="sh-cta-wrap">
+          <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
+        </div>
+      </div>
+      <!-- 블러 오버레이 (비로그인 시 표시) -->
+      <div class="blur-overlay" id="sh-blur-overlay" style="display:none;">
+        <div class="blur-overlay-box">
+          <div class="bl-ico">🔒</div>
+          <h4>로그인 후 확인하세요</h4>
+          <p>수강료·연락처·상세 정보는<br>가입 회원에게만 공개됩니다</p>
+          <button class="bl-btn" onclick="closeSheet(event);go('page-user-signup')">무료 가입하기</button>
+          <button class="bl-btn2" onclick="closeSheet(event);openLoginModal()">이미 계정이 있어요</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -2185,13 +2228,24 @@ function openSheet(id){
   if(a.plan==='premium'&&a.blog){cta.textContent='블로그 / 상세보기';cta.className='sh-cta o';}
   else if(a.plan==='basic'){cta.textContent='학원 문의하기';cta.className='sh-cta';}
   else{cta.textContent='정보 준비 중';cta.className='sh-cta';}
+  // 비로그인 시 블러 처리
+  const blurContent = document.getElementById('sh-blur-content');
+  const blurOverlay = document.getElementById('sh-blur-overlay');
+  if(!currentUser){
+    blurContent.classList.add('blurred');
+    blurOverlay.style.display = 'flex';
+  } else {
+    blurContent.classList.remove('blurred');
+    blurOverlay.style.display = 'none';
+  }
+
   document.getElementById('sh-ov').classList.add('open');
 }
 function ctaClick(){
   if(sheetAcademy?.plan==='premium'&&sheetAcademy?.blog) window.open(sheetAcademy.blog,'_blank');
   else showToast('학원에 직접 문의해 주세요');
 }
-function closeSheet(e){if(e.target.id==='sh-ov') e.target.classList.remove('open');}
+function closeSheet(e){document.getElementById('sh-ov').classList.remove('open');}
 
 /* ════ REVIEW ════ */
 let editingReviewIdx = null; // null=신규, 숫자=수정 중인 인덱스
