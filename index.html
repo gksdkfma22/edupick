@@ -7,8 +7,10 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <!-- 카카오맵 SDK -->
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6"></script>
-<!-- 토스페이먼츠 SDK v1 (결제창 방식 — 현재 키로 바로 작동) -->
+<!-- 토스페이먼츠 SDK v1 -->
 <script src="https://js.tosspayments.com/v1/payment"></script>
+<!-- Supabase SDK -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --blue:#0A3D91;--blue2:#1658D6;--blue3:#E8F0FD;
@@ -645,7 +647,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <span class="logo-text-kr" style="display:none;font-size:18px;font-weight:900;color:#fff;">에듀픽</span>
     </div>
     <div class="hdr-r">
-      <button class="hbtn" onclick="go('page-type')">로그인</button>
+      <button class="hbtn" id="hdr-login-btn" onclick="go('page-type')">로그인</button>
       <button class="hbtn o" onclick="go('page-landing')">학원등록</button>
     </div>
   </div>
@@ -1379,13 +1381,168 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <script>
+/* ════════════════════════════════════════════
+   ✅ Supabase 설정 (로그인 + DB + 이미지 저장)
+════════════════════════════════════════════ */
+const SUPABASE_URL = 'https://ubhdnvzzteeywcyqqucm.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_acBPtAHwtVeFxmtatsQTQw_n_rqt2LW';
+const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let currentUser    = null; // 로그인된 유저
+let currentAcademy = null; // 사업자 학원 정보
+
+/* Auth 초기화 */
+async function initAuth(){
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session) await onLogin(session.user);
+  sb.auth.onAuthStateChange(async(event, session)=>{
+    if(event==='SIGNED_IN')  await onLogin(session.user);
+    if(event==='SIGNED_OUT') onLogout();
+  });
+}
+
+async function onLogin(user){
+  currentUser = user;
+  // 사업자 학원 정보 불러오기
+  const { data } = await sb.from('academies').select('*').eq('owner_id', user.id).maybeSingle();
+  if(data) currentAcademy = data;
+  updateHeaderUI();
+}
+
+function onLogout(){
+  currentUser = null;
+  currentAcademy = null;
+  updateHeaderUI();
+}
+
+function updateHeaderUI(){
+  const loginBtn = document.getElementById('hdr-login-btn');
+  if(!loginBtn) return;
+  if(currentUser){
+    loginBtn.textContent = '로그아웃';
+    loginBtn.onclick = ()=> sbLogout();
+  } else {
+    loginBtn.textContent = '로그인';
+    loginBtn.onclick = ()=> go('page-type');
+  }
+}
+
+/* 로그아웃 */
+async function sbLogout(){
+  await sb.auth.signOut();
+  showToast('로그아웃 됐습니다');
+  go('page-home');
+}
+
+/* 일반 유저 로그인 */
+async function loginDemo(){
+  const email = document.querySelector('#page-login input[type=email]')?.value?.trim();
+  const pw    = document.querySelector('#page-login input[type=password]')?.value;
+  if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
+  try {
+    showToast('로그인 중...');
+    const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if(error) throw error;
+    showToast('✅ 로그인 성공!');
+    setTimeout(()=>{ currentAcademy ? go('page-dashboard') : go('page-home'); }, 500);
+  } catch(e){ showToast('로그인 실패: ' + (e.message||'이메일/비밀번호 확인')); }
+}
+
+/* 일반 유저 가입 */
+async function completeUserSignup(){
+  const email = document.querySelector('#page-user-signup input[type=email]')?.value?.trim();
+  const pw    = document.querySelector('#page-user-signup input[type=password]')?.value;
+  if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
+  try {
+    showToast('가입 중...');
+    const { error } = await sb.auth.signUp({ email, password: pw, options:{ data:{ role:'user' } } });
+    if(error) throw error;
+    showToast('🎉 가입 완료! 이메일 인증 후 로그인해주세요');
+    go('page-home');
+  } catch(e){ showToast('오류: ' + (e.message||'다시 시도해주세요')); }
+}
+
+/* 사업자 가입 + 학원 DB 저장 */
+async function completeBizSignupAndPay(){
+  const name  = document.getElementById('biz-name')?.value?.trim() || '';
+  const addr  = document.getElementById('biz-addr')?.value?.trim() || '';
+  const subj  = document.getElementById('biz-subj')?.value || '영어';
+  const email = document.querySelector('#page-biz-signup input[type=email]')?.value?.trim() || '';
+  const pw    = document.querySelector('#page-biz-signup input[type=password]')?.value || '';
+  if(!name){ showToast('학원명을 입력해주세요'); return; }
+  if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
+  try {
+    showToast('가입 중...');
+    const { data:authData, error:authErr } = await sb.auth.signUp({
+      email, password: pw, options:{ data:{ role:'academy', academy_name:name } }
+    });
+    if(authErr) throw authErr;
+
+    // 학원 정보 DB 저장
+    if(authData.user){
+      await sb.from('academies').insert({
+        owner_id: authData.user.id,
+        name, address: addr, subject: subj,
+        plan: selectedPlan, city: addr,
+        lat: 36.8151, lng: 127.1139,
+        is_active: true,
+      });
+    }
+    // 대시보드 UI
+    document.getElementById('db-acad-name').textContent = name;
+    document.getElementById('di-name').textContent = name;
+    document.getElementById('di-subj').textContent = subj;
+    document.getElementById('db-loc').textContent = '📍 ' + addr;
+
+    if(selectedPlan !== 'free') openPayModal(selectedPlan);
+    else {
+      showToast('🎉 가입 완료! 이메일 인증 후 로그인해주세요');
+      go('page-home');
+    }
+  } catch(e){ showToast('오류: ' + (e.message||'다시 시도해주세요')); }
+}
+
+function completeBizSignup(){ completeBizSignupAndPay(); }
+
+/* Supabase DB에서 학원 목록 불러오기 */
+async function loadAcademiesFromDB(){
+  try {
+    const { data, error } = await sb.from('academies').select('*, reviews(*)').eq('is_active', true);
+    if(error || !data?.length) return false;
+    DATA = data.map(r=>({
+      id: r.id, name: r.name||'', city: r.city||r.address||'',
+      subject: r.subject||'영어',
+      grade: r.grade ? (typeof r.grade==='string' ? r.grade.split(',').map(g=>g.trim()) : r.grade) : ['초등','중등','고등'],
+      price: r.price||0, plan: r.plan||'free',
+      blog: r.blog||'', image: r.image||'',
+      lat: r.lat||0, lng: r.lng||0,
+      reviews: (r.reviews||[]).map(rv=>({ nick:rv.nickname||'익명', stars:rv.stars||5, body:rv.body||'', date:rv.created_at?.slice(5,10)||'', mine: rv.user_id===currentUser?.id })),
+    })).filter(r=>r.name&&r.lat&&r.lng);
+    return DATA.length > 0;
+  } catch(e){ return false; }
+}
+
+/* 소식 저장 */
+async function saveNews(title, content){
+  if(!currentUser||!currentAcademy){ showToast('로그인이 필요합니다'); return; }
+  const { error } = await sb.from('news').insert({ academy_id:currentAcademy.id, title, content });
+  if(error) showToast('저장 실패: '+error.message);
+  else { showToast('📢 소식을 게시했습니다'); closeModal('news'); }
+}
+
+/* 리뷰 저장 */
+async function saveReviewToDB(academyId, stars, nick, body){
+  const { error } = await sb.from('reviews').insert({
+    academy_id: academyId, user_id: currentUser?.id||null,
+    stars, nickname: nick, body,
+  });
+  if(error) throw error;
+}
+
 /* ══════════════════════════════════════════════════════
-   ✅ 구글 시트 연동 설정
-   STEP 1: 아래 GAS_URL 에 Apps Script 배포 URL을 붙여넣으세요
-   STEP 2: 저장 후 Netlify/GitHub Pages에 업로드하면 끝!
+   ✅ 구글 시트 연동 설정 (Supabase DB 없을 때 폴백용)
 ══════════════════════════════════════════════════════ */
 const GAS_URL = '여기에_Apps_Script_URL_붙여넣기';
-//  예시: 'https://script.google.com/macros/s/AKfycb.../exec'
 
 /* ════ 상수 ════ */
 const ICONS  = {영어:"A",수학:"π",국어:"가",음악:"♪",미술:"✏",체육:"⚽",예체능:"🎨",과학:"⚗",기타:"···"};
@@ -1425,32 +1582,31 @@ function showError(msg){
 
 /* ════ 구글 시트 데이터 로딩 ════ */
 async function loadData(){
-  // 1. 캐시 확인 (5분 이내면 재사용)
+  showLoading();
+
+  // 1. Supabase DB 우선 시도
+  const fromDB = await loadAcademiesFromDB();
+  if(fromDB){ hideLoading(); render(); return; }
+
+  // 2. 캐시 확인
   try {
     const cached = localStorage.getItem(CACHE_KEY);
     if(cached){
       const {ts, data} = JSON.parse(cached);
-      if(Date.now() - ts < CACHE_TTL){
-        DATA = data;
-        hideLoading();
-        render();
-        // 백그라운드에서 최신 데이터 갱신
+      if(Date.now()-ts < CACHE_TTL){
+        DATA=data; hideLoading(); render();
         fetchFromSheet(true);
         return;
       }
     }
   } catch(e){}
 
-  // 2. URL 미설정 시 샘플 데이터로 동작
-  if(!GAS_URL || GAS_URL.includes('여기에')){
-    DATA = getSampleData();
-    hideLoading();
-    render();
-    showToast('⚠️ 샘플 데이터 표시 중 — GAS_URL을 설정해 주세요');
+  // 3. 구글 시트
+  if(!GAS_URL||GAS_URL.includes('여기에')){
+    DATA=getSampleData(); hideLoading(); render();
+    showToast('⚠️ 샘플 데이터 표시 중');
     return;
   }
-
-  showLoading();
   await fetchFromSheet(false);
 }
 
@@ -2039,9 +2195,10 @@ let tt;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 
 /* ════ INIT ════ */
+initAuth();   // Supabase 로그인 상태 확인
 loadData();
 initBanner();
-checkPaymentResult(); // 결제 완료 후 리다이렉트 처리
+checkPaymentResult();
 
 /* ════ 배너 슬라이더 ════ */
 function initBanner(){
