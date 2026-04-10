@@ -9,8 +9,6 @@
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6"></script>
 <!-- 토스페이먼츠 SDK v1 -->
 <script src="https://js.tosspayments.com/v1/payment"></script>
-<!-- Supabase SDK -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   --blue:#0A3D91;--blue2:#1658D6;--blue3:#E8F0FD;
@@ -1405,13 +1403,17 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 ════════════════════════════════════════════ */
 const SUPABASE_URL = 'https://ubhdnvzzteeywcyqqucm.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_acBPtAHwtVeFxmtatsQTQw_n_rqt2LW';
-const sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let sb = null; // Supabase SDK 로드 후 initAuth()에서 초기화
 
 let currentUser    = null; // 로그인된 유저
 let currentAcademy = null; // 사업자 학원 정보
 
 /* Auth 초기화 */
 async function initAuth(){
+  // Supabase 클라이언트 초기화
+  if(typeof supabase === 'undefined'){ console.error('Supabase SDK 미로드'); return; }
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
   const { data:{ session } } = await sb.auth.getSession();
   if(session) await onLogin(session.user);
   sb.auth.onAuthStateChange(async(event, session)=>{
@@ -1572,6 +1574,7 @@ function completeBizSignup(){ completeBizSignupAndPay(); }
 
 /* Supabase DB에서 학원 목록 불러오기 */
 async function loadAcademiesFromDB(){
+  if(!sb) return false;
   try {
     const { data, error } = await sb.from('academies').select('*, reviews(*)').eq('is_active', true);
     if(error || !data?.length) return false;
@@ -2268,12 +2271,35 @@ let tt;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 
 /* ════ INIT ════ */
-document.addEventListener('DOMContentLoaded', function(){
-  initKakaoMap();
-  initAuth();
-  loadData();
+// 1단계: 카카오맵 먼저 초기화 (SDK가 head에서 동기 로드됨)
+window.addEventListener('DOMContentLoaded', function(){
+  // 카카오맵 초기화
+  try {
+    initKakaoMap();
+  } catch(e) {
+    console.error('카카오맵 초기화 실패:', e);
+  }
+
+  // 배너 초기화
   initBanner();
   checkPaymentResult();
+
+  // 2단계: Supabase SDK 동적 로드 후 나머지 초기화
+  const sbScript = document.createElement('script');
+  sbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+  sbScript.onload = function(){
+    // Supabase 로드 완료 후 실행
+    initAuth();
+    loadData();
+  };
+  sbScript.onerror = function(){
+    // Supabase 로드 실패해도 샘플 데이터로 동작
+    console.warn('Supabase 로드 실패, 샘플 데이터 사용');
+    DATA = getSampleData();
+    hideLoading();
+    render();
+  };
+  document.head.appendChild(sbScript);
 });
 
 /* ════ 배너 슬라이더 ════ */
