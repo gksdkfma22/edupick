@@ -1783,21 +1783,34 @@ function renderWishList(){
   el.innerHTML='';
   DATA.filter(a=>wishSet.has(a.id)).forEach(a=>{
     const avg=avgStars(a.reviews);
+    const planCls=a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
+    const planLbl=a.plan==='premium'?'프리미엄':a.plan==='basic'?'베이직':'무료';
+    const thumbBg={영어:"#E8F4FF",수학:"#FFF8E8",국어:"#E8FFF0",음악:"#FFE8F8",미술:"#FFF0E8",체육:"#E8FFE8",예체능:"#FFE8F8",과학:"#F0E8FF",기타:"#F4F6FB"};
+    const icon = ICONS[a.subject]||'📚';
     const div=document.createElement('div');
-    div.className=`acard ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':''}`;
+    div.className=`acard ${planCls}`;
     div.style.opacity='1';div.style.transform='none';
     div.innerHTML=`
-      <div class="ac-top">
-        <div class="ac-ico" style="background:${COLORS[a.subject]||'#f3f4f6'}">${ICONS[a.subject]||'📚'}</div>
-        <div class="ac-info">
-          <div class="ac-name-row"><div class="ac-name">${a.name}</div></div>
-          <div class="ac-sub">📍 ${a.city} · ${a.subject}</div>
-          ${a.reviews.length?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span></div>`:''}
+      <div class="ac-inner">
+        <div class="ac-thumb" style="background:${thumbBg[a.subject]||'#F0F2F8'}">${a.image?`<img src="${a.image}" style="width:100%;height:100%;object-fit:cover;" onerror="this.parentNode.innerHTML='${icon}'">`:icon}</div>
+        <div class="ac-top">
+          <div class="ac-info">
+            <div class="ac-name-row">
+              <div class="ac-name">${a.name}</div>
+              <span class="plan-tag ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free'}">${planLbl}</span>
+            </div>
+            <div class="ac-sub">📍 ${a.city} · ${a.subject}</div>
+            ${gradeBadgesHtml(a.grade)}
+            ${a.reviews.length?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`:''}
+          </div>
+          <button class="heart-btn liked" onclick="removeWish(${a.id},this)" style="color:#F43F5E">❤️</button>
         </div>
-        <button class="heart-btn liked" onclick="removeWish(${a.id},this)" style="color:#EF4444">❤️</button>
       </div>
       <div class="ac-foot">
-        <div><div class="ac-price">월 ${a.price.toLocaleString('ko-KR')}원</div><div class="ac-dist">${km(userLat,userLng,a.lat,a.lng)}km 거리</div></div>
+        <div>
+          <div class="ac-price">월 ${a.price.toLocaleString('ko-KR')}원</div>
+          <div class="ac-dist">${km(userLat,userLng,a.lat,a.lng)}km 거리</div>
+        </div>
         <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="go('page-home');setTimeout(()=>openSheet(${a.id}),200)">상세보기</button>
       </div>`;
     el.appendChild(div);
