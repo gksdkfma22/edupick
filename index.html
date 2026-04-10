@@ -1749,7 +1749,7 @@ function go(id){
   const next=document.getElementById(id);
   next.classList.add('active');
   next.scrollTop=0;
-  if(id==='page-home') setTimeout(()=>map.relayout(),80);
+  if(id==='page-home' && map) setTimeout(()=>map.relayout(),80);
   if(id==='page-wish') renderWishList();
 }
 function goBack(){
@@ -1758,15 +1758,20 @@ function goBack(){
 }
 
 /* ════ MAP ════ */
-/* ════ 카카오맵 초기화 ════ */
-const KAKAO_CENTER = new kakao.maps.LatLng(36.80, 127.10);
-const mapContainer  = document.getElementById('map');
-const mapOption     = { center: KAKAO_CENTER, level: 7 };
-const map           = new kakao.maps.Map(mapContainer, mapOption);
+let map, zoomCtrl;
 
-// 지도 컨트롤
-const zoomCtrl = new kakao.maps.ZoomControl();
-map.addControl(zoomCtrl, kakao.maps.ControlPosition.TOPRIGHT);
+function initKakaoMap(){
+  try {
+    const KAKAO_CENTER = new kakao.maps.LatLng(36.80, 127.10);
+    const mapContainer = document.getElementById('map');
+    const mapOption    = { center: KAKAO_CENTER, level: 7 };
+    map = new kakao.maps.Map(mapContainer, mapOption);
+    zoomCtrl = new kakao.maps.ZoomControl();
+    map.addControl(zoomCtrl, kakao.maps.ControlPosition.TOPRIGHT);
+  } catch(e){
+    console.error('카카오맵 초기화 실패:', e);
+  }
+}
 
 function km(la1,ln1,la2,ln2){
   const R=6371,dL=(la2-la1)*Math.PI/180,dG=(ln2-ln1)*Math.PI/180;
@@ -1775,6 +1780,7 @@ function km(la1,ln1,la2,ln2){
 }
 
 function makeKakaoMarker(a){
+  if(!map) return null;
   const cls   = a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free';
   const colors = {prem:'#FF6B2B', basic:'#4A90E2', free:'#94A3B8'};
   const bgColor = colors[cls];
@@ -1884,13 +1890,14 @@ function render(){
   });
 
   // 카카오맵 마커
-  markers.forEach(m=>m.setMap(null));
+  markers.forEach(m=>{ try{ m.setMap(null); }catch(e){} });
   markers=[];
-  items.forEach(a=>{
-    const overlay = makeKakaoMarker(a);
-    overlay.setMap(map);
-    markers.push(overlay);
-  });
+  if(map){
+    items.forEach(a=>{
+      const overlay = makeKakaoMarker(a);
+      if(overlay){ overlay.setMap(map); markers.push(overlay); }
+    });
+  }
 }
 
 /* ════ FILTER / SEARCH / SORT ════ */
@@ -1927,7 +1934,7 @@ function switchView(v){
   document.getElementById('list-wrap').style.display=v==='list'?'block':'none';
   document.getElementById('vtmap').classList.toggle('on',v==='map');
   document.getElementById('vtlist').classList.toggle('on',v==='list');
-  if(v==='map') setTimeout(()=>map.relayout(), 100);
+  if(v==='map' && map) setTimeout(()=>{ try{ map.relayout(); }catch(e){} }, 150);
 }
 
 /* ════ GPS ════ */
@@ -2262,10 +2269,13 @@ let tt;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 
 /* ════ INIT ════ */
-initAuth();   // Supabase 로그인 상태 확인
-loadData();
-initBanner();
-checkPaymentResult();
+window.addEventListener('load', ()=>{
+  initKakaoMap();   // 카카오맵 초기화
+  initAuth();       // Supabase 로그인 상태 확인
+  loadData();       // 학원 데이터 로딩
+  initBanner();     // 배너 슬라이더
+  checkPaymentResult(); // 결제 완료 처리
+});
 
 /* ════ 배너 슬라이더 ════ */
 function initBanner(){
