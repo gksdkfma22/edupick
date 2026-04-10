@@ -62,6 +62,35 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   cursor:pointer;font-family:inherit;margin-top:6px;
 }
 
+
+/* ══ 관리자 페이지 ══ */
+.admin-tab{padding:7px 16px;border-radius:20px;border:1.5px solid #E0E4EF;
+  background:#fff;font-size:12px;font-weight:700;color:#6B7280;
+  cursor:pointer;font-family:inherit;transition:.15s;}
+.admin-tab.on{background:#1E293B;color:#fff;border-color:#1E293B;}
+
+.admin-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;
+  box-shadow:0 2px 10px rgba(0,0,0,.06);border:1.5px solid #F0F1F6;}
+.admin-card.pending{border-color:#F59E0B;background:linear-gradient(135deg,#FFFBEB,#fff);}
+.admin-card.approved{border-color:#10B981;background:linear-gradient(135deg,#ECFDF5,#fff);}
+.admin-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.admin-name{font-size:16px;font-weight:800;color:#1A1A2E;}
+.admin-status{font-size:11px;font-weight:800;padding:3px 10px;border-radius:20px;}
+.admin-status.pending{background:#FEF3C7;color:#B45309;}
+.admin-status.approved{background:#D1FAE5;color:#065F46;}
+.admin-info{font-size:12px;color:#6B7280;line-height:1.8;}
+.admin-info span{color:#1A1A2E;font-weight:600;}
+.admin-btns{display:flex;gap:8px;margin-top:12px;}
+.admin-btn-approve{flex:1;padding:10px;border-radius:10px;border:none;
+  background:#10B981;color:#fff;font-size:13px;font-weight:800;
+  cursor:pointer;font-family:inherit;}
+.admin-btn-reject{padding:10px 16px;border-radius:10px;border:1.5px solid #EF4444;
+  background:#fff;color:#EF4444;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:inherit;}
+.admin-btn-detail{padding:10px 16px;border-radius:10px;border:1.5px solid #E0E4EF;
+  background:#fff;color:#6B7280;font-size:13px;font-weight:700;
+  cursor:pointer;font-family:inherit;}
+
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);
   background:#0F172A;color:#fff;padding:11px 22px;border-radius:12px;
@@ -1216,15 +1245,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         <div class="ty-arr">무료 가입하기 →</div>
       </div>
     </div>
-    <div class="type-card p" onclick="go('page-tutor-signup')">
-      <div class="ty-ico p">👩‍🏫</div>
-      <div>
-        <div class="ty-nm">개인과외 선생님</div>
-        <span class="ty-badge tutor">월 33,000원</span>
-        <div class="ty-desc">사업자 등록 여부와 관계없이 지도에 노출되고 학생을 모집할 수 있습니다.</div>
-        <div class="ty-arr" style="color:#8B5CF6">가입하기 →</div>
-      </div>
-    </div>
+
     <div class="type-card b" onclick="go('page-plan')">
       <div class="ty-ico b">🏫</div>
       <div>
@@ -1346,72 +1367,6 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 </div>
 
-<!-- ════════════════ 개인과외 가입 ════════════════ -->
-<div class="page" id="page-tutor-signup">
-  <div class="form-hdr" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);">
-    <span class="form-hdr-back" onclick="go('page-type')">←</span>
-    <h2>개인과외 선생님 가입</h2>
-    <p>월 33,000원 단일 플랜 · 지도에 바로 노출</p>
-  </div>
-  <div class="form-body">
-    <div class="plan-sum" style="border-color:#8B5CF6;">
-      <div><div class="ps-l">플랜</div><div class="ps-pl" style="color:#7C3AED;">👩‍🏫 개인과외</div></div>
-      <div class="ps-pr" style="color:#7C3AED;">33,000원/월</div>
-    </div>
-
-    <!-- 사업자 여부 선택 -->
-    <div class="fg">
-      <label>사업자 등록 여부 <span style="color:red">*</span></label>
-      <div style="display:flex;gap:10px;margin-top:6px;">
-        <button type="button" id="tutor-reg-yes" onclick="selectTutorRegType('registered')"
-          style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:#F4F6FB;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;">
-          ✅ 사업자 등록함
-        </button>
-        <button type="button" id="tutor-reg-no" onclick="selectTutorRegType('unregistered')"
-          style="flex:1;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:#F4F6FB;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;transition:.15s;">
-          ❌ 미등록 (개인)
-        </button>
-      </div>
-    </div>
-
-    <!-- 사업자 등록한 경우 -->
-    <div id="tutor-registered-fields" style="display:none;">
-      <div class="fg"><label>사업자등록번호 <span style="color:red">*</span></label>
-        <input type="text" id="tutor-reg-no" placeholder="000-00-00000">
-      </div>
-      <div class="fg"><label>사업자등록증 업로드 <span style="color:red">*</span></label>
-        <input type="file" id="tutor-reg-file" accept="image/*,.pdf" style="padding:8px;border:1.5px dashed var(--border);border-radius:10px;width:100%;font-size:13px;">
-        <div class="hint">승인 후 지도에 노출됩니다</div>
-      </div>
-    </div>
-
-    <!-- 미등록 개인 안내 -->
-    <div id="tutor-unregistered-info" style="display:none;background:#F5F3FF;border:1.5px solid #8B5CF6;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#6D28D9;">
-      📋 미등록 개인과외는 신분증 사본으로 본인 확인 후 승인됩니다
-      <div class="fg" style="margin-top:10px;margin-bottom:0;">
-        <label>신분증 사본 업로드 <span style="color:red">*</span></label>
-        <input type="file" id="tutor-id-file" accept="image/*" style="padding:8px;border:1.5px dashed #8B5CF6;border-radius:10px;width:100%;font-size:13px;background:#fff;">
-      </div>
-    </div>
-
-    <div class="fg"><label>이름 <span style="color:red">*</span></label><input type="text" id="tutor-name" placeholder="홍길동"></div>
-    <div class="fg"><label>연락처 <span style="color:red">*</span></label><input type="tel" id="tutor-phone" placeholder="010-0000-0000"></div>
-    <div class="fg"><label>이메일 <span style="color:red">*</span></label><input type="email" id="tutor-email" placeholder="example@email.com"></div>
-    <div class="fg"><label>활동 지역 <span style="color:red">*</span></label>
-      <input type="text" id="tutor-addr" placeholder="천안시 서북구 …">
-    </div>
-    <div class="fg"><label>과목</label>
-      <select id="tutor-subj"><option>영어</option><option>수학</option><option>국어</option><option>음악</option><option>미술</option><option>체육</option><option>과학</option><option>기타</option></select>
-    </div>
-    <div class="fg"><label>시간당 수업료</label><input type="text" id="tutor-price" placeholder="예) 30,000"></div>
-    <div class="fg"><label>비밀번호 <span style="color:red">*</span></label><input type="password" id="tutor-pw" placeholder="6자 이상"></div>
-    <button class="sub-btn" style="background:linear-gradient(135deg,#7C3AED,#8B5CF6);color:#fff;" onclick="completeTutorSignup()">
-      가입 신청하기
-    </button>
-    <div class="sub-note">신청 후 서류 확인 및 승인까지 영업일 1~2일 소요됩니다</div>
-  </div>
-</div>
-
 <!-- ════════════════ 사업자 가입 폼 ════════════════ -->
 <div class="page" id="page-biz-signup">
   <div class="form-hdr orange">
@@ -1522,6 +1477,50 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </nav>
 </div>
 
+<!-- ════════════════ 관리자 승인 페이지 ════════════════ -->
+<div class="page" id="page-admin">
+  <div class="hdr" style="background:#1E293B;">
+    <div style="display:flex;align-items:center;gap:8px;">
+      <span style="font-size:18px;">🛡</span>
+      <span style="font-size:16px;font-weight:900;color:#fff;">에듀픽 관리자</span>
+    </div>
+    <button class="hbtn" onclick="go('page-home')">← 홈으로</button>
+  </div>
+
+  <div style="padding:68px 16px 20px;">
+    <!-- 통계 요약 -->
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;">
+      <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <div style="font-size:22px;font-weight:900;color:#176ED3;" id="admin-total-cnt">-</div>
+        <div style="font-size:11px;color:#8A94A6;margin-top:2px;">전체 신청</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <div style="font-size:22px;font-weight:900;color:#F59E0B;" id="admin-pending-cnt">-</div>
+        <div style="font-size:11px;color:#8A94A6;margin-top:2px;">승인 대기</div>
+      </div>
+      <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+        <div style="font-size:22px;font-weight:900;color:#10B981;" id="admin-approved-cnt">-</div>
+        <div style="font-size:11px;color:#8A94A6;margin-top:2px;">승인 완료</div>
+      </div>
+    </div>
+
+    <!-- 필터 탭 -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="admin-tab on" id="atab-pending" onclick="adminFilter('pending')">⏳ 대기중</button>
+      <button class="admin-tab" id="atab-approved" onclick="adminFilter('approved')">✅ 승인됨</button>
+      <button class="admin-tab" id="atab-all" onclick="adminFilter('all')">전체</button>
+    </div>
+
+    <!-- 목록 -->
+    <div id="admin-list">
+      <div style="text-align:center;padding:40px;color:#8A94A6;">
+        <div style="font-size:32px;margin-bottom:12px;">🔄</div>
+        <div>데이터 로딩 중...</div>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 /* ════════════════════════════════════════════
    ✅ Supabase 설정 (로그인 + DB + 이미지 저장)
@@ -1562,6 +1561,23 @@ function onLogout(){
 }
 
 function updateHeaderUI(){
+  // 관리자 버튼 처리
+  let adminBtn = document.getElementById('hdr-admin-btn');
+  if(currentUser && currentUser.email === ADMIN_EMAIL){
+    if(!adminBtn){
+      adminBtn = document.createElement('button');
+      adminBtn.id = 'hdr-admin-btn';
+      adminBtn.className = 'hbtn';
+      adminBtn.style.background = '#1E293B';
+      adminBtn.textContent = '🛡 관리자';
+      adminBtn.onclick = ()=> goAdmin();
+      document.querySelector('.hdr-r').prepend(adminBtn);
+    }
+    adminBtn.style.display = 'block';
+  } else if(adminBtn){
+    adminBtn.style.display = 'none';
+  }
+
   const loginBtn = document.getElementById('hdr-login-btn');
   if(!loginBtn) return;
   if(currentUser){
@@ -2457,6 +2473,138 @@ async function completeTutorSignup(){
     if(msg.includes('already registered')) msg = '이미 가입된 이메일이에요';
     showToast('오류: ' + msg);
   }
+}
+
+
+/* ════ 관리자 페이지 ════ */
+const ADMIN_EMAIL = 'gksdkfma22@gmail.com'; // 관리자 이메일
+let adminCurrentFilter = 'pending';
+let adminData = [];
+
+async function goAdmin(){
+  // 관리자 이메일 체크
+  if(!currentUser || currentUser.email !== ADMIN_EMAIL){
+    showToast('관리자 권한이 없습니다');
+    return;
+  }
+  go('page-admin');
+  await loadAdminData();
+}
+
+async function loadAdminData(){
+  if(!sb){ showToast('서버 연결 중...'); return; }
+  try {
+    const { data, error } = await sb
+      .from('academies')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if(error) throw error;
+    adminData = data || [];
+
+    // 통계 업데이트
+    const pending  = adminData.filter(a => !a.is_active).length;
+    const approved = adminData.filter(a => a.is_active).length;
+    document.getElementById('admin-total-cnt').textContent   = adminData.length;
+    document.getElementById('admin-pending-cnt').textContent  = pending;
+    document.getElementById('admin-approved-cnt').textContent = approved;
+
+    renderAdminList(adminCurrentFilter);
+  } catch(e){
+    document.getElementById('admin-list').innerHTML =
+      '<div style="text-align:center;padding:30px;color:#EF4444;">데이터 로딩 실패: ' + e.message + '</div>';
+  }
+}
+
+function adminFilter(filter){
+  adminCurrentFilter = filter;
+  ['pending','approved','all'].forEach(f => {
+    const el = document.getElementById('atab-' + f);
+    if(el) el.classList.toggle('on', f === filter);
+  });
+  renderAdminList(filter);
+}
+
+function renderAdminList(filter){
+  const list = document.getElementById('admin-list');
+  let items = adminData;
+  if(filter === 'pending')  items = adminData.filter(a => !a.is_active);
+  if(filter === 'approved') items = adminData.filter(a => a.is_active);
+
+  if(!items.length){
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:#8A94A6;"><div style="font-size:32px;margin-bottom:12px;">📭</div><div>해당하는 신청이 없어요</div></div>';
+    return;
+  }
+
+  list.innerHTML = items.map(a => `
+    <div class="admin-card ${a.is_active ? 'approved' : 'pending'}">
+      <div class="admin-card-top">
+        <div class="admin-name">${a.name || '이름없음'}</div>
+        <span class="admin-status ${a.is_active ? 'approved' : 'pending'}">
+          ${a.is_active ? '✅ 승인됨' : '⏳ 대기중'}
+        </span>
+      </div>
+      <div class="admin-info">
+        📍 <span>${a.city || a.address || '-'}</span> &nbsp;
+        📚 <span>${a.subject || '-'}</span> &nbsp;
+        💳 <span>${a.plan || 'free'}</span><br>
+        📅 신청일: <span>${a.created_at ? a.created_at.slice(0,10) : '-'}</span>
+      </div>
+      <div class="admin-btns">
+        ${!a.is_active ? `
+          <button class="admin-btn-approve" onclick="approveAcademy('${a.id}')">✅ 승인</button>
+          <button class="admin-btn-reject"  onclick="rejectAcademy('${a.id}', '${a.name}')">❌ 거절</button>
+        ` : `
+          <button class="admin-btn-reject" onclick="revokeAcademy('${a.id}')">🔒 승인 취소</button>
+        `}
+        <button class="admin-btn-detail" onclick="showAdminDetail('${a.id}')">상세</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+async function approveAcademy(id){
+  if(!confirm('이 학원을 승인할까요?')) return;
+  try {
+    const { error } = await sb.from('academies').update({ is_active: true }).eq('id', id);
+    if(error) throw error;
+    showToast('✅ 승인 완료!');
+    await loadAdminData();
+  } catch(e){ showToast('오류: ' + e.message); }
+}
+
+async function revokeAcademy(id){
+  if(!confirm('승인을 취소할까요?')) return;
+  try {
+    const { error } = await sb.from('academies').update({ is_active: false }).eq('id', id);
+    if(error) throw error;
+    showToast('🔒 승인 취소됨');
+    await loadAdminData();
+  } catch(e){ showToast('오류: ' + e.message); }
+}
+
+async function rejectAcademy(id, name){
+  if(!confirm(name + ' 을(를) 거절할까요? 삭제됩니다.')) return;
+  try {
+    const { error } = await sb.from('academies').delete().eq('id', id);
+    if(error) throw error;
+    showToast('❌ 거절 및 삭제 완료');
+    await loadAdminData();
+  } catch(e){ showToast('오류: ' + e.message); }
+}
+
+function showAdminDetail(id){
+  const a = adminData.find(x => x.id === id);
+  if(!a) return;
+  alert(`
+학원명: ${a.name}
+주소: ${a.address || '-'}
+과목: ${a.subject || '-'}
+플랜: ${a.plan}
+이메일: ${a.owner_email || '-'}
+신청일: ${a.created_at?.slice(0,10)}
+상태: ${a.is_active ? '승인됨' : '대기중'}
+  `.trim());
 }
 
 function openLoginModal(){
