@@ -6,7 +6,7 @@
 <title>에듀픽 — 우리동네 학원찾기</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <!-- 카카오맵 SDK -->
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6&autoload=false"></script>
 <!-- 토스페이먼츠 SDK v1 -->
 <script src="https://js.tosspayments.com/v1/payment"></script>
 <!-- Supabase SDK -->
@@ -47,7 +47,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
    HOME PAGE
 ══════════════════════════════════ */
 #page-home{padding-bottom:64px;}
-.hdr{position:fixed;top:0;left:0;right:0;z-index:600;height:52px;
+.hdr{position:fixed;top:0;left:0;right:0;z-index:650;height:52px;
   background:#176ED3;display:flex;align-items:center;justify-content:space-between;padding:0 15px;
   box-shadow:0 2px 12px rgba(23,110,211,.3);}
 .logo{display:flex;align-items:center;gap:6px;cursor:pointer;text-decoration:none;}
@@ -659,7 +659,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     </div>
   </div>
   <!-- 과목 필터 -->
-  <div class="fbar" style="top:104px;">
+  <div class="fbar">
     <button class="chip on" onclick="setFilter('전체',this)">
       <div class="chip-ico" style="background:#EEF4FF;font-size:22px;">📚</div><div class="chip-lbl">전체</div>
     </button>
@@ -1749,7 +1749,7 @@ function go(id){
   const next=document.getElementById(id);
   next.classList.add('active');
   next.scrollTop=0;
-  if(id==='page-home' && map) setTimeout(()=>map.relayout(),80);
+  if(id==='page-home' && map) setTimeout(()=>{ try{map.relayout();}catch(e){} },80);
   if(id==='page-wish') renderWishList();
 }
 function goBack(){
@@ -1951,8 +1951,7 @@ function getGPS(){
       zIndex: 20,
     });
     userMarker.setMap(map);
-    map.setCenter(locPos);
-    map.setLevel(5);
+    if(map){ map.setCenter(locPos); map.setLevel(5); }
     render();
   },()=>alert('위치 권한을 허용해 주세요.'));
 }
@@ -2269,11 +2268,11 @@ let tt;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 
 /* ════ INIT ════ */
-window.addEventListener('load', ()=>{
-  initKakaoMap();   // 카카오맵 초기화
-  initAuth();       // Supabase 로그인 상태 확인
-  loadData();       // 학원 데이터 로딩
-  initBanner();     // 배너 슬라이더
+kakao.maps.load(function(){
+  initKakaoMap();       // 카카오맵 초기화 (SDK 완전 로드 후)
+  initAuth();           // Supabase 로그인 상태 확인
+  loadData();           // 학원 데이터 로딩
+  initBanner();         // 배너 슬라이더
   checkPaymentResult(); // 결제 완료 처리
 });
 
