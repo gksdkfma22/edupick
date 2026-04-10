@@ -1473,18 +1473,6 @@ async function doLogin(){
     showToast('로그인 실패: ' + (e.message?.includes('Invalid') ? '이메일/비밀번호 확인' : e.message));
   }
 }
-  const email = document.querySelector('#page-login input[type=email]')?.value?.trim();
-  const pw    = document.querySelector('#page-login input[type=password]')?.value;
-  if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
-  try {
-    showToast('로그인 중...');
-    const { error } = await sb.auth.signInWithPassword({ email, password: pw });
-    if(error) throw error;
-    showToast('✅ 로그인 성공!');
-    setTimeout(()=>{ currentAcademy ? go('page-dashboard') : go('page-home'); }, 500);
-  } catch(e){ showToast('로그인 실패: ' + (e.message||'이메일/비밀번호 확인')); }
-}
-
 /* 일반 유저 가입 */
 async function completeUserSignup(){
   const emailEl = document.getElementById('user-email') || document.querySelector('#page-user-signup input[type=email]');
