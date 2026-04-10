@@ -1185,7 +1185,26 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </div>
     </div>
   </div>
-  <div class="login-row">이미 계정이 있으신가요? <span onclick="loginDemo()">로그인</span></div>
+  <div class="login-row">이미 계정이 있으신가요? <span onclick="openLoginModal()">로그인</span></div>
+</div>
+
+<!-- 로그인 모달 -->
+<div class="modal-ov" id="login-modal-ov" onclick="if(event.target===this)this.classList.remove('open')">
+  <div class="modal-box">
+    <div class="modal-title">🔐 로그인</div>
+    <div class="mfg">
+      <label>이메일</label>
+      <input type="email" id="login-email" placeholder="example@email.com">
+    </div>
+    <div class="mfg">
+      <label>비밀번호</label>
+      <input type="password" id="login-pw" placeholder="비밀번호 입력">
+    </div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="document.getElementById('login-modal-ov').classList.remove('open')">취소</button>
+      <button class="mb-save" onclick="doLogin()">로그인</button>
+    </div>
+  </div>
 </div>
 
 <!-- ════════════════ 일반 가입 ════════════════ -->
@@ -1196,9 +1215,9 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <p>무료로 학원 찾기, 찜하기, 리뷰 작성까지</p>
   </div>
   <div class="form-body">
-    <div class="fg"><label>이름</label><input type="text" placeholder="홍길동"></div>
-    <div class="fg"><label>이메일</label><input type="email" placeholder="example@email.com"></div>
-    <div class="fg"><label>비밀번호</label><input type="password" placeholder="8자 이상"><div class="hint">영문, 숫자 포함 8자 이상</div></div>
+    <div class="fg"><label>이름</label><input type="text" id="user-name" placeholder="홍길동"></div>
+    <div class="fg"><label>이메일</label><input type="email" id="user-email" placeholder="example@email.com"></div>
+    <div class="fg"><label>비밀번호</label><input type="password" id="user-pw" placeholder="6자 이상"><div class="hint">6자 이상</div></div>
     <div class="fg"><label>자녀 학년</label>
       <select>
         <option value="">선택하세요</option>
@@ -1293,13 +1312,13 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div class="fg"><label>대표자명</label><input type="text" placeholder="홍길동"></div>
     <div class="fg"><label>사업자등록번호 (선택)</label><input type="text" placeholder="000-00-00000"><div class="hint">개인 교습소도 등록 가능합니다</div></div>
     <div class="fg"><label>연락처</label><input type="tel" placeholder="010-0000-0000"></div>
-    <div class="fg"><label>이메일</label><input type="email" placeholder="example@email.com"></div>
+    <div class="fg"><label>이메일</label><input type="email" id="biz-email" placeholder="example@email.com"></div>
     <div class="fg"><label>학원 주소</label><input type="text" id="biz-addr" placeholder="천안시 서북구 …"></div>
     <div class="fg"><label>주요 과목</label>
       <select id="biz-subj"><option>영어</option><option>수학</option><option>국어</option><option>예체능</option><option>과학</option></select>
     </div>
     <div class="fg"><label>월 수강료</label><input type="text" placeholder="예) 180,000"></div>
-    <div class="fg"><label>비밀번호</label><input type="password" placeholder="8자 이상"></div>
+    <div class="fg"><label>비밀번호</label><input type="password" id="biz-pw" placeholder="6자 이상"></div>
     <button class="sub-btn orange" onclick="completeBizSignupAndPay()">가입 완료 · 결제하기</button>
     <div class="sub-note">가입 후 결제 화면으로 이동합니다</div>
   </div>
@@ -1435,7 +1454,23 @@ async function sbLogout(){
 }
 
 /* 일반 유저 로그인 */
-async function loginDemo(){
+async function loginDemo(){ openLoginModal(); }
+
+async function doLogin(){
+  const email = document.getElementById('login-email')?.value?.trim();
+  const pw    = document.getElementById('login-pw')?.value;
+  if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
+  try {
+    showToast('로그인 중...');
+    const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+    if(error) throw error;
+    document.getElementById('login-modal-ov').classList.remove('open');
+    showToast('✅ 로그인 성공!');
+    setTimeout(()=>{ currentAcademy ? go('page-dashboard') : go('page-home'); }, 600);
+  } catch(e){
+    showToast('로그인 실패: ' + (e.message?.includes('Invalid') ? '이메일/비밀번호 확인' : e.message));
+  }
+}
   const email = document.querySelector('#page-login input[type=email]')?.value?.trim();
   const pw    = document.querySelector('#page-login input[type=password]')?.value;
   if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
@@ -1450,56 +1485,87 @@ async function loginDemo(){
 
 /* 일반 유저 가입 */
 async function completeUserSignup(){
-  const email = document.querySelector('#page-user-signup input[type=email]')?.value?.trim();
-  const pw    = document.querySelector('#page-user-signup input[type=password]')?.value;
+  const emailEl = document.getElementById('user-email') || document.querySelector('#page-user-signup input[type=email]');
+  const pwEl    = document.getElementById('user-pw')    || document.querySelector('#page-user-signup input[type=password]');
+  const email   = emailEl?.value?.trim();
+  const pw      = pwEl?.value;
   if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
+  if(pw.length < 6){ showToast('비밀번호는 6자 이상이어야 해요'); return; }
   try {
     showToast('가입 중...');
-    const { error } = await sb.auth.signUp({ email, password: pw, options:{ data:{ role:'user' } } });
+    const { data, error } = await sb.auth.signUp({
+      email, password: pw,
+      options:{ data:{ role:'user' }, emailRedirectTo: null }
+    });
     if(error) throw error;
-    showToast('🎉 가입 완료! 이메일 인증 후 로그인해주세요');
+    // 이메일 인증 없이 바로 로그인 시도
+    const { error: loginErr } = await sb.auth.signInWithPassword({ email, password: pw });
+    if(loginErr){
+      showToast('🎉 가입 완료! 로그인해주세요');
+    } else {
+      showToast('🎉 가입 & 로그인 완료!');
+    }
     go('page-home');
   } catch(e){ showToast('오류: ' + (e.message||'다시 시도해주세요')); }
 }
 
 /* 사업자 가입 + 학원 DB 저장 */
 async function completeBizSignupAndPay(){
-  const name  = document.getElementById('biz-name')?.value?.trim() || '';
-  const addr  = document.getElementById('biz-addr')?.value?.trim() || '';
-  const subj  = document.getElementById('biz-subj')?.value || '영어';
-  const email = document.querySelector('#page-biz-signup input[type=email]')?.value?.trim() || '';
-  const pw    = document.querySelector('#page-biz-signup input[type=password]')?.value || '';
+  const name    = document.getElementById('biz-name')?.value?.trim() || '';
+  const addr    = document.getElementById('biz-addr')?.value?.trim() || '';
+  const subj    = document.getElementById('biz-subj')?.value || '영어';
+  const emailEl = document.getElementById('biz-email') || document.querySelector('#page-biz-signup input[type=email]');
+  const pwEl    = document.getElementById('biz-pw')    || document.querySelector('#page-biz-signup input[type=password]');
+  const email   = emailEl?.value?.trim() || '';
+  const pw      = pwEl?.value || '';
+
   if(!name){ showToast('학원명을 입력해주세요'); return; }
-  if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
+  if(!email){ showToast('이메일을 입력해주세요'); return; }
+  if(!pw || pw.length < 6){ showToast('비밀번호는 6자 이상이어야 해요'); return; }
+
   try {
     showToast('가입 중...');
+    // 1. Supabase 회원가입
     const { data:authData, error:authErr } = await sb.auth.signUp({
-      email, password: pw, options:{ data:{ role:'academy', academy_name:name } }
+      email, password: pw,
+      options:{ data:{ role:'academy', academy_name:name }, emailRedirectTo: null }
     });
     if(authErr) throw authErr;
 
-    // 학원 정보 DB 저장
-    if(authData.user){
-      await sb.from('academies').insert({
-        owner_id: authData.user.id,
+    // 2. 바로 로그인
+    await sb.auth.signInWithPassword({ email, password: pw });
+
+    // 3. 학원 정보 DB 저장
+    const userId = authData.user?.id || currentUser?.id;
+    if(userId){
+      const { error: dbErr } = await sb.from('academies').insert({
+        owner_id: userId,
         name, address: addr, subject: subj,
         plan: selectedPlan, city: addr,
         lat: 36.8151, lng: 127.1139,
         is_active: true,
       });
+      if(dbErr) console.error('DB 저장 오류:', dbErr);
     }
-    // 대시보드 UI
+
+    // 4. 대시보드 UI 업데이트
     document.getElementById('db-acad-name').textContent = name;
     document.getElementById('di-name').textContent = name;
     document.getElementById('di-subj').textContent = subj;
     document.getElementById('db-loc').textContent = '📍 ' + addr;
 
+    const pills = { free:'🆓 무료 플랜', basic:'🗺 베이직 플랜', premium:'⭐ 프리미엄 플랜' };
+    document.getElementById('db-plan-pill').textContent = pills[selectedPlan] || '';
+
+    showToast('🎉 가입 완료!');
+
     if(selectedPlan !== 'free') openPayModal(selectedPlan);
-    else {
-      showToast('🎉 가입 완료! 이메일 인증 후 로그인해주세요');
-      go('page-home');
-    }
-  } catch(e){ showToast('오류: ' + (e.message||'다시 시도해주세요')); }
+    else go('page-dashboard');
+
+  } catch(e){
+    console.error('가입 오류:', e);
+    showToast('오류: ' + (e.message||'다시 시도해주세요'));
+  }
 }
 
 function completeBizSignup(){ completeBizSignupAndPay(); }
@@ -2170,8 +2236,9 @@ function unlockSection(id){
   el.classList.remove('locked');el.querySelectorAll('.lock-cover').forEach(c=>c.remove());
 }
 
-function completeUserSignup(){showToast('🎉 가입 완료! 환영합니다');go('page-home');}
-function loginDemo(){showToast('로그인 후 대시보드로 이동합니다');setTimeout(()=>go('page-dashboard'),800);}
+function openLoginModal(){
+  document.getElementById('login-modal-ov').classList.add('open');
+}
 
 /* ════ MODALS ════ */
 function openModal(t){document.getElementById('modal-'+t).classList.add('open');}
