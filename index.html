@@ -435,7 +435,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .sh-cta.o{background:var(--orange);}
 
 /* ══════════════════════════════════
-   찜 목록 PAGE
+   관심목록 PAGE
 ══════════════════════════════════ */
 #page-wish{padding-bottom:64px;}
 .ph{background:var(--blue);padding:52px 18px 20px;color:#fff;}
@@ -828,7 +828,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span>홈
     </button>
     <button class="nb nb-wish" id="wish-nav-btn" onclick="goWish()">
-      <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>찜목록<span class="nb-badge" id="wish-badge" style="display:none">0</span>
+      <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>관심목록<span class="nb-badge" id="wish-badge" style="display:none">0</span>
     </button>
     <button class="nb nb-my" onclick="go('page-type')">
       <span class="nb-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>MY
@@ -1089,10 +1089,10 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 </div>
 
-<!-- ════════════════ 찜 목록 ════════════════ -->
+<!-- ════════════════ 관심목록 ════════════════ -->
 <div class="page" id="page-wish">
   <div class="ph">
-    <h2>❤️ 찜한 학원</h2>
+    <h2>❤️ 관심 학원</h2>
     <p>관심 있는 학원을 모아봤어요</p>
   </div>
   <div class="wish-list" id="wish-list"></div>
@@ -1101,7 +1101,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span>홈
     </button>
     <button class="nb on nb-wish">
-      <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>찜목록
+      <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>관심목록
     </button>
     <button class="nb nb-my" onclick="go('page-type')">
       <span class="nb-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>MY
@@ -1137,7 +1137,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div class="sp-pill">✅ 아산시 21개 학원</div>
     <div class="sp-pill">✅ 세종시 17개 학원</div>
     <div class="sp-pill">⭐ 별점 리뷰 시스템</div>
-    <div class="sp-pill">❤️ 찜하기 기능</div>
+    <div class="sp-pill">❤️ 관심등록 기능</div>
   </div>
   <div class="section" style="background:var(--white);">
     <div class="sec-tag">WHY 에듀픽</div>
@@ -1271,7 +1271,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <div>
         <div class="ty-nm">학부모 · 학생</div>
         <span class="ty-badge free">무료</span>
-        <div class="ty-desc">학원 검색, 찜하기, 리뷰 작성, 상담 신청을 이용할 수 있습니다.</div>
+        <div class="ty-desc">학원 검색, 관심등록, 리뷰 작성, 상담 신청을 이용할 수 있습니다.</div>
         <div class="ty-arr">무료 가입하기 →</div>
       </div>
     </div>
@@ -1324,7 +1324,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   <div class="form-hdr blue">
     <span class="form-hdr-back" onclick="go('page-type')">←</span>
     <h2>일반 회원가입</h2>
-    <p>무료로 학원 찾기, 찜하기, 리뷰 작성까지</p>
+    <p>무료로 학원 찾기, 관심등록, 리뷰 작성까지</p>
   </div>
   <div class="form-body">
     <div class="fg"><label>이름</label><input type="text" id="user-name" placeholder="홍길동"></div>
@@ -1446,7 +1446,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
   <div class="db-stats">
     <div class="ds"><div class="ds-n">128</div><div class="ds-l">이번달 조회</div></div>
-    <div class="ds"><div class="ds-n">34</div><div class="ds-l">찜한 학부모</div></div>
+    <div class="ds"><div class="ds-n">34</div><div class="ds-l">관심 학부모</div></div>
     <div class="ds"><div class="ds-n" id="db-review-cnt">3</div><div class="ds-l">받은 리뷰</div></div>
   </div>
   <div class="up-banner" id="up-banner" style="display:none" onclick="openPayModal('premium')">
@@ -2155,12 +2155,12 @@ function toggleHeart(id, btn){
   if(wishSet.has(id)){
     wishSet.delete(id);
     btn.textContent='🤍'; btn.style.color='#CBD5E1'; btn.classList.remove('liked');
-    showToast('찜을 취소했습니다');
+    showToast('관심을 취소했습니다');
   } else {
     wishSet.add(id);
     btn.textContent='❤️'; btn.style.color='#EF4444'; btn.classList.add('liked');
     btn.style.animation='none'; void btn.offsetWidth; btn.style.animation='heartPop .3s ease';
-    showToast('❤️ 찜 목록에 추가했습니다');
+    showToast('❤️ 관심목록에 추가했습니다');
   }
   updateWishBadge();
   // 시트가 열려있으면 하트 동기화
@@ -2181,8 +2181,8 @@ function toggleHeartSheet(){
   if(found) found.click();
   else {
     // 목록에 안보이는 상태면 직접 처리
-    if(wishSet.has(id)){wishSet.delete(id);document.getElementById('sh-heart').textContent='🤍';showToast('찜을 취소했습니다');}
-    else{wishSet.add(id);document.getElementById('sh-heart').textContent='❤️';showToast('❤️ 찜 목록에 추가했습니다');}
+    if(wishSet.has(id)){wishSet.delete(id);document.getElementById('sh-heart').textContent='🤍';showToast('관심을 취소했습니다');}
+    else{wishSet.add(id);document.getElementById('sh-heart').textContent='❤️';showToast('❤️ 관심목록에 추가했습니다');}
     updateWishBadge();
   }
 }
@@ -2193,13 +2193,13 @@ function updateWishBadge(){
   badge.textContent=cnt;
 }
 function goWish(){
-  if(wishSet.size===0){showToast('찜한 학원이 없어요 ❤️');return;}
+  if(wishSet.size===0){showToast('관심 학원이 없어요 ❤️');return;}
   go('page-wish');
 }
 function renderWishList(){
   const el=document.getElementById('wish-list');
   if(wishSet.size===0){
-    el.innerHTML=`<div class="wish-empty"><div class="wi-ico">🤍</div><p>아직 찜한 학원이 없어요</p><button onclick="go('page-home')">학원 둘러보기</button></div>`;
+    el.innerHTML=`<div class="wish-empty"><div class="wi-ico">🤍</div><p>아직 관심 학원이 없어요</p><button onclick="go('page-home')">학원 둘러보기</button></div>`;
     return;
   }
   el.innerHTML='';
@@ -2242,7 +2242,7 @@ function removeWish(id,btn){
   wishSet.delete(id);
   updateWishBadge();
   renderWishList();
-  showToast('찜을 취소했습니다');
+  showToast('관심을 취소했습니다');
   render();
 }
 
@@ -2298,6 +2298,22 @@ function openSheet(id){
   if(a.plan==='premium'&&a.blog){cta.textContent='블로그 / 상세보기';cta.className='sh-cta o';}
   else if(a.plan==='basic'){cta.textContent='학원 문의하기';cta.className='sh-cta';}
   else{cta.textContent='정보 준비 중';cta.className='sh-cta';}
+  // 관심수 표시 (전체 유저 중 해당 학원을 관심등록한 수 — 로컬 wishSet 기준)
+  const wishCountEl = document.getElementById('sh-wish-count');
+  if(wishCountEl){
+    // Supabase에서 실제 관심수 조회
+    if(sb){
+      sb.from('wishes').select('id', { count: 'exact' }).eq('academy_id', a.id)
+        .then(({ count }) => {
+          if(wishCountEl) wishCountEl.textContent = count || 0;
+        }).catch(()=>{
+          wishCountEl.textContent = wishSet.has(a.id) ? 1 : 0;
+        });
+    } else {
+      wishCountEl.textContent = wishSet.has(a.id) ? 1 : 0;
+    }
+  }
+
   // 비로그인 시 블러 처리
   const blurContent = document.getElementById('sh-blur-content');
   const blurOverlay = document.getElementById('sh-blur-overlay');
