@@ -1309,7 +1309,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </select>
     </div>
     <div class="fg"><label>관심 지역</label>
-      <select><option value="">선택</option><option>천안시 서북구</option><option>천안시 동남구</option><option>아산시</option><option>세종시</option><option>공주시</option><option>청주시</option></select>
+      <select id="user-region"><option value="">선택</option><option>천안시</option><option>아산시</option></select>
     </div>
     <button class="sub-btn blue" onclick="completeUserSignup()">무료로 가입하기</button>
     <div class="divr"><hr><span>또는</span><hr></div>
@@ -1335,7 +1335,8 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <div class="pc-feats">
         <div class="pf"><span class="ck">✅</span>지도에 핀 노출 (회색 핀)</div>
         <div class="pf"><span class="ck">✅</span>학원명·과목·위치 표시</div>
-        <div class="pf off"><span class="ck">❌</span>소식·공지·사진 등록 불가</div>
+        <div class="pf"><span class="ck">✅</span>프로필 사진 1장 등록</div>
+        <div class="pf off"><span class="ck">❌</span>소식·공지 등록 불가</div>
         <div class="pf off"><span class="ck">❌</span>SNS 연동 불가</div>
       </div>
       <button class="pc-btn gr" onclick="selectPlan('free');go('page-biz-signup')">무료로 시작하기</button>
@@ -1432,6 +1433,16 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
   <div class="db-sec">
     <div class="db-sh">📋 학원 정보 <button onclick="openModal('info')">수정</button></div>
+    <div class="db-profile-upload" id="db-profile-wrap" style="padding:12px 0;display:flex;align-items:center;gap:12px;">
+      <div id="db-profile-preview" style="width:64px;height:64px;border-radius:12px;background:#F4F6FB;border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;">🏫</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:4px;">프로필 사진</div>
+        <label style="display:inline-block;padding:7px 14px;background:#176ED3;color:#fff;border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;">사진 변경
+          <input type="file" id="profile-img-input" accept="image/*" style="display:none;" onchange="previewProfileImg(this)">
+        </label>
+        <div style="font-size:11px;color:#8A94A6;margin-top:4px;">모든 플랜 가능 · 최대 2MB</div>
+      </div>
+    </div>
     <div class="info-card">
       <div class="ir"><span class="ir-l">학원명</span><span class="ir-v" id="di-name">내 학원</span></div>
       <div class="ir"><span class="ir-l">과목</span><span class="ir-v" id="di-subj">영어</span></div>
@@ -1515,8 +1526,14 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </div>
     </div>
 
-    <!-- 필터 탭 -->
+    <!-- 섹션 탭 -->
     <div style="display:flex;gap:8px;margin-bottom:16px;">
+      <button class="admin-tab on" id="asec-academy" onclick="adminSection('academy')">🏫 학원 승인</button>
+      <button class="admin-tab" id="asec-review" onclick="adminSection('review')">💬 리뷰 승인</button>
+    </div>
+
+    <!-- 학원 필터 탭 -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;" id="academy-filter-tabs">
       <button class="admin-tab on" id="atab-pending" onclick="adminFilter('pending')">⏳ 대기중</button>
       <button class="admin-tab" id="atab-approved" onclick="adminFilter('approved')">✅ 승인됨</button>
       <button class="admin-tab" id="atab-all" onclick="adminFilter('all')">전체</button>
@@ -2322,7 +2339,7 @@ function setStarRating(n){
   document.querySelectorAll('#star-input span').forEach((s,i)=>{ s.classList.toggle('on', i<n); });
 }
 
-function submitReview(){
+async function submitReview(){
   if(!currentRating){ showToast('별점을 선택해주세요'); return; }
   const nick = document.getElementById('rv-nick').value.trim() || '익명';
   const body = document.getElementById('rv-body').value.trim();
@@ -2334,17 +2351,53 @@ function submitReview(){
   const today = new Date().toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace('. ','.');
 
   if(editingReviewIdx !== null){
-    // 수정 모드
+    // 수정 모드 (로컬만)
     a.reviews[editingReviewIdx] = { nick, stars: currentRating, body, date: today, mine: true };
     showToast('✅ 리뷰가 수정됐습니다!');
+    closeModal('review');
+    openSheet(a.id);
+    render();
   } else {
-    // 신규 등록
-    a.reviews.unshift({ nick, stars: currentRating, body, date: today, mine: true });
-    showToast('✅ 리뷰가 등록됐습니다!');
+    // 신규 등록 → Supabase에 블라인드(is_approved:false)로 저장
+    if(sb){
+      try {
+        const { error } = await sb.from('reviews').insert({
+          academy_id: a.id,
+          user_id: currentUser?.id || null,
+          nickname: nick,
+          stars: currentRating,
+          body: body,
+          is_approved: false  // 관리자 승인 전까지 블라인드
+        });
+        if(error) throw error;
+        showToast('✅ 리뷰가 접수됐습니다! 검토 후 게시됩니다 😊');
+      } catch(e){
+        showToast('리뷰 저장 실패: ' + e.message);
+      }
+    } else {
+      // 오프라인 fallback
+      a.reviews.unshift({ nick, stars: currentRating, body, date: today, mine: true });
+      showToast('✅ 리뷰가 등록됐습니다!');
+    }
+    closeModal('review');
+    openSheet(a.id);
+    render();
   }
-  closeModal('review');
-  openSheet(a.id);
-  render();
+}
+
+
+/* ════ 프로필 이미지 업로드 ════ */
+function previewProfileImg(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 2 * 1024 * 1024){ showToast('2MB 이하 이미지만 가능해요'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e){
+    const preview = document.getElementById('db-profile-preview');
+    preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
+    showToast('✅ 사진이 변경됐어요! (저장 버튼을 눌러 적용)');
+  };
+  reader.readAsDataURL(file);
 }
 
 /* ════ PLAN ════ */
@@ -2495,6 +2548,73 @@ async function completeTutorSignup(){
 
 
 /* ════ 관리자 페이지 ════ */
+
+/* ════ 관리자 섹션 전환 ════ */
+function adminSection(sec){
+  ['academy','review'].forEach(s => {
+    document.getElementById('asec-' + s)?.classList.toggle('on', s === sec);
+  });
+  const filterTabs = document.getElementById('academy-filter-tabs');
+  if(sec === 'academy'){
+    filterTabs.style.display = 'flex';
+    loadAdminData();
+  } else {
+    filterTabs.style.display = 'none';
+    loadAdminReviews();
+  }
+}
+
+async function loadAdminReviews(){
+  if(!sb) return;
+  const list = document.getElementById('admin-list');
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:#8A94A6;">로딩 중...</div>';
+  try {
+    const { data, error } = await sb
+      .from('reviews')
+      .select('*, academies(name)')
+      .eq('is_approved', false)
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    if(!data?.length){
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:#8A94A6;"><div style="font-size:32px;margin-bottom:12px;">📭</div><div>승인 대기 리뷰가 없어요</div></div>';
+      return;
+    }
+    list.innerHTML = data.map(r => `
+      <div class="admin-card pending">
+        <div class="admin-card-top">
+          <div>
+            <div class="admin-name">${r.academies?.name || '학원명 없음'}</div>
+            <div style="font-size:12px;color:#6B7280;margin-top:2px;">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)} · ${r.nickname || '익명'}</div>
+          </div>
+          <span class="admin-status pending">⏳ 대기</span>
+        </div>
+        <div style="font-size:13px;color:#374151;padding:8px 0;border-top:1px solid #F0F1F6;margin-top:6px;">${r.body}</div>
+        <div class="admin-btns">
+          <button class="admin-btn-approve" onclick="approveReview('${r.id}')">✅ 승인 · 공개</button>
+          <button class="admin-btn-reject" onclick="rejectReview('${r.id}')">❌ 삭제</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e){
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:#EF4444;">로딩 실패: ' + e.message + '</div>';
+  }
+}
+
+async function approveReview(id){
+  const { error } = await sb.from('reviews').update({ is_approved: true }).eq('id', id);
+  if(error){ showToast('오류: ' + error.message); return; }
+  showToast('✅ 리뷰 공개됐습니다!');
+  loadAdminReviews();
+}
+
+async function rejectReview(id){
+  if(!confirm('이 리뷰를 삭제할까요?')) return;
+  const { error } = await sb.from('reviews').delete().eq('id', id);
+  if(error){ showToast('오류: ' + error.message); return; }
+  showToast('🗑 리뷰 삭제됐습니다');
+  loadAdminReviews();
+}
+
 const ADMIN_EMAIL = 'gksdkfma22@gmail.com'; // 관리자 이메일
 let adminCurrentFilter = 'pending';
 let adminData = [];
