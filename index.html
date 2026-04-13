@@ -1944,7 +1944,7 @@ function makeKakaoMarker(a){
   const bgColor = colors[cls];
   const icon  = ICONS[a.subject]||'📚';
   // 핀 HTML — onclick 직접 연결
-  const content = `<div onclick="openSheet(${a.id})" style="
+  const content = `<div onclick="openSheet('${a.id}')" style="
     cursor:pointer;display:flex;flex-direction:column;align-items:center;
   ">
     <div style="
@@ -2034,7 +2034,7 @@ function render(){
               ?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`
               :`<div class="ac-stars"><span class="stars-cnt" style="font-size:11px;color:#C0C8D8">리뷰 없음</span></div>`}
           </div>
-          <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart(${a.id},this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
+          <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart('${a.id}',this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
         </div>
       </div>
       <div class="ac-foot">
@@ -2042,7 +2042,7 @@ function render(){
           <div class="ac-price">월 ${a.price.toLocaleString('ko-KR')}원</div>
           <div class="ac-dist">${a.distKm}km 거리</div>
         </div>
-        <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="openSheet(${a.id})">상세보기</button>
+        <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="openSheet('${a.id}')">상세보기</button>
       </div>`;
     listEl.appendChild(el);
   });
@@ -2189,7 +2189,7 @@ function renderWishList(){
             ${gradeBadgesHtml(a.grade)}
             ${a.reviews.length?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`:''}
           </div>
-          <button class="heart-btn liked" onclick="removeWish(${a.id},this)" style="color:#F43F5E">❤️</button>
+          <button class="heart-btn liked" onclick="removeWish('${a.id}',this)" style="color:#F43F5E">❤️</button>
         </div>
       </div>
       <div class="ac-foot">
@@ -2197,7 +2197,7 @@ function renderWishList(){
           <div class="ac-price">월 ${a.price.toLocaleString('ko-KR')}원</div>
           <div class="ac-dist">${km(userLat,userLng,a.lat,a.lng)}km 거리</div>
         </div>
-        <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="go('page-home');setTimeout(()=>openSheet(${a.id}),200)">상세보기</button>
+        <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="go('page-home');setTimeout(()=>openSheet('${a.id}'),200)">상세보기</button>
       </div>`;
     el.appendChild(div);
   });
