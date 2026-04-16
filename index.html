@@ -9,6 +9,8 @@
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6"></script>
 <!-- 토스페이먼츠 SDK v1 -->
 <script src="https://js.tosspayments.com/v1/payment"></script>
+<!-- Supabase SDK (직접 로드) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
 <style>
 :root{
   --blue:#0A3D91;--blue2:#1658D6;--blue3:#E8F0FD;
@@ -90,6 +92,13 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .admin-btn-detail{padding:10px 16px;border-radius:10px;border:1.5px solid #E0E4EF;
   background:#fff;color:#6B7280;font-size:13px;font-weight:700;
   cursor:pointer;font-family:inherit;}
+
+
+/* ══ 리뷰 뱃지 ══ */
+.rv-badge{display:inline-flex;align-items:center;gap:3px;
+  font-size:10px;font-weight:800;padding:2px 7px;border-radius:10px;margin-bottom:4px;}
+.rv-badge.normal{background:#F4F6FB;color:#6B7280;}
+.rv-badge.verified{background:#EEF5FF;color:#176ED3;}
 
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);
@@ -858,7 +867,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         <div class="sh-rcnt" id="sh-rcnt"></div>
       </div>
     </div>
-    <!-- 비로그인 블러 영역 -->
+    <!-- ① 학원정보 블러 영역 (비로그인 시) -->
     <div class="blur-wrap" id="sh-blur-wrap">
       <div class="blur-content" id="sh-blur-content">
         <div class="sh-grid">
@@ -867,15 +876,12 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
           <div class="sh-cell"><div class="sh-lbl">거리</div><div class="sh-val" id="sh-dist"></div></div>
           <div class="sh-cell"><div class="sh-lbl">위치</div><div class="sh-val" id="sh-city" style="font-size:12px"></div></div>
         </div>
-        <!-- 학급 뱃지 -->
         <div id="sh-grade-badges" style="padding:0 20px;margin-bottom:14px;"></div>
-        <div class="sh-sec-title">💬 학부모 리뷰 <button onclick="openReviewModal()">리뷰 작성</button></div>
-        <div id="sh-reviews"></div>
         <div class="sh-cta-wrap">
           <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
         </div>
       </div>
-      <!-- 블러 오버레이 (비로그인 시 표시) -->
+      <!-- 비로그인 오버레이 -->
       <div class="blur-overlay" id="sh-blur-overlay" style="display:none;">
         <div class="blur-overlay-box">
           <div class="bl-ico">🔒</div>
@@ -883,6 +889,26 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
           <p>수강료·연락처·상세 정보는<br>가입 회원에게만 공개됩니다</p>
           <button class="bl-btn" onclick="closeSheet(event);go('page-user-signup')">무료 가입하기</button>
           <button class="bl-btn2" onclick="closeSheet(event);openLoginModal()">이미 계정이 있어요</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 리뷰 섹션 (로그인+리뷰 작성 시 열람 가능) -->
+    <div class="sh-sec-title">
+      💬 학부모 리뷰
+      <button id="sh-review-write-btn" onclick="openReviewModal()" style="display:none;">리뷰 작성</button>
+    </div>
+    <div class="blur-wrap" id="sh-review-blur-wrap">
+      <div class="blur-content" id="sh-review-content">
+        <div id="sh-reviews"></div>
+      </div>
+      <!-- 리뷰 블러 오버레이 (로그인했지만 리뷰 없을 때) -->
+      <div class="blur-overlay" id="sh-review-overlay" style="display:none;">
+        <div class="blur-overlay-box">
+          <div class="bl-ico">✍️</div>
+          <h4>리뷰 작성 후 열람 가능</h4>
+          <p>다른 학부모의 리뷰를 보려면<br>먼저 리뷰 1개를 작성해주세요</p>
+          <button class="bl-btn" onclick="document.getElementById('sh-review-overlay').style.display='none';openReviewModal()">리뷰 작성하기</button>
         </div>
       </div>
     </div>
@@ -905,6 +931,23 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     </div>
     <div class="mfg"><label>닉네임</label><input type="text" id="rv-nick" placeholder="예) 천안맘 김○○"></div>
     <div class="mfg"><label>리뷰 내용</label><textarea id="rv-body" placeholder="학원에 대한 솔직한 후기를 남겨주세요…"></textarea></div>
+    <!-- 영수증 첨부 -->
+    <div class="mfg">
+      <label>영수증·결제내역 첨부 <span style="font-size:11px;color:#8A94A6;">(선택 — 첨부 시 인증 뱃지 부여)</span></label>
+      <input type="file" id="rv-receipt" accept="image/*,.pdf"
+        style="padding:8px;border:1.5px dashed var(--border);border-radius:10px;width:100%;font-size:13px;">
+      <div class="hint">첨부하면 ✅ 인증리뷰 뱃지가 부여됩니다</div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:4px;">
+      <div style="flex:1;padding:10px;border-radius:10px;background:#F4F6FB;font-size:12px;text-align:center;">
+        <div style="font-weight:800;color:#374151;">📝 일반리뷰</div>
+        <div style="color:#8A94A6;margin-top:2px;">영수증 없이 작성</div>
+      </div>
+      <div style="flex:1;padding:10px;border-radius:10px;background:#EEF5FF;font-size:12px;text-align:center;">
+        <div style="font-weight:800;color:#176ED3;">✅ 인증리뷰</div>
+        <div style="color:#8A94A6;margin-top:2px;">영수증 첨부 시</div>
+      </div>
+    </div>
     <div class="modal-btns">
       <button class="mb-cancel" onclick="closeModal('review')">취소</button>
       <button class="mb-save" id="rv-submit-btn" onclick="submitReview()">등록</button>
@@ -2201,11 +2244,14 @@ function toggleHeartSheet(){
 }
 
 function updateWishCount(id){
-  // 현재 열린 시트의 관심수 업데이트
   const el = document.getElementById('sh-wish-count');
   if(!el || !sheetAcademy || sheetAcademy.id !== id) return;
   const current = parseInt(el.textContent) || 0;
-  el.textContent = wishSet.has(id) ? current + 1 : Math.max(0, current - 1);
+  const next = wishSet.has(id) ? current + 1 : Math.max(0, current - 1);
+  el.textContent = next;
+  // DATA에도 반영
+  const a = DATA.find(x => x.id === id);
+  if(a) a.wish_count = next;
 }
 function updateWishBadge(){
   const cnt=wishSet.size;
@@ -2319,23 +2365,15 @@ function openSheet(id){
   if(a.plan==='premium'&&a.blog){cta.textContent='블로그 / 상세보기';cta.className='sh-cta o';}
   else if(a.plan==='basic'){cta.textContent='학원 문의하기';cta.className='sh-cta';}
   else{cta.textContent='정보 준비 중';cta.className='sh-cta';}
-  // 관심수 표시 (전체 유저 중 해당 학원을 관심등록한 수 — 로컬 wishSet 기준)
+  // 관심수 표시
   const wishCountEl = document.getElementById('sh-wish-count');
   if(wishCountEl){
-    // Supabase에서 실제 관심수 조회
-    if(sb){
-      sb.from('wishes').select('id', { count: 'exact' }).eq('academy_id', a.id)
-        .then(({ count }) => {
-          if(wishCountEl) wishCountEl.textContent = count || 0;
-        }).catch(()=>{
-          wishCountEl.textContent = wishSet.has(a.id) ? 1 : 0;
-        });
-    } else {
-      wishCountEl.textContent = wishSet.has(a.id) ? 1 : 0;
-    }
+    // academy 객체에 wish_count 있으면 사용, 없으면 로컬 기준
+    const baseCount = a.wish_count || 0;
+    wishCountEl.textContent = baseCount;
   }
 
-  // 비로그인 시 블러 처리
+  // ① 비로그인 → 학원정보 블러
   const blurContent = document.getElementById('sh-blur-content');
   const blurOverlay = document.getElementById('sh-blur-overlay');
   if(!currentUser){
@@ -2344,6 +2382,30 @@ function openSheet(id){
   } else {
     blurContent.classList.remove('blurred');
     blurOverlay.style.display = 'none';
+  }
+
+  // ② 로그인했지만 리뷰 0개 → 리뷰 섹션 블러
+  const reviewContent = document.getElementById('sh-review-content');
+  const reviewOverlay = document.getElementById('sh-review-overlay');
+  const reviewWriteBtn = document.getElementById('sh-review-write-btn');
+
+  if(!currentUser){
+    // 비로그인: 리뷰도 블러
+    if(reviewContent) reviewContent.classList.add('blurred');
+    if(reviewOverlay) reviewOverlay.style.display = 'none'; // 학원정보 팝업만 표시
+    if(reviewWriteBtn) reviewWriteBtn.style.display = 'none';
+  } else {
+    // 로그인: 리뷰 작성 여부 확인
+    if(reviewWriteBtn) reviewWriteBtn.style.display = 'inline-block';
+    checkUserReviewCount().then(hasReview => {
+      if(hasReview){
+        if(reviewContent) reviewContent.classList.remove('blurred');
+        if(reviewOverlay) reviewOverlay.style.display = 'none';
+      } else {
+        if(reviewContent) reviewContent.classList.add('blurred');
+        if(reviewOverlay) reviewOverlay.style.display = 'flex';
+      }
+    });
   }
 
   document.getElementById('sh-ov').classList.add('open');
@@ -2397,42 +2459,49 @@ function setStarRating(n){
 
 async function submitReview(){
   if(!currentRating){ showToast('별점을 선택해주세요'); return; }
-  const nick = document.getElementById('rv-nick').value.trim() || '익명';
-  const body = document.getElementById('rv-body').value.trim();
+  const nick    = document.getElementById('rv-nick').value.trim() || '익명';
+  const body    = document.getElementById('rv-body').value.trim();
+  const receipt = document.getElementById('rv-receipt')?.files[0] || null;
   if(!body){ showToast('리뷰 내용을 입력해주세요'); return; }
   if(!sheetAcademy){ closeModal('review'); return; }
   const a = DATA.find(x=>x.id===sheetAcademy.id);
   if(!a) return;
 
+  const isVerified = !!receipt; // 영수증 첨부 여부
   const today = new Date().toLocaleDateString('ko-KR',{month:'2-digit',day:'2-digit'}).replace('. ','.');
 
   if(editingReviewIdx !== null){
-    // 수정 모드 (로컬만)
-    a.reviews[editingReviewIdx] = { nick, stars: currentRating, body, date: today, mine: true };
+    a.reviews[editingReviewIdx] = { nick, stars: currentRating, body, date: today, mine: true, verified: isVerified };
     showToast('✅ 리뷰가 수정됐습니다!');
     closeModal('review');
     openSheet(a.id);
     render();
   } else {
-    // 신규 등록 → Supabase에 블라인드(is_approved:false)로 저장
     if(sb){
       try {
         const { error } = await sb.from('reviews').insert({
-          academy_id: a.id,
-          user_id: currentUser?.id || null,
-          nickname: nick,
-          stars: currentRating,
-          body: body,
-          is_approved: false  // 관리자 승인 전까지 블라인드
+          academy_id:  a.id,
+          user_id:     currentUser?.id || null,
+          nickname:    nick,
+          stars:       currentRating,
+          body:        body,
+          is_approved: false,
+          is_verified: isVerified, // 인증리뷰 여부
         });
         if(error) throw error;
-        showToast('✅ 리뷰가 접수됐습니다! 검토 후 게시됩니다 😊');
+        resetReviewCache(); // 리뷰 작성 완료 → 캐시 초기화
+        _userHasReview = true; // 즉시 반영
+        showToast(isVerified ? '✅ 인증리뷰 접수! 검토 후 게시됩니다' : '✅ 리뷰 접수! 검토 후 게시됩니다');
+        // 리뷰 블러 즉시 해제
+        const rc = document.getElementById('sh-review-content');
+        const ro = document.getElementById('sh-review-overlay');
+        if(rc) rc.classList.remove('blurred');
+        if(ro) ro.style.display = 'none';
       } catch(e){
         showToast('리뷰 저장 실패: ' + e.message);
       }
     } else {
-      // 오프라인 fallback
-      a.reviews.unshift({ nick, stars: currentRating, body, date: today, mine: true });
+      a.reviews.unshift({ nick, stars: currentRating, body, date: today, mine: true, verified: isVerified });
       showToast('✅ 리뷰가 등록됐습니다!');
     }
     closeModal('review');
@@ -2661,6 +2730,26 @@ async function completeTutorSignup(){
 }
 
 
+
+/* ════ 리뷰 작성 여부 확인 ════ */
+let _userHasReview = null; // 캐시
+
+async function checkUserReviewCount(){
+  if(!currentUser) return false;
+  if(_userHasReview !== null) return _userHasReview;
+  if(!sb) return false;
+  try {
+    const { count } = await sb.from('reviews')
+      .select('id', { count: 'exact', head: true })
+      .eq('user_id', currentUser.id);
+    _userHasReview = (count || 0) > 0;
+    return _userHasReview;
+  } catch(e){ return false; }
+}
+
+// 리뷰 작성 완료 시 캐시 초기화
+function resetReviewCache(){ _userHasReview = null; }
+
 /* ════ 관리자 페이지 ════ */
 
 /* ════ 관리자 섹션 전환 ════ */
@@ -2702,7 +2791,7 @@ async function loadAdminReviews(){
           </div>
           <span class="admin-status pending">⏳ 대기</span>
         </div>
-        <div style="font-size:13px;color:#374151;padding:8px 0;border-top:1px solid #F0F1F6;margin-top:6px;">${r.body}</div>
+        <div style="margin-top:4px;">${r.is_verified ? '<span class="rv-badge verified">✅ 인증리뷰</span>' : '<span class="rv-badge normal">📝 일반리뷰</span>'}</div><div style="font-size:13px;color:#374151;padding:8px 0;border-top:1px solid #F0F1F6;margin-top:6px;">${r.body}</div>
         <div class="admin-btns">
           <button class="admin-btn-approve" onclick="approveReview('${r.id}')">✅ 승인 · 공개</button>
           <button class="admin-btn-reject" onclick="rejectReview('${r.id}')">❌ 삭제</button>
