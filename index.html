@@ -861,7 +861,10 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         <div class="sh-ico" id="sh-ico"></div>
         <div style="flex:1">
           <div class="sh-nm" id="sh-nm"></div>
+          <div style="display:flex;gap:6px;align-items:center;">
           <div class="sh-plan-tag" id="sh-plan-tag"></div>
+          <span id="sh-claimed-badge" style="display:none;background:#10B981;color:#fff;font-size:10px;font-weight:800;padding:2px 8px;border-radius:10px;">✅ 인증완료</span>
+        </div>
         </div>
         <div style="display:flex;flex-direction:column;align-items:center;gap:2px;">
           <button class="sh-heart" id="sh-heart" onclick="toggleHeartSheet()">🤍</button>
@@ -1706,6 +1709,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div style="display:flex;gap:8px;margin-bottom:16px;">
       <button class="admin-tab on" id="asec-academy" onclick="adminSection('academy')">🏫 학원 승인</button>
       <button class="admin-tab" id="asec-review" onclick="adminSection('review')">💬 리뷰 승인</button>
+      <button class="admin-tab" id="asec-claim" onclick="adminSection('claim')">🔑 소유권 신청</button>
     </div>
 
     <!-- 학원 필터 탭 -->
@@ -1930,6 +1934,8 @@ async function loadAcademiesFromDB(){
       blog: r.blog||'', image: r.image||'',
       lat: r.lat||0, lng: r.lng||0,
       reviews: (r.reviews||[]).map(rv=>({ nick:rv.nickname||'익명', stars:rv.stars||5, body:rv.body||'', date:rv.created_at?.slice(5,10)||'', mine: rv.user_id===currentUser?.id })),
+      claimed: !!r.owner_id,  // 업체가 소유권 주장했는지
+      owner_id: r.owner_id || null,
     })).filter(r=>r.name&&r.lat&&r.lng);
     return DATA.length > 0;
   } catch(e){ return false; }
@@ -2315,9 +2321,11 @@ function render(){
     const pos    = new kakao.maps.LatLng(a.lat, a.lng);
 
     // SVG 마커 이미지
+    const claimedMark = a.claimed ? '<circle cx="30" cy="6" r="6" fill="#10B981" stroke="white" stroke-width="1.5"/><text x="30" y="10" text-anchor="middle" font-size="8" fill="white">✓</text>' : '';
     const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="36" height="44" viewBox="0 0 36 44">
       <path d="M18 0C8 0 0 8 0 18c0 12 18 26 18 26S36 30 36 18C36 8 28 0 18 0z" fill="${color}" stroke="white" stroke-width="2"/>
       <text x="18" y="23" text-anchor="middle" font-size="14" font-family="serif">${icon}</text>
+      ${claimedMark}
     </svg>`;
     const blob = new Blob([svg], {type:'image/svg+xml'});
     const url  = URL.createObjectURL(blob);
@@ -2536,6 +2544,29 @@ function openSheet(id){
   const pt=document.getElementById('sh-plan-tag');
   pt.textContent=PLAN_LABELS[a.plan]||'';
   pt.className='sh-plan-tag '+(a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free');
+
+  // 인증완료 뱃지
+  const claimedBadge = document.getElementById('sh-claimed-badge');
+  if(claimedBadge) claimedBadge.style.display = a.claimed ? 'inline-flex' : 'none';
+
+  // Claim 버튼 (로그인했고, 미인증 학원이고, 본인 학원이 아닐 때)
+  let claimBtn = document.getElementById('sh-claim-btn');
+  if(!claimBtn){
+    claimBtn = document.createElement('div');
+    claimBtn.id = 'sh-claim-btn';
+    claimBtn.style.cssText = 'padding:10px 20px;';
+    document.getElementById('sh-grade-badges').after(claimBtn);
+  }
+  if(currentUser && !a.claimed){
+    claimBtn.innerHTML = `<button onclick="claimAcademy('${a.id}')" style="
+      width:100%;padding:11px;border-radius:12px;border:1.5px solid #10B981;
+      background:#ECFDF5;color:#065F46;font-size:13px;font-weight:800;
+      cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;">
+      🏫 이 학원 원장님이신가요? 소유권 신청하기
+    </button>`;
+  } else {
+    claimBtn.innerHTML = '';
+  }
   // stars
   document.getElementById('sh-stars').textContent=avg>0?starsHtml(avg):'☆☆☆☆☆';
   document.getElementById('sh-rat').textContent=avg>0?avg:'';
@@ -2583,10 +2614,12 @@ function openSheet(id){
     wishCountEl.textContent = baseCount;
   }
 
-  // ① 비로그인 → 학원정보 블러
+  const isAdmin = currentUser?.email === ADMIN_EMAIL;
+
+  // ① 비로그인 → 학원정보 블러 (관리자 제외)
   const blurContent = document.getElementById('sh-blur-content');
   const blurOverlay = document.getElementById('sh-blur-overlay');
-  if(!currentUser){
+  if(!currentUser && !isAdmin){
     blurContent.classList.add('blurred');
     blurOverlay.style.display = 'flex';
   } else {
@@ -2594,18 +2627,22 @@ function openSheet(id){
     blurOverlay.style.display = 'none';
   }
 
-  // ② 로그인했지만 리뷰 0개 → 리뷰 섹션 블러
+  // ② 리뷰 블러 (관리자는 항상 열람 가능)
   const reviewContent = document.getElementById('sh-review-content');
   const reviewOverlay = document.getElementById('sh-review-overlay');
   const reviewWriteBtn = document.getElementById('sh-review-write-btn');
 
-  if(!currentUser){
-    // 비로그인: 리뷰도 블러
+  if(isAdmin){
+    // 관리자: 모든 블러 해제
+    if(blurContent) blurContent.classList.remove('blurred');
+    if(reviewContent) reviewContent.classList.remove('blurred');
+    if(reviewOverlay) reviewOverlay.style.display = 'none';
+    if(reviewWriteBtn) reviewWriteBtn.style.display = 'none';
+  } else if(!currentUser){
     if(reviewContent) reviewContent.classList.add('blurred');
-    if(reviewOverlay) reviewOverlay.style.display = 'none'; // 학원정보 팝업만 표시
+    if(reviewOverlay) reviewOverlay.style.display = 'none';
     if(reviewWriteBtn) reviewWriteBtn.style.display = 'none';
   } else {
-    // 로그인: 리뷰 작성 여부 확인
     if(reviewWriteBtn) reviewWriteBtn.style.display = 'inline-block';
     checkUserReviewCount().then(hasReview => {
       if(hasReview){
@@ -3067,20 +3104,122 @@ function goMySchedule(){
   `).join('');
 }
 
+
+/* ════ 학원 소유권 주장 (Claim) ════ */
+async function claimAcademy(academyId){
+  if(!currentUser){ openLoginModal(); return; }
+  if(!sb){ showToast('서버 연결 중...'); return; }
+
+  const a = DATA.find(x => x.id === academyId);
+  if(!a){ showToast('학원 정보를 찾을 수 없어요'); return; }
+
+  if(!confirm(`"${a.name}" 학원의 원장님이신가요?\n소유권 신청 후 관리자 승인이 필요합니다.`)) return;
+
+  try {
+    // claim_requests 테이블에 신청 저장
+    const { error } = await sb.from('claim_requests').insert({
+      academy_id:  academyId,
+      user_id:     currentUser.id,
+      user_email:  currentUser.email,
+      academy_name: a.name,
+      status:      'pending',
+    });
+    if(error) throw error;
+    showToast('✅ 소유권 신청 완료! 관리자 승인 후 대시보드가 활성화됩니다.');
+    // 버튼 업데이트
+    const btn = document.getElementById('sh-claim-btn');
+    if(btn) btn.innerHTML = '<div style="padding:8px 0;font-size:12px;color:#8A94A6;text-align:center;">⏳ 소유권 신청 완료 · 승인 대기중</div>';
+  } catch(e){
+    if(e.message?.includes('duplicate') || e.message?.includes('unique')){
+      showToast('이미 신청하셨어요. 승인을 기다려주세요.');
+    } else {
+      showToast('오류: ' + (e.message || '다시 시도해주세요'));
+    }
+  }
+}
+
+/* ════ 관리자: Claim 승인 ════ */
+async function loadClaimRequests(){
+  if(!sb) return;
+  const list = document.getElementById('admin-list');
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:#8A94A6;">로딩 중...</div>';
+  try {
+    const { data, error } = await sb
+      .from('claim_requests')
+      .select('*')
+      .eq('status', 'pending')
+      .order('created_at', { ascending: false });
+    if(error) throw error;
+    if(!data?.length){
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:#8A94A6;"><div style="font-size:32px;margin-bottom:12px;">📭</div><div>소유권 신청이 없어요</div></div>';
+      return;
+    }
+    list.innerHTML = data.map(r => `
+      <div class="admin-card pending">
+        <div class="admin-card-top">
+          <div class="admin-name">${r.academy_name}</div>
+          <span class="admin-status pending">⏳ 대기</span>
+        </div>
+        <div class="admin-info">
+          📧 <span>${r.user_email}</span><br>
+          📅 신청일: <span>${r.created_at?.slice(0,10)}</span>
+        </div>
+        <div class="admin-btns">
+          <button class="admin-btn-approve" onclick="approveClaim('${r.id}','${r.academy_id}','${r.user_id}')">✅ 승인</button>
+          <button class="admin-btn-reject" onclick="rejectClaim('${r.id}')">❌ 거절</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e){
+    list.innerHTML = `<div style="text-align:center;padding:30px;color:#EF4444;">로딩 실패: ${e.message}</div>`;
+  }
+}
+
+async function approveClaim(claimId, academyId, userId){
+  if(!confirm('소유권을 승인할까요?')) return;
+  try {
+    // 1. 학원에 owner_id 연결
+    const { error: e1 } = await sb.from('academies')
+      .update({ owner_id: userId, is_active: true })
+      .eq('id', academyId);
+    if(e1) throw e1;
+    // 2. 신청 상태 업데이트
+    const { error: e2 } = await sb.from('claim_requests')
+      .update({ status: 'approved' })
+      .eq('id', claimId);
+    if(e2) throw e2;
+    showToast('✅ 소유권 승인 완료!');
+    loadClaimRequests();
+  } catch(e){ showToast('오류: ' + e.message); }
+}
+
+async function rejectClaim(claimId){
+  if(!confirm('소유권 신청을 거절할까요?')) return;
+  const { error } = await sb.from('claim_requests')
+    .update({ status: 'rejected' })
+    .eq('id', claimId);
+  if(error){ showToast('오류: ' + error.message); return; }
+  showToast('❌ 거절됐습니다');
+  loadClaimRequests();
+}
+
 /* ════ 관리자 페이지 ════ */
 
 /* ════ 관리자 섹션 전환 ════ */
 function adminSection(sec){
-  ['academy','review'].forEach(s => {
+  ['academy','review','claim'].forEach(s => {
     document.getElementById('asec-' + s)?.classList.toggle('on', s === sec);
   });
   const filterTabs = document.getElementById('academy-filter-tabs');
   if(sec === 'academy'){
     filterTabs.style.display = 'flex';
     loadAdminData();
-  } else {
+  } else if(sec === 'review'){
     filterTabs.style.display = 'none';
     loadAdminReviews();
+  } else {
+    filterTabs.style.display = 'none';
+    loadClaimRequests();
   }
 }
 
