@@ -839,7 +839,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <button class="nb nb-wish" id="wish-nav-btn" onclick="goWish()">
       <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>관심목록<span class="nb-badge" id="wish-badge" style="display:none">0</span>
     </button>
-    <button class="nb nb-my" onclick="go('page-type')">
+    <button class="nb nb-my" onclick="goMyPage()">
       <span class="nb-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>MY
     </button>
   </nav>
@@ -1149,7 +1149,110 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <button class="nb on nb-wish">
       <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>관심목록
     </button>
-    <button class="nb nb-my" onclick="go('page-type')">
+    <button class="nb nb-my" onclick="goMyPage()">
+      <span class="nb-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>MY
+    </button>
+  </nav>
+</div>
+
+<!-- ════════════════ MY 페이지 ════════════════ -->
+<div class="page" id="page-my">
+  <div class="hdr" style="background:#176ED3;">
+    <div class="logo" onclick="go('page-home')">
+      <img src="logo.png" alt="에듀픽" style="height:36px;width:auto;object-fit:contain;"
+        onerror="this.style.display='none';this.nextElementSibling.style.display='block'">
+      <span class="logo-text-kr" style="display:none;font-size:18px;font-weight:900;color:#fff;">에듀픽</span>
+    </div>
+    <button class="hbtn" onclick="sbLogout()">로그아웃</button>
+  </div>
+
+  <div style="padding:68px 16px 80px;">
+    <!-- 프로필 영역 -->
+    <div style="background:#fff;border-radius:16px;padding:20px;margin-bottom:16px;box-shadow:0 2px 10px rgba(0,0,0,.06);display:flex;align-items:center;gap:14px;">
+      <div style="width:56px;height:56px;border-radius:50%;background:#EEF5FF;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;">👤</div>
+      <div style="flex:1;">
+        <div id="my-email" style="font-size:15px;font-weight:800;color:#1A1A2E;">로그인 필요</div>
+        <div id="my-role" style="font-size:12px;color:#8A94A6;margin-top:2px;">일반 회원</div>
+      </div>
+      <button onclick="sbLogout()" style="padding:7px 12px;border-radius:8px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;color:#6B7280;cursor:pointer;font-family:inherit;">로그아웃</button>
+    </div>
+
+    <!-- 메뉴 리스트 -->
+    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px;">
+      <div onclick="goMyReviews()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:20px;">✍️</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">내 리뷰 관리</div>
+            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">작성한 리뷰 확인 및 삭제</div>
+          </div>
+        </div>
+        <span style="color:#C0C8D8;font-size:18px;">›</span>
+      </div>
+      <div onclick="goMySchedule()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:20px;">📅</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">학원 일정 관리</div>
+            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">관심 학원 일정 및 시간표</div>
+          </div>
+        </div>
+        <span style="color:#C0C8D8;font-size:18px;">›</span>
+      </div>
+      <div onclick="goWish()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:20px;">❤️</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">관심목록</div>
+            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">관심 등록한 학원 모아보기</div>
+          </div>
+        </div>
+        <span style="color:#C0C8D8;font-size:18px;">›</span>
+      </div>
+      <div onclick="go('page-home')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:20px;">🔍</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">학원 찾기</div>
+            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">지도에서 학원 검색</div>
+          </div>
+        </div>
+        <span style="color:#C0C8D8;font-size:18px;">›</span>
+      </div>
+    </div>
+
+    <!-- 사업자 대시보드 버튼 (사업자일 때만 표시) -->
+    <div id="my-biz-btn" style="display:none;">
+      <button onclick="go('page-dashboard')" style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#176ED3,#4A90E2);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:16px;">
+        🏫 학원 대시보드 바로가기
+      </button>
+    </div>
+
+    <!-- 내 리뷰 섹션 -->
+    <div id="my-reviews-section" style="display:none;">
+      <div style="font-size:15px;font-weight:800;margin-bottom:12px;">✍️ 내 리뷰</div>
+      <div id="my-reviews-list">
+        <div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">작성한 리뷰가 없어요</div>
+      </div>
+    </div>
+
+    <!-- 학원 일정 섹션 -->
+    <div id="my-schedule-section" style="display:none;">
+      <div style="font-size:15px;font-weight:800;margin-bottom:12px;">📅 관심 학원 시간표</div>
+      <div id="my-schedule-list">
+        <div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">관심 학원을 먼저 등록해주세요</div>
+      </div>
+    </div>
+  </div>
+
+  <nav class="bnav">
+    <button class="nb nb-home" onclick="go('page-home')">
+      <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M3 9.5L12 3l9 6.5V20a1 1 0 01-1 1H5a1 1 0 01-1-1V9.5z"/><path d="M9 21V12h6v9"/></svg></span>홈
+    </button>
+    <button class="nb nb-wish" onclick="goWish()">
+      <span class="nb-ic"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></span>관심목록<span class="nb-badge" id="wish-badge2" style="display:none">0</span>
+    </button>
+    <button class="nb on nb-my">
       <span class="nb-ic"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg></span>MY
     </button>
   </nav>
@@ -1641,15 +1744,18 @@ async function initAuth(){
 
 async function onLogin(user){
   currentUser = user;
-  // 사업자 학원 정보 불러오기
+  loadWishFromLocal(); // 유저별 관심목록 불러오기
   const { data } = await sb.from('academies').select('*').eq('owner_id', user.id).maybeSingle();
   if(data) currentAcademy = data;
   updateHeaderUI();
+  resetReviewCache();
 }
 
 function onLogout(){
   currentUser = null;
   currentAcademy = null;
+  wishSet = new Set(); // 로그아웃 시 관심목록 초기화
+  updateWishBadge();
   updateHeaderUI();
 }
 
@@ -1857,6 +1963,21 @@ let userLat=36.8151, userLng=127.1139;
 let markers=[], userMarker=null;
 let sheetAcademy=null;
 let wishSet=new Set();
+
+/* 유저별 관심목록 저장/불러오기 */
+function getWishKey(){ return currentUser ? 'wish_' + currentUser.id : 'wish_guest'; }
+function saveWishToLocal(){
+  try { localStorage.setItem(getWishKey(), JSON.stringify([...wishSet])); } catch(e){}
+}
+function loadWishFromLocal(){
+  try {
+    const key = getWishKey();
+    const saved = localStorage.getItem(key);
+    if(saved) wishSet = new Set(JSON.parse(saved));
+    else wishSet = new Set();
+    updateWishBadge();
+  } catch(e){ wishSet = new Set(); }
+}
 let selectedPlan="free";
 let currentRating=0;
 let pageHistory=[];
@@ -2210,6 +2331,7 @@ function toggleHeart(id, btn){
   }
   updateWishBadge();
   updateWishCount(id);
+  saveWishToLocal(); // 유저별 저장
   // 시트가 열려있으면 하트 동기화
   if(sheetAcademy && sheetAcademy.id===id){
     const sh=document.getElementById('sh-heart');
@@ -2749,6 +2871,102 @@ async function checkUserReviewCount(){
 
 // 리뷰 작성 완료 시 캐시 초기화
 function resetReviewCache(){ _userHasReview = null; }
+
+
+/* ════ MY 페이지 ════ */
+function goMyPage(){
+  if(!currentUser){
+    openLoginModal();
+    return;
+  }
+  // 프로필 정보 업데이트
+  const emailEl = document.getElementById('my-email');
+  const roleEl  = document.getElementById('my-role');
+  if(emailEl) emailEl.textContent = currentUser.email || '회원';
+  if(roleEl)  roleEl.textContent  = currentAcademy ? '사업자 회원 (원장님)' : '일반 회원';
+
+  // 사업자 대시보드 버튼
+  const bizBtn = document.getElementById('my-biz-btn');
+  if(bizBtn) bizBtn.style.display = currentAcademy ? 'block' : 'none';
+
+  // 섹션 초기화
+  document.getElementById('my-reviews-section').style.display = 'none';
+  document.getElementById('my-schedule-section').style.display = 'none';
+
+  go('page-my');
+}
+
+async function goMyReviews(){
+  const section = document.getElementById('my-reviews-section');
+  const list    = document.getElementById('my-reviews-list');
+  section.style.display = 'block';
+  document.getElementById('my-schedule-section').style.display = 'none';
+
+  if(!sb || !currentUser){ list.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;">로그인이 필요해요</div>'; return; }
+
+  list.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;">불러오는 중...</div>';
+  try {
+    const { data, error } = await sb.from('reviews')
+      .select('*, academies(name)')
+      .eq('user_id', currentUser.id)
+      .order('created_at', { ascending: false });
+
+    if(error) throw error;
+    if(!data?.length){
+      list.innerHTML = '<div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">작성한 리뷰가 없어요</div>';
+      return;
+    }
+    list.innerHTML = data.map(r => `
+      <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1.5px solid #F0F1F6;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+          <div style="font-size:13px;font-weight:800;color:#176ED3;">${r.academies?.name||'학원명 없음'}</div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            ${r.is_approved ? '<span style="font-size:10px;background:#D1FAE5;color:#065F46;padding:2px 7px;border-radius:10px;font-weight:800;">✅ 게시됨</span>' : '<span style="font-size:10px;background:#FEF3C7;color:#B45309;padding:2px 7px;border-radius:10px;font-weight:800;">⏳ 검토중</span>'}
+            ${r.is_verified ? '<span style="font-size:10px;background:#EEF5FF;color:#176ED3;padding:2px 7px;border-radius:10px;font-weight:800;">✅ 인증</span>' : ''}
+          </div>
+        </div>
+        <div style="font-size:12px;color:#F59E0B;margin-bottom:4px;">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+        <div style="font-size:13px;color:#374151;">${r.body}</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;">
+          <div style="font-size:11px;color:#8A94A6;">${r.created_at?.slice(0,10)||''}</div>
+          <button onclick="deleteMyReview('${r.id}')" style="border:none;background:none;color:#EF4444;font-size:12px;font-weight:700;cursor:pointer;">삭제</button>
+        </div>
+      </div>
+    `).join('');
+  } catch(e){
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:#EF4444;">불러오기 실패</div>';
+  }
+}
+
+async function deleteMyReview(id){
+  if(!confirm('이 리뷰를 삭제할까요?')) return;
+  const { error } = await sb.from('reviews').delete().eq('id', id).eq('user_id', currentUser.id);
+  if(error){ showToast('삭제 실패: ' + error.message); return; }
+  showToast('🗑 리뷰가 삭제됐습니다');
+  resetReviewCache();
+  goMyReviews();
+}
+
+function goMySchedule(){
+  const section = document.getElementById('my-schedule-section');
+  const list    = document.getElementById('my-schedule-list');
+  section.style.display = 'block';
+  document.getElementById('my-reviews-section').style.display = 'none';
+
+  // 관심 학원의 시간표 표시
+  const wishAcademies = DATA.filter(a => wishSet.has(a.id));
+  if(!wishAcademies.length){
+    list.innerHTML = '<div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">관심 학원을 먼저 등록해주세요</div>';
+    return;
+  }
+  list.innerHTML = wishAcademies.map(a => `
+    <div style="background:#fff;border-radius:12px;padding:14px;margin-bottom:10px;border:1.5px solid #F0F1F6;">
+      <div style="font-size:14px;font-weight:800;color:#176ED3;margin-bottom:8px;">🏫 ${a.name}</div>
+      <div style="font-size:12px;color:#6B7280;">📍 ${a.city} · ${a.subject}</div>
+      <div style="font-size:12px;color:#374151;margin-top:6px;">시간표 정보가 없어요</div>
+    </div>
+  `).join('');
+}
 
 /* ════ 관리자 페이지 ════ */
 
