@@ -1605,9 +1605,9 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div class="db-loc" id="db-loc">📍 천안시 서북구</div>
   </div>
   <div class="db-stats">
-    <div class="ds"><div class="ds-n">128</div><div class="ds-l">이번달 조회</div></div>
-    <div class="ds"><div class="ds-n">34</div><div class="ds-l">관심 학부모</div></div>
-    <div class="ds"><div class="ds-n" id="db-review-cnt">3</div><div class="ds-l">받은 리뷰</div></div>
+    <div class="ds"><div class="ds-n" id="db-view-cnt">-</div><div class="ds-l">이번달 조회</div></div>
+    <div class="ds"><div class="ds-n" id="db-wish-cnt">-</div><div class="ds-l">관심 학부모</div></div>
+    <div class="ds"><div class="ds-n" id="db-review-cnt">-</div><div class="ds-l">받은 리뷰</div></div>
   </div>
   <div class="up-banner" id="up-banner" style="display:none" onclick="openPayModal('premium')">
     <div><h4>🚀 프리미엄으로 업그레이드</h4><p>SNS 연동 · 상담예약 · 상단 고정 노출</p></div>
@@ -1628,8 +1628,8 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div class="info-card">
       <div class="ir"><span class="ir-l">학원명</span><span class="ir-v" id="di-name">내 학원</span></div>
       <div class="ir"><span class="ir-l">과목</span><span class="ir-v" id="di-subj">영어</span></div>
-      <div class="ir"><span class="ir-l">월 수강료</span><span class="ir-v" style="color:var(--red)">200,000원</span></div>
-      <div class="ir"><span class="ir-l">연락처</span><span class="ir-v">010-1234-5678</span></div>
+      <div class="ir"><span class="ir-l">월 수강료</span><span class="ir-v" id="di-price" style="color:var(--red)">-</span></div>
+      <div class="ir"><span class="ir-l">연락처</span><span class="ir-v" id="di-phone">-</span></div>
       <div class="ir"><span class="ir-l">블로그 URL</span><button class="ir-e" onclick="showToast('블로그 URL을 수정했습니다')">변경</button></div>
     </div>
   </div>
@@ -1641,16 +1641,15 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
   <div class="db-sec" id="db-sec-news">
     <div class="db-sh">📢 소식·공지 <button onclick="openModal('news')">+ 작성</button></div>
-    <div class="news-c"><div class="news-d">2025.07.10</div><div class="news-t">여름방학 특강 모집 안내 (7/21~8/16)</div></div>
-    <div class="news-c"><div class="news-d">2025.07.01</div><div class="news-t">7월 원비 납부 안내</div></div>
+    <div id="db-news-list">
+      <div style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">아직 등록된 소식이 없어요</div>
+    </div>
   </div>
-  <!-- 리뷰 현황 (모든 플랜) -->
+  <!-- 리뷰 현황 -->
   <div class="db-sec">
     <div class="db-sh">⭐ 받은 리뷰</div>
-    <div class="info-card">
-      <div class="ir"><span class="ir-l">평균 별점</span><span class="ir-v" style="color:var(--yellow)">★ 4.7</span></div>
-      <div class="ir"><span class="ir-l">전체 리뷰 수</span><span class="ir-v">3개</span></div>
-      <div class="ir"><span class="ir-l">최근 리뷰</span><span class="ir-v" style="font-size:12px;color:var(--sub)">"선생님이 친절하고 아이가 좋아해요"</span></div>
+    <div id="db-review-summary">
+      <div style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">아직 받은 리뷰가 없어요</div>
     </div>
   </div>
   <!-- SNS (프리미엄 전용) -->
@@ -1664,10 +1663,11 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
   <!-- 예약 (프리미엄 전용) -->
   <div class="db-sec">
-    <div class="db-sh">📅 상담 예약 <span class="pro-tag">프리미엄</span></div>
-    <div class="locked" id="rsv-sec" style="min-height:120px;">
-      <div class="rsv-c"><div><div class="rsv-nm">김○○ 학부모</div><div class="rsv-tm">07.15 오후 2시</div></div><span class="rsv-b new">신규</span></div>
-      <div class="rsv-c"><div><div class="rsv-nm">이○○ 학부모</div><div class="rsv-tm">07.12 오전 11시</div></div><span class="rsv-b done">완료</span></div>
+    <div class="db-sh">📅 상담 문의 <span class="pro-tag">프리미엄</span></div>
+    <div class="locked" id="rsv-sec" style="min-height:80px;">
+      <div id="db-rsv-list" style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">
+        아직 들어온 문의가 없어요
+      </div>
     </div>
   </div>
   <nav class="db-bnav bnav">
@@ -1761,6 +1761,8 @@ async function onLogin(user){
   if(data) currentAcademy = data;
   updateHeaderUI();
   resetReviewCache();
+  // 대시보드 데이터 자동 로드
+  if(data) setTimeout(loadDashboardData, 300);
 }
 
 function onLogout(){
@@ -1905,7 +1907,7 @@ async function completeBizSignupAndPay(){
     showToast('🎉 가입 완료!');
 
     if(selectedPlan !== 'free') openPayModal(selectedPlan);
-    else go('page-dashboard');
+    else go('page-dashboard'); setTimeout(loadDashboardData, 500);
 
   } catch(e){
     console.error('가입 오류:', e);
@@ -2783,6 +2785,118 @@ function previewProfileImg(input){
   reader.readAsDataURL(file);
 }
 
+
+
+/* ════ 대시보드 실제 데이터 로딩 ════ */
+async function loadDashboardData(){
+  if(!sb || !currentAcademy) return;
+  const aid = currentAcademy.id;
+
+  // 1. 리뷰 수 + 평균 별점
+  try {
+    const { data: reviews } = await sb.from('reviews')
+      .select('stars, body, nickname, created_at')
+      .eq('academy_id', aid)
+      .eq('is_approved', true);
+
+    const cnt = reviews?.length || 0;
+    const avg = cnt > 0
+      ? (reviews.reduce((s,r)=>s+r.stars,0)/cnt).toFixed(1)
+      : 0;
+
+    const reviewCntEl = document.getElementById('db-review-cnt');
+    if(reviewCntEl) reviewCntEl.textContent = cnt;
+
+    const summaryEl = document.getElementById('db-review-summary');
+    if(summaryEl){
+      if(cnt === 0){
+        summaryEl.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">아직 받은 리뷰가 없어요</div>';
+      } else {
+        const latest = reviews[0];
+        summaryEl.innerHTML = `
+          <div class="info-card">
+            <div class="ir"><span class="ir-l">평균 별점</span><span class="ir-v" style="color:var(--yellow)">★ ${avg}</span></div>
+            <div class="ir"><span class="ir-l">전체 리뷰 수</span><span class="ir-v">${cnt}개</span></div>
+            <div class="ir"><span class="ir-l">최근 리뷰</span><span class="ir-v" style="font-size:12px;color:var(--sub)">"${latest?.body?.slice(0,30)||''}"</span></div>
+          </div>`;
+      }
+    }
+  } catch(e){ console.error('리뷰 로딩 오류:', e); }
+
+  // 2. 관심 수
+  try {
+    const { count } = await sb.from('wishes')
+      .select('id', { count:'exact', head:true })
+      .eq('academy_id', aid);
+    const wishEl = document.getElementById('db-wish-cnt');
+    if(wishEl) wishEl.textContent = count || 0;
+  } catch(e){
+    const wishEl = document.getElementById('db-wish-cnt');
+    if(wishEl) wishEl.textContent = '0';
+  }
+
+  // 3. 조회수 (로컬 기반)
+  const viewKey = 'views_' + aid;
+  const views = parseInt(localStorage.getItem(viewKey)) || 0;
+  const viewEl = document.getElementById('db-view-cnt');
+  if(viewEl){
+    viewEl.textContent = views > 0 ? views : '데이터 수집 중';
+    viewEl.style.fontSize = views > 0 ? '' : '11px';
+    viewEl.style.color = views > 0 ? '' : '#8A94A6';
+  }
+
+  // 4. 소식 목록
+  try {
+    const { data: news } = await sb.from('news')
+      .select('*')
+      .eq('academy_id', aid)
+      .order('created_at', { ascending: false })
+      .limit(5);
+    const newsEl = document.getElementById('db-news-list');
+    if(newsEl){
+      if(!news?.length){
+        newsEl.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">아직 등록된 소식이 없어요</div>';
+      } else {
+        newsEl.innerHTML = news.map(n=>`
+          <div class="news-c">
+            <div class="news-d">${n.created_at?.slice(0,10)||''}</div>
+            <div class="news-t">${n.title||''}</div>
+          </div>`).join('');
+      }
+    }
+  } catch(e){ console.error('소식 로딩 오류:', e); }
+
+  // 5. 문의 목록 (reservations)
+  try {
+    const { data: rsvs } = await sb.from('reservations')
+      .select('*')
+      .eq('academy_id', aid)
+      .order('created_at', { ascending: false })
+      .limit(10);
+    const rsvEl = document.getElementById('db-rsv-list');
+    if(rsvEl){
+      if(!rsvs?.length){
+        rsvEl.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">아직 들어온 문의가 없어요</div>';
+      } else {
+        rsvEl.innerHTML = rsvs.map(r=>`
+          <div class="rsv-c">
+            <div>
+              <div class="rsv-nm">${r.name||'익명'}</div>
+              <div class="rsv-tm">${r.created_at?.slice(0,10)||''}</div>
+            </div>
+            <span class="rsv-b ${r.status==='done'?'done':'new'}">${r.status==='done'?'완료':'신규'}</span>
+          </div>`).join('');
+      }
+    }
+  } catch(e){ console.error('문의 로딩 오류:', e); }
+
+  // 6. 학원 정보 표시
+  const ac = currentAcademy;
+  const priceEl = document.getElementById('di-price');
+  const phoneEl = document.getElementById('di-phone');
+  if(priceEl) priceEl.textContent = ac.price ? ac.price.toLocaleString('ko-KR') + '원' : '-';
+  if(phoneEl) phoneEl.textContent = ac.phone || '-';
+}
 
 /* ════ 시간표 관리 ════ */
 let timetableList = []; // 수업 목록
