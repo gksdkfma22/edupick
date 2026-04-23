@@ -1330,6 +1330,19 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </div>
     </div>
 
+    <!-- CSV 백업 버튼 -->
+    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+      <button onclick="exportCSV('academies')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+        📥 학원 백업
+      </button>
+      <button onclick="exportCSV('reviews')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+        📥 리뷰 백업
+      </button>
+      <button onclick="exportCSV('profiles')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+        📥 회원 백업
+      </button>
+    </div>
+
     <!-- 빠른 통계 -->
     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;" id="admin-quick-stats">
       <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
@@ -2067,8 +2080,15 @@ function completeBizSignup(){ selectedPlan='free'; completeBizSignupAndPay(); }
 async function loadAcademiesFromDB(){
   if(!sb) return false;
   try {
-    const { data, error } = await sb.from('academies').select('*, reviews(*)').eq('is_active', true);
-    if(error || !data?.length) return false;
+    const { data, error } = await withRetry(async () => {
+      const res = await sb.from('academies')
+        .select('*, reviews(*)')
+        .eq('is_active', true)
+        .order('plan', { ascending: false }); // premium 먼저
+      if(res.error) throw res.error;
+      return res;
+    }, 3, 1500, '학원 데이터');
+    if(!data?.length) return false;
     DATA = data.map(r=>({
       id: r.id, name: r.name||'', city: r.city||r.address||'',
       subject: r.subject||'영어',
@@ -2087,9 +2107,13 @@ async function loadAcademiesFromDB(){
 /* 소식 저장 */
 async function saveNews(title, content){
   if(!currentUser||!currentAcademy){ showToast('로그인이 필요합니다'); return; }
-  const { error } = await sb.from('news').insert({ academy_id:currentAcademy.id, title, content });
-  if(error) showToast('저장 실패: '+error.message);
-  else { showToast('📢 소식을 게시했습니다'); closeModal('news'); }
+  try {
+    await withRetry(async () => {
+      const { error } = await sb.from('news').insert({ academy_id:currentAcademy.id, title, content });
+      if(error) throw error;
+    }, 3, 1500, '소식 저장');
+    showToast('📢 소식을 게시했습니다'); closeModal('news');
+  } catch(e){ showToast('저장 실패: ' + e.message); }
 }
 
 /* 리뷰 저장 */
@@ -2114,8 +2138,11 @@ const CACHE_KEY  = 'edupick_data';
 const CACHE_TTL  = 5 * 60 * 1000; // 5분 캐시
 
 /* ════ STATE ════ */
-let DATA = [];                       // 구글 시트에서 불러온 학원 목록
+let DATA = [];                       // 학원 목록
 let curFilter="전체", curSearch="", sortMode="dist", curGrade="전체";
+const PAGE_SIZE = 20;                  // 페이지당 학원 수
+let curPage = 1;                       // 현재 페이지
+let isLoadingMore = false;             // 추가 로딩 중 여부
 let userLat=36.8151, userLng=127.1139;
 let markers=[], userMarker=null;
 let sheetAcademy=null;
@@ -2468,6 +2495,22 @@ function render(){
       </div>`;
     listEl.appendChild(el);
   });
+
+  // 더 보기 버튼
+  const existingMore = document.getElementById('load-more-btn');
+  if(existingMore) existingMore.remove();
+  if(hasMore){
+    const moreBtn = document.createElement('div');
+    moreBtn.id = 'load-more-btn';
+    moreBtn.style.cssText = 'text-align:center;padding:16px;';
+    moreBtn.innerHTML = `<button onclick="loadMoreItems()" style="
+      padding:11px 28px;border-radius:12px;border:1.5px solid #E0E4EF;
+      background:#fff;font-size:13px;font-weight:700;color:#374151;
+      cursor:pointer;font-family:inherit;">
+      📋 더 보기 (${items.length - pagedItems.length}개 남음)
+    </button>`;
+    listEl.appendChild(moreBtn);
+  }
 
   // 카카오맵 마커 + 클러스터러
   // CustomOverlay 모두 제거
@@ -2900,16 +2943,18 @@ async function submitReview(){
   } else {
     if(sb){
       try {
-        const { error } = await sb.from('reviews').insert({
-          academy_id:  a.id,
-          user_id:     currentUser?.id || null,
-          nickname:    nick,
-          stars:       currentRating,
-          body:        body,
-          is_approved: false,
-          is_verified: isVerified, // 인증리뷰 여부
-        });
-        if(error) throw error;
+        await withRetry(async () => {
+          const { error } = await sb.from('reviews').insert({
+            academy_id:  a.id,
+            user_id:     currentUser?.id || null,
+            nickname:    nick,
+            stars:       currentRating,
+            body:        body,
+            is_approved: false,
+            is_verified: isVerified,
+          });
+          if(error) throw error;
+        }, 3, 1500, '리뷰 등록');
         resetReviewCache(); // 리뷰 작성 완료 → 캐시 초기화
         _userHasReview = true; // 즉시 반영
         showToast(isVerified ? '✅ 인증리뷰 접수! 검토 후 게시됩니다' : '✅ 리뷰 접수! 검토 후 게시됩니다');
@@ -3184,6 +3229,60 @@ async function loadDashboardData(){
   const phoneEl = document.getElementById('di-phone');
   if(priceEl) priceEl.textContent = ac.price ? ac.price.toLocaleString('ko-KR') + '원' : '-';
   if(phoneEl) phoneEl.textContent = ac.phone || '-';
+}
+
+
+/* ════ 목록 더 불러오기 ════ */
+function loadMoreItems(){
+  if(isLoadingMore || !window._allItems) return;
+  isLoadingMore = true;
+  curPage++;
+
+  const items = window._allItems;
+  const start = PAGE_SIZE * (curPage - 1);
+  const end   = PAGE_SIZE * curPage;
+  const newItems = items.slice(start, end);
+  const hasMore  = items.length > end;
+
+  const listEl = document.getElementById('list');
+  const oldBtn = document.getElementById('load-more-btn');
+  if(oldBtn) oldBtn.remove();
+
+  newItems.forEach(a => {
+    const liked = wishSet.has(a.id);
+    const el = document.createElement('div');
+    el.className = 'acard';
+    const dist = a.distKm !== undefined ? a.distKm : km(userLat, userLng, a.lat, a.lng);
+    el.innerHTML = `
+      <div class="ac-left">
+        <div class="ac-ico" style="background:${COLORS[a.subject]||'#f3f4f6'}">${ICONS[a.subject]||'📚'}</div>
+        <div class="ac-info">
+          <div class="ac-nm">${a.name}${a.claimed?'<span style="font-size:9px;background:#10B981;color:#fff;padding:1px 5px;border-radius:6px;margin-left:4px;font-weight:800;">✓인증</span>':''}</div>
+          <div class="ac-sub">${a.subject} · ${dist}km</div>
+          <div class="ac-pr">${a.price.toLocaleString('ko-KR')}원/월</div>
+        </div>
+      </div>
+      <div class="ac-right">
+        <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart('${a.id}',this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
+        <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="openSheet('${a.id}')">상세보기</button>
+      </div>`;
+    listEl.appendChild(el);
+  });
+
+  if(hasMore){
+    const moreBtn = document.createElement('div');
+    moreBtn.id = 'load-more-btn';
+    moreBtn.style.cssText = 'text-align:center;padding:16px;';
+    moreBtn.innerHTML = `<button onclick="loadMoreItems()" style="
+      padding:11px 28px;border-radius:12px;border:1.5px solid #E0E4EF;
+      background:#fff;font-size:13px;font-weight:700;color:#374151;
+      cursor:pointer;font-family:inherit;">
+      📋 더 보기 (${items.length - end}개 남음)
+    </button>`;
+    listEl.appendChild(moreBtn);
+  }
+
+  isLoadingMore = false;
 }
 
 /* ════ 시간표 관리 ════ */
@@ -3764,6 +3863,73 @@ async function goAdminUsers(){
       list.innerHTML = `<div style="text-align:center;padding:30px;color:#EF4444;">로딩 실패: ${e.message}</div>`;
     }
   }, 150);
+}
+
+
+/* ════ 자동 재시도 유틸 ════ */
+async function withRetry(fn, maxRetries=3, delay=1500, label='요청'){
+  for(let i=0; i<maxRetries; i++){
+    try {
+      return await fn();
+    } catch(e){
+      const isLast = i === maxRetries-1;
+      if(isLast) throw e;
+      const wait = delay * (i+1); // 1.5초, 3초, 4.5초
+      showToast(`⟳ 다시 시도 중입니다... (${i+1}/${maxRetries-1})`);
+      await new Promise(r => setTimeout(r, wait));
+    }
+  }
+}
+
+/* 네트워크 상태 감지 */
+window.addEventListener('online',  () => { showToast('🌐 인터넷 연결됐어요! 데이터를 불러옵니다'); loadData(); });
+window.addEventListener('offline', () => { showToast('📵 인터넷 연결이 끊겼어요'); });
+
+
+/* ════ CSV 백업 기능 ════ */
+async function exportCSV(table){
+  if(!requireRole(['admin'])) return;
+  showToast(`📥 ${table} 데이터 다운로드 중...`);
+
+  try {
+    let query = sb.from(table).select('*');
+    if(table === 'academies') query = query.order('created_at', {ascending:false});
+    if(table === 'reviews')   query = query.order('created_at', {ascending:false});
+    if(table === 'profiles')  query = query.order('created_at', {ascending:false});
+
+    const { data, error } = await query;
+    if(error) throw error;
+    if(!data?.length){ showToast('데이터가 없어요'); return; }
+
+    // JSON → CSV 변환
+    const headers = Object.keys(data[0]);
+    const csvRows = [
+      headers.join(','),
+      ...data.map(row =>
+        headers.map(h => {
+          const val = row[h] ?? '';
+          const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+          const needsQuote = str.includes(',') || str.includes('"') || str.indexOf('\r') >= 0 || str.indexOf('\n') >= 0;
+          return needsQuote ? '"' + str.replace(/"/g, '""') + '"' : str;
+        }).join(',')
+      )
+    ];
+
+    const csv = '\uFEFF' + csvRows.join('\n'); // BOM 추가 (엑셀 한글 깨짐 방지)
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    const date = new Date().toISOString().slice(0,10);
+    a.href     = url;
+    a.download = `edupick_${table}_${date}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+
+    showToast(`✅ ${table} ${data.length}건 다운로드 완료!`);
+  } catch(e){
+    showToast('백업 실패: ' + e.message);
+    console.error('CSV 백업 오류:', e);
+  }
 }
 
 /* ════ 관리자 페이지 ════ */
