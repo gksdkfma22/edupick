@@ -1274,146 +1274,101 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   <div class="lnav">
     <div class="logo" onclick="go('page-home')">에듀<em>픽</em></div>
     <div class="lnav-r">
-      <button class="lnav-btn g" onclick="go('page-type')">로그인</button>
-      <button class="lnav-btn s" onclick="go('page-plan')">학원 등록</button>
+      <button class="lnav-btn g" onclick="openLoginModal()">로그인</button>
+      <button class="lnav-btn s" onclick="go('page-biz-signup')">학원 등록</button>
     </div>
   </div>
+
+  <!-- 히어로 -->
   <div class="hero">
-    <div class="hero-tag">🗺 위치 기반 학원 플랫폼</div>
-    <h1>우리 학원을<br><em>지도 위에</em> 올려보세요</h1>
-    <p class="hero-sub">에듀픽에 등록하면 근처 학부모가<br>지도에서 바로 우리 학원을 찾아옵니다</p>
+    <div class="hero-tag">🏫 학원 관계자 전용</div>
+    <h1>우리 학원 정보를 등록하고<br><em>학부모들에게</em> 홍보하세요</h1>
+    <p class="hero-sub">에듀픽에 무료로 등록하면<br>근처 학부모가 지도에서 바로 찾아옵니다</p>
     <div class="hero-btns">
-      <button class="hcta pr" onclick="go('page-plan')">🏫 지금 학원 등록하기 — 무료 시작 가능</button>
-      <button class="hcta sc" onclick="go('page-home')">🔍 학원 검색해보기</button>
+      <button class="hcta pr" onclick="go('page-biz-signup')">🏫 지금 바로 학원 관리 시작하기</button>
+      <button class="hcta sc" onclick="go('page-home')">🔍 에듀픽 둘러보기</button>
     </div>
-    <div class="hero-stats">
-      <div class="hs"><div class="hs-n">1,240+</div><div class="hs-l">등록 학원</div></div>
-      <div class="hs"><div class="hs-n">8,500+</div><div class="hs-l">학부모 회원</div></div>
-      <div class="hs"><div class="hs-n">4.8★</div><div class="hs-l">평균 만족도</div></div>
+    <div style="margin-top:16px;font-size:13px;color:rgba(255,255,255,.8);">
+      ✓ 무료 시작 &nbsp;·&nbsp; ✓ 약정 없음 &nbsp;·&nbsp; ✓ 5분 가입
     </div>
   </div>
-  <div class="sp-bar">
-    <div class="sp-pill">✅ 천안 서북구 38개 학원</div>
-    <div class="sp-pill">✅ 아산시 21개 학원</div>
-    <div class="sp-pill">✅ 세종시 17개 학원</div>
-    <div class="sp-pill">⭐ 별점 리뷰 시스템</div>
-    <div class="sp-pill">❤️ 관심등록 기능</div>
-  </div>
-  <div class="section" style="background:var(--white);">
-    <div class="sec-tag">WHY 에듀픽</div>
-    <div class="sec-title">학부모는 지도로 찾고<br>원장님은 직접 관리해요</div>
-    <div class="sec-sub">블로그·SNS를 따로 운영할 필요 없이 에듀픽 하나로 해결하세요</div>
+
+  <!-- 혜택 -->
+  <div class="section" style="background:#fff;">
+    <div class="sec-tag">에듀픽 혜택</div>
+    <div class="sec-title">등록만 해도 이런 게 가능해요</div>
     <div class="why-grid">
-      <div class="why-c"><div class="why-ico" style="background:#EEF4FF">📍</div><div><div class="why-t">지도 기반 노출</div><div class="why-d">학부모가 GPS로 근처 학원을 검색할 때 내 학원이 핀으로 표시됩니다</div></div></div>
-      <div class="why-c"><div class="why-ico" style="background:#FFF3E0">⭐</div><div><div class="why-t">학부모 리뷰·별점</div><div class="why-d">실제 학부모 후기와 별점이 쌓여 신뢰도가 높아집니다</div></div></div>
-      <div class="why-c"><div class="why-ico" style="background:#FDE8F4">📸</div><div><div class="why-t">SNS 자동 연동</div><div class="why-d">인스타·블로그 최신 글이 학원 페이지에 자동 반영됩니다 (프리미엄)</div></div></div>
-      <div class="why-c"><div class="why-ico" style="background:#ECFDF5">📅</div><div><div class="why-t">온라인 상담 예약</div><div class="why-d">학부모가 앱에서 상담 예약, SMS 알림까지 자동 발송됩니다 (프리미엄)</div></div></div>
-    </div>
-  </div>
-
-  <!-- PRICING — 3단계 -->
-  <div class="pricing-sec">
-    <div class="pricing-hdr">
-      <div class="sec-tag" style="background:var(--white);color:var(--blue2)">PRICING</div>
-      <div class="sec-title">3단계 요금제</div>
-      <div class="sec-sub" style="margin-bottom:0">무료로 시작하고, 필요할 때 업그레이드</div>
-    </div>
-    <div class="plan-cards">
-      <!-- FREE -->
-      <div class="pc free-pc">
-        <div class="pc-head">
-          <div><div class="pc-name">🆓 무료</div><div class="pc-tl">지도에 학원 표시만</div></div>
-          <div><div class="pc-pn">0원</div><div class="pc-pu">무료</div></div>
+      <div class="why-c">
+        <div class="why-ico" style="background:#EEF4FF;">📍</div>
+        <div>
+          <div class="why-t">지도에 바로 노출</div>
+          <div class="why-d">학부모가 GPS로 근처 학원 검색 시 내 학원이 핀으로 표시돼요</div>
         </div>
-        <div class="pc-feats">
-          <div class="pf"><span class="ck">✅</span>지도에 핀 노출 (회색 핀)</div>
-          <div class="pf"><span class="ck">✅</span>학원명·과목·위치 표시</div>
-          <div class="pf off"><span class="ck">❌</span>소식·공지 게시</div>
-          <div class="pf off"><span class="ck">❌</span>사진·소개 등록</div>
-          <div class="pf off"><span class="ck">❌</span>SNS 연동</div>
-          <div class="pf off"><span class="ck">❌</span>상담 예약</div>
-        </div>
-        <button class="pc-btn gr" onclick="selectPlan('free');go('page-biz-signup')">무료로 시작하기</button>
       </div>
-      <!-- BASIC -->
-      <div class="pc hot">
-        <div class="pc-ribbon hot">인기</div>
-        <div class="pc-head">
-          <div><div class="pc-name">🗺 베이직</div><div class="pc-tl">지도 + 정보·소식 관리</div></div>
-          <div><div class="pc-pn">33,000</div><div class="pc-pu">원/월 (VAT포함)</div></div>
+      <div class="why-c">
+        <div class="why-ico" style="background:#FFF3E0;">📢</div>
+        <div>
+          <div class="why-t">소식 · 시간표 직접 관리</div>
+          <div class="why-d">대시보드에서 학원 소식, 시간표를 직접 등록하고 관리해요</div>
         </div>
-        <div class="pc-feats">
-          <div class="pf"><span class="ck">✅</span>지도 핀 노출 (파란 핀)</div>
-          <div class="pf"><span class="ck">✅</span>학원 소개·사진 등록</div>
-          <div class="pf"><span class="ck">✅</span>시간표 직접 등록</div>
-          <div class="pf"><span class="ck">✅</span>소식·공지 게시</div>
-          <div class="pf"><span class="ck">✅</span>블로그 URL 연동</div>
-          <div class="pf off"><span class="ck">❌</span>SNS 자동 연동</div>
-          <div class="pf off"><span class="ck">❌</span>상담 예약 시스템</div>
-          <div class="pf off"><span class="ck">❌</span>상단 고정 노출</div>
-        </div>
-        <button class="pc-btn oo" onclick="selectPlan('basic')">베이직 시작하기</button>
       </div>
-      <!-- PREMIUM -->
-      <div class="pc pro">
-        <div class="pc-ribbon pro">추천</div>
-        <div class="pc-head">
-          <div><div class="pc-name">⭐ 프리미엄</div><div class="pc-tl">전체 기능 + 상단 고정</div></div>
-          <div><div class="pc-pn">55,000</div><div class="pc-pu">원/월 (VAT포함)</div></div>
+      <div class="why-c">
+        <div class="why-ico" style="background:#ECFDF5;">⭐</div>
+        <div>
+          <div class="why-t">학부모 리뷰 · 별점</div>
+          <div class="why-d">실제 학부모 후기가 쌓여 신뢰도와 입소문이 높아져요</div>
         </div>
-        <div class="pc-feats">
-          <div class="pf"><span class="ck">✅</span>베이직 전체 포함</div>
-          <div class="pf"><span class="ck">✅</span>🔶 주황 핀 + 상단 고정 노출</div>
-          <div class="pf"><span class="ck">✅</span>네이버 블로그 자동 연동</div>
-          <div class="pf"><span class="ck">✅</span>인스타그램 피드 연동</div>
-          <div class="pf"><span class="ck">✅</span>유튜브 채널 연동</div>
-          <div class="pf"><span class="ck">✅</span>온라인 상담 예약 시스템</div>
-          <div class="pf"><span class="ck">✅</span>예약 알림 SMS 자동 발송</div>
+      </div>
+      <div class="why-c">
+        <div class="why-ico" style="background:#FDF4FF;">📊</div>
+        <div>
+          <div class="why-t">방문자 · 관심수 통계</div>
+          <div class="why-d">몇 명의 학부모가 내 학원을 조회했는지 확인할 수 있어요</div>
         </div>
-        <button class="pc-btn ob" onclick="selectPlan('premium')">프리미엄 시작하기</button>
       </div>
     </div>
   </div>
 
-  <div class="section" style="background:var(--white);">
-    <div class="sec-tag">HOW IT WORKS</div>
-    <div class="sec-title" style="margin-bottom:22px">등록까지 딱 3단계</div>
-    <div class="steps">
-      <div class="step"><div class="step-num">1</div><div><div class="step-t">플랜 선택 & 가입</div><div class="step-d">무료부터 시작하고 원할 때 업그레이드할 수 있습니다.</div></div></div>
-      <div class="step"><div class="step-num">2</div><div><div class="step-t">학원 정보 등록</div><div class="step-d">대시보드에서 사진, 시간표, 소식을 직접 등록하세요.</div></div></div>
-      <div class="step"><div class="step-num">3</div><div><div class="step-t">지도에 바로 노출!</div><div class="step-d">근처 학부모 앱에 학원 핀이 표시되고 리뷰가 쌓입니다.</div></div></div>
-    </div>
-  </div>
-
+  <!-- 3단계 -->
   <div class="section" style="background:var(--bg);">
+    <div class="sec-tag">HOW IT WORKS</div>
+    <div class="sec-title" style="margin-bottom:22px;">등록까지 딱 3단계</div>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div><div class="step-t">무료 가입</div><div class="step-d">이메일만 있으면 5분 안에 가입 완료. 결제 없이 바로 시작해요.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div><div class="step-t">내 학원 소유권 신청</div><div class="step-d">지도에서 내 학원을 찾아 소유권 신청 → 관리자 승인 후 대시보드 활성화.</div></div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div><div class="step-t">정보 직접 관리!</div><div class="step-d">소식, 시간표, 프로필 사진을 직접 등록하고 학부모 리뷰를 확인하세요.</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 후기 -->
+  <div class="section" style="background:var(--white);">
     <div class="sec-tag">REVIEWS</div>
-    <div class="sec-title" style="margin-bottom:18px">원장님들의 후기</div>
+    <div class="sec-title" style="margin-bottom:18px;">원장님들의 후기</div>
     <div class="testi-cards">
       <div class="tc"><div class="tc-stars">★★★★★</div><div class="tc-body">등록 다음날 바로 상담 문의가 왔어요. 지도 핀 하나로 이렇게 효과가 좋을 줄 몰랐어요.</div><div class="tc-auth"><div class="tc-av" style="background:#EEF4FF">👩</div><div><div class="tc-nm">김○○ 원장님</div><div class="tc-rl">천안 · 영어학원</div></div></div></div>
       <div class="tc"><div class="tc-stars">★★★★★</div><div class="tc-body">학부모 리뷰가 쌓이니까 신뢰도가 확 올랐어요. 리뷰 별점이 4.9점이라 자랑스럽습니다.</div><div class="tc-auth"><div class="tc-av" style="background:#FFF3E0">👨</div><div><div class="tc-nm">이○○ 원장님</div><div class="tc-rl">아산 · 수학학원</div></div></div></div>
     </div>
   </div>
 
-  <div class="section" style="background:var(--white);">
-    <div class="sec-tag">FAQ</div>
-    <div class="sec-title" style="margin-bottom:18px">자주 묻는 질문</div>
-    <div class="faq-items">
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>무료 플랜도 지도에 표시되나요?</span><span class="arr">⌄</span></div><div class="faq-a">네, 무료 플랜도 지도에 회색 핀으로 표시됩니다. 다만 소식 게시, 사진 등록 등의 기능은 베이직 이상에서 사용 가능합니다.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>약정 기간이 있나요?</span><span class="arr">⌄</span></div><div class="faq-a">월 단위 구독이라 언제든지 해지 가능합니다. 약정이나 위약금이 없습니다.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>리뷰는 누가 쓸 수 있나요?</span><span class="arr">⌄</span></div><div class="faq-a">일반 회원(학부모·학생)으로 가입한 분이라면 누구나 리뷰를 작성할 수 있습니다. 리뷰는 학원 상세 페이지에 바로 노출됩니다.</div></div>
-      <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)"><span>베이직에서 프리미엄으로 업그레이드하면?</span><span class="arr">⌄</span></div><div class="faq-a">대시보드에서 바로 업그레이드 가능합니다. 기존 등록 정보는 모두 유지되며, 업그레이드 즉시 주황 핀으로 상단에 고정 노출됩니다.</div></div>
-    </div>
-  </div>
-
+  <!-- CTA -->
   <div class="cta-bottom">
     <h2>지금 무료로 등록하고<br>첫 문의를 받아보세요</h2>
-    <p>무료 플랜으로 시작 · 언제든 업그레이드</p>
-    <button class="cta-bottom-btn" onclick="go('page-plan')">🏫 학원 무료 등록 시작하기</button>
+    <p>무료로 시작 · 소유권 신청 후 직접 관리</p>
+    <button class="cta-bottom-btn" onclick="go('page-biz-signup')">🏫 지금 바로 학원 관리 시작하기</button>
     <div class="cta-note">✓ 가입 5분 · 즉시 지도 노출 · 약정 없음</div>
   </div>
   <div class="footer">
     <div class="logo" style="color:#fff;margin-bottom:10px;">에듀<em>픽</em></div>
-    <div class="footer-links"><a href="#">이용약관</a><a href="#">개인정보처리방침</a><a href="#">고객센터</a></div>
+    <div class="footer-links"><a href="#">이용약관</a><a href="privacy.html">개인정보처리방침</a><a href="#">고객센터</a></div>
     <div class="footer-copy">© 2025 에듀픽. All rights reserved.</div>
   </div>
 </div>
@@ -1746,7 +1701,8 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div style="display:flex;gap:8px;margin-bottom:16px;">
       <button class="admin-tab on" id="asec-academy" onclick="adminSection('academy')">🏫 학원 승인</button>
       <button class="admin-tab" id="asec-review" onclick="adminSection('review')">💬 리뷰 승인</button>
-      <button class="admin-tab" id="asec-claim" onclick="adminSection('claim')">🔑 소유권 신청</button>
+      <button class="admin-tab" id="asec-claim" onclick="adminSection('claim')">🔑 소유권</button>
+      <button class="admin-tab" id="asec-allreview" onclick="adminSection('allreview')">📋 전체 리뷰</button>
     </div>
 
     <!-- 학원 필터 탭 -->
@@ -1982,7 +1938,7 @@ async function loadAcademiesFromDB(){
       price: r.price||0, plan: r.plan||'free',
       blog: r.blog||'', image: r.image||'',
       lat: r.lat||0, lng: r.lng||0,
-      reviews: (r.reviews||[]).map(rv=>({ nick:rv.nickname||'익명', stars:rv.stars||5, body:rv.body||'', date:rv.created_at?.slice(5,10)||'', mine: rv.user_id===currentUser?.id })),
+      reviews: (r.reviews||[]).filter(rv => !rv.status || rv.status === 'active').map(rv=>({ nick:rv.nickname||'익명', stars:rv.stars||5, body:rv.body||'', date:rv.created_at?.slice(5,10)||'', mine: rv.user_id===currentUser?.id })),
       claimed: !!r.owner_id,  // 업체가 소유권 주장했는지
       owner_id: r.owner_id || null,
     })).filter(r=>r.name&&r.lat&&r.lng);
@@ -3370,6 +3326,79 @@ async function rejectClaim(claimId){
   loadClaimRequests();
 }
 
+
+/* ════ 관리자: 전체 리뷰 관리 ════ */
+async function loadAllReviews(){
+  if(!sb) return;
+  const list = document.getElementById('admin-list');
+  list.innerHTML = '<div style="text-align:center;padding:30px;color:#8A94A6;">로딩 중...</div>';
+
+  try {
+    const { data, error } = await sb
+      .from('reviews')
+      .select('*, academies(name)')
+      .order('created_at', { ascending: false });
+
+    if(error) throw error;
+    if(!data?.length){
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:#8A94A6;"><div style="font-size:32px;margin-bottom:12px;">📭</div><div>리뷰가 없어요</div></div>';
+      return;
+    }
+
+    list.innerHTML = data.map(r => {
+      const status = r.status || (r.is_approved ? 'active' : 'pending');
+      const statusBadge = {
+        active:  '<span style="background:#D1FAE5;color:#065F46;font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;">✅ 게시중</span>',
+        hidden:  '<span style="background:#FEF3C7;color:#B45309;font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;">🙈 숨김</span>',
+        deleted: '<span style="background:#FEE2E2;color:#B91C1C;font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;">🗑 삭제</span>',
+        pending: '<span style="background:#F3F4F6;color:#6B7280;font-size:11px;font-weight:800;padding:2px 8px;border-radius:8px;">⏳ 대기</span>',
+      }[status] || '';
+
+      return `
+      <div class="admin-card" style="border-color:${status==='active'?'#10B981':status==='hidden'?'#F59E0B':status==='deleted'?'#EF4444':'#E0E4EF'}">
+        <div class="admin-card-top">
+          <div>
+            <div class="admin-name" style="font-size:14px;">${r.academies?.name||'학원명 없음'}</div>
+            <div style="font-size:11px;color:#6B7280;margin-top:2px;">
+              ${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)} · ${r.nickname||'익명'} · ${r.created_at?.slice(0,10)||''}
+              ${r.is_verified ? '<span style="background:#EEF5FF;color:#176ED3;font-size:10px;font-weight:800;padding:1px 6px;border-radius:6px;margin-left:4px;">✅ 인증</span>' : ''}
+            </div>
+          </div>
+          ${statusBadge}
+        </div>
+        <div style="font-size:13px;color:#374151;padding:8px 0;border-top:1px solid #F0F1F6;margin-top:6px;">${r.body||''}</div>
+        ${r.admin_memo ? `<div style="font-size:11px;color:#8A94A6;background:#F8F9FA;padding:6px 10px;border-radius:8px;margin-top:4px;">📝 처리사유: ${r.admin_memo}</div>` : ''}
+        <div class="admin-btns" style="flex-wrap:wrap;gap:6px;">
+          ${status !== 'active' ? `<button class="admin-btn-approve" onclick="setReviewStatus('${r.id}','active')" style="font-size:12px;padding:7px 10px;">🔄 복구</button>` : ''}
+          ${status !== 'hidden' ? `<button onclick="setReviewStatusWithMemo('${r.id}','hidden')" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid #F59E0B;background:#fff;color:#B45309;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">🙈 숨김</button>` : ''}
+          ${status !== 'deleted' ? `<button class="admin-btn-reject" onclick="setReviewStatusWithMemo('${r.id}','deleted')" style="font-size:12px;padding:7px 10px;">🗑 삭제</button>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e){
+    list.innerHTML = `<div style="text-align:center;padding:30px;color:#EF4444;">로딩 실패: ${e.message}</div>`;
+  }
+}
+
+async function setReviewStatus(id, status){
+  const { error } = await sb.from('reviews').update({ status }).eq('id', id);
+  if(error){ showToast('오류: ' + error.message); return; }
+  showToast(status === 'active' ? '🔄 복구됐습니다' : status === 'hidden' ? '🙈 숨김 처리됐습니다' : '🗑 삭제됐습니다');
+  loadAllReviews();
+}
+
+async function setReviewStatusWithMemo(id, status){
+  const reasons = ['업체 요청', '비속어 포함', '허위 정보', '광고성 내용', '기타'];
+  const reasonList = reasons.map((r,i) => `${i+1}. ${r}`).join('\n');
+  const input = prompt(`처리 사유를 선택하거나 입력하세요:\n${reasonList}\n\n번호 입력 또는 직접 입력:`);
+  if(input === null) return;
+  const memo = isNaN(input) ? input : reasons[parseInt(input)-1] || input;
+  const { error } = await sb.from('reviews').update({ status, admin_memo: memo }).eq('id', id);
+  if(error){ showToast('오류: ' + error.message); return; }
+  showToast(status === 'hidden' ? `🙈 숨김: ${memo}` : `🗑 삭제: ${memo}`);
+  loadAllReviews();
+}
+
 /* ════ 관리자 페이지 ════ */
 
 /* ════ 관리자 섹션 전환 ════ */
@@ -3384,9 +3413,12 @@ function adminSection(sec){
   } else if(sec === 'review'){
     filterTabs.style.display = 'none';
     loadAdminReviews();
-  } else {
+  } else if(sec === 'claim') {
     filterTabs.style.display = 'none';
     loadClaimRequests();
+  } else {
+    filterTabs.style.display = 'none';
+    loadAllReviews();
   }
 }
 
