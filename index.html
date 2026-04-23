@@ -5,6 +5,22 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>에듀픽 — 우리동네 학원찾기</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#176ED3">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- iOS PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="에듀픽">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="152x152" href="icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="icon-192.png">
+
+<!-- Splash Screen (iOS) -->
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <!-- 카카오맵 SDK -->
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6&libraries=clusterer"></script>
 <!-- 토스페이먼츠 SDK v1 -->
@@ -99,6 +115,28 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   font-size:10px;font-weight:800;padding:2px 7px;border-radius:10px;margin-bottom:4px;}
 .rv-badge.normal{background:#F4F6FB;color:#6B7280;}
 .rv-badge.verified{background:#EEF5FF;color:#176ED3;}
+
+
+/* ══ PWA 설치 배너 ══ */
+#pwa-banner{
+  position:fixed;bottom:72px;left:12px;right:12px;z-index:9998;
+  background:#1A1A2E;color:#fff;
+  border-radius:16px;padding:14px 16px;
+  display:flex;align-items:center;gap:12px;
+  box-shadow:0 8px 30px rgba(0,0,0,.3);
+  transform:translateY(120px);opacity:0;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+}
+#pwa-banner.show{transform:translateY(0);opacity:1;}
+#pwa-banner .pwa-ico{font-size:28px;flex-shrink:0;}
+#pwa-banner .pwa-txt{flex:1;}
+#pwa-banner .pwa-ttl{font-size:14px;font-weight:800;margin-bottom:2px;}
+#pwa-banner .pwa-sub{font-size:11px;color:rgba(255,255,255,.6);}
+#pwa-banner .pwa-btn{background:#176ED3;border:none;color:#fff;
+  padding:8px 14px;border-radius:10px;font-size:12px;font-weight:800;
+  cursor:pointer;font-family:inherit;white-space:nowrap;}
+#pwa-banner .pwa-x{background:none;border:none;color:rgba(255,255,255,.5);
+  font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;}
 
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);
@@ -3980,6 +4018,81 @@ function toggleFaq(el){
 let tt;
 function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('show'),2500);}
 
+
+/* ════ PWA 설치 로직 ════ */
+let deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+  // 3초 후 배너 표시 (이미 설치됐거나 닫은 경우 제외)
+  if(!localStorage.getItem('pwa-dismissed')){
+    setTimeout(showPWABanner, 3000);
+  }
+});
+
+function showPWABanner(){
+  const banner = document.getElementById('pwa-banner');
+  if(!banner) return;
+  banner.style.display = 'flex';
+  setTimeout(()=> banner.classList.add('show'), 50);
+}
+
+function dismissPWA(){
+  const banner = document.getElementById('pwa-banner');
+  if(banner){ banner.classList.remove('show'); setTimeout(()=> banner.style.display='none', 400); }
+  localStorage.setItem('pwa-dismissed', '1');
+}
+
+document.getElementById('pwa-install-btn')?.addEventListener('click', async ()=>{
+  if(deferredPrompt){
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    if(outcome === 'accepted') showToast('✅ 홈 화면에 추가됐어요!');
+    deferredPrompt = null;
+    dismissPWA();
+  } else {
+    // iOS 안내
+    showIOSInstallGuide();
+  }
+});
+
+function showIOSInstallGuide(){
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  if(isIOS){
+    showToast('Safari 하단 공유 버튼 → 홈 화면에 추가 탭하세요 📱');
+  } else {
+    showToast('브라우저 메뉴 → 홈 화면에 추가를 눌러주세요');
+  }
+}
+
+// iOS용 - 앱으로 실행 중인지 감지
+window.addEventListener('DOMContentLoaded', ()=>{
+  const isStandalone = window.navigator.standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches;
+
+  if(!isStandalone){
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const dismissed = localStorage.getItem('pwa-dismissed');
+    // iOS에서 Safari로 접속 + 미설치 + 안닫은 경우
+    if(isIOS && !dismissed){
+      setTimeout(showPWABanner, 4000);
+    }
+  }
+
+  // 서비스 워커 등록
+  if('serviceWorker' in navigator){
+    navigator.serviceWorker.register('sw.js')
+      .then(reg => console.log('SW 등록:', reg.scope))
+      .catch(err => console.log('SW 실패:', err));
+  }
+});
+
+window.addEventListener('appinstalled', ()=>{
+  showToast('🎉 에듀픽 앱 설치 완료!');
+  dismissPWA();
+});
+
 /* ════ INIT ════ */
 // 1단계: 카카오맵 먼저 초기화 (SDK가 head에서 동기 로드됨)
 window.addEventListener('DOMContentLoaded', function(){
@@ -4234,5 +4347,17 @@ function completePay(){
   setTimeout(()=> go('page-dashboard'), 400);
 }
 </script>
+
+<!-- PWA 설치 배너 -->
+<div id="pwa-banner" style="display:none;">
+  <span class="pwa-ico">📱</span>
+  <div class="pwa-txt">
+    <div class="pwa-ttl">앱으로 더 편리하게!</div>
+    <div class="pwa-sub">홈 화면에 추가하면 앱처럼 사용해요</div>
+  </div>
+  <button class="pwa-btn" id="pwa-install-btn">추가하기</button>
+  <button class="pwa-x" onclick="dismissPWA()">✕</button>
+</div>
+
 </body>
 </html>
