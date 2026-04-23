@@ -1,0 +1,50 @@
+{
+  "name": "에듀픽 — 우리동네 학원찾기",
+  "short_name": "에듀픽",
+  "description": "천안·아산 학원 지도 검색 플랫폼",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#176ED3",
+  "theme_color": "#176ED3",
+  "lang": "ko",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshot.png",
+      "sizes": "390x844",
+      "type": "image/png",
+      "form_factor": "narrow"
+    }
+  ],
+  "categories": ["education", "lifestyle"],
+  "shortcuts": [
+    {
+      "name": "학원 검색",
+      "short_name": "검색",
+      "description": "근처 학원 지도 검색",
+      "url": "/?action=search",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "관심목록",
+      "short_name": "관심",
+      "description": "관심 등록한 학원 보기",
+      "url": "/?action=wish",
+      "icons": [{ "src": "icon-192.png", "sizes": "192x192" }]
+    }
+  ]
+}
