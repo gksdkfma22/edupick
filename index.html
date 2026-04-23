@@ -1426,23 +1426,35 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <p>어떤 목적으로 이용하실 건가요?</p>
   </div>
   <div class="type-list">
-    <div class="type-card u" onclick="go('page-user-signup')">
+    <!-- 학부모/학생 카드 -->
+    <div class="type-card u" onclick="go('page-user-signup')" style="border-color:#176ED3;background:linear-gradient(135deg,#EEF5FF,#fff);">
       <div class="ty-ico u">👨‍👩‍👧</div>
-      <div>
+      <div style="flex:1;">
         <div class="ty-nm">학부모 · 학생</div>
-        <span class="ty-badge free">무료</span>
-        <div class="ty-desc">학원 검색, 관심등록, 리뷰 작성, 상담 신청을 이용할 수 있습니다.</div>
-        <div class="ty-arr">무료 가입하기 →</div>
+        <span class="ty-badge free" style="background:#EEF5FF;color:#176ED3;">무료</span>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 내 주변 학원 지도로 한눈에</div>
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 학원 소식 · 시간표 실시간 확인</div>
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 다른 학부모 리뷰 열람</div>
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 관심 학원 저장 · 알림</div>
+        </div>
+        <div class="ty-arr" style="margin-top:14px;color:#176ED3;font-weight:900;">무료 가입하기 →</div>
       </div>
     </div>
 
-    <div class="type-card b" onclick="go('page-plan')">
+    <!-- 학원 관계자 카드 -->
+    <div class="type-card b" onclick="go('page-biz-signup')" style="border-color:var(--orange);background:linear-gradient(135deg,#FFF8F5,#fff);">
       <div class="ty-ico b">🏫</div>
-      <div>
-        <div class="ty-nm">학원 사업자 (원장님)</div>
-        <span class="ty-badge paid">월 33,000~55,000원</span>
-        <div class="ty-desc">사업자등록증 필수 · 승인 후 지도 노출 · 소식·SNS·예약 관리까지.</div>
-        <div class="ty-arr" style="color:var(--orange)">플랜 선택하기 →</div>
+      <div style="flex:1;">
+        <div class="ty-nm">학원 관계자 (원장님)</div>
+        <span class="ty-badge" style="background:#FFF0EA;color:#FF5A1F;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;">무료로 시작</span>
+        <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 내 학원 정보 무료 등록</div>
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 지도에 핀으로 바로 노출</div>
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 소식 · 시간표 직접 관리</div>
+          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 학부모 리뷰 · 문의 확인</div>
+        </div>
+        <div class="ty-arr" style="margin-top:14px;color:var(--orange);font-weight:900;">무료로 내 학원 등록하기 →</div>
       </div>
     </div>
   </div>
@@ -1483,17 +1495,36 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <div class="page" id="page-user-signup">
   <div class="form-hdr blue">
     <span class="form-hdr-back" onclick="go('page-type')">←</span>
-    <h2>일반 회원가입</h2>
-    <p>무료로 학원 찾기, 관심등록, 리뷰 작성까지</p>
+    <h2>학부모 · 학생 가입</h2>
+    <p>완전 무료 · 1분 가입</p>
   </div>
   <div class="form-body">
+    <!-- 혜택 강조 -->
+    <div style="background:#EEF5FF;border-radius:14px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:13px;font-weight:800;color:#176ED3;margin-bottom:10px;">가입하면 바로 이용할 수 있어요 😊</div>
+      <div style="display:flex;flex-direction:column;gap:8px;">
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+          <span style="font-size:18px;">🗺</span> 내 주변 학원 지도로 한눈에 보기
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+          <span style="font-size:18px;">📢</span> 학원 소식 · 시간표 실시간 확인
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+          <span style="font-size:18px;">💬</span> 다른 학부모 솔직 리뷰 열람
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;font-size:13px;color:#374151;">
+          <span style="font-size:18px;">❤️</span> 관심 학원 저장 · 비교하기
+        </div>
+      </div>
+    </div>
+
     <div class="fg"><label>이름</label><input type="text" id="user-name" placeholder="홍길동"></div>
     <div class="fg"><label>이메일</label><input type="email" id="user-email" placeholder="example@email.com"></div>
     <div class="fg"><label>비밀번호</label><input type="password" id="user-pw" placeholder="6자 이상"><div class="hint">6자 이상</div></div>
     <div class="fg"><label>관심 지역</label>
       <select id="user-region"><option value="">선택</option><option>천안시 서북구</option><option>천안시 동남구</option><option>아산시</option></select>
     </div>
-    <button class="sub-btn blue" onclick="completeUserSignup()">무료로 가입하기</button>
+    <button class="sub-btn blue" onclick="completeUserSignup()" style="font-size:16px;padding:14px;">✅ 무료로 시작하기</button>
     <div class="divr"><hr><span>또는</span><hr></div>
     <button class="social-btn" onclick="loginWithKakao()">🟡 카카오로 시작하기</button>
     <button class="social-btn" onclick="showToast('네이버 로그인 준비 중')">🟢 네이버로 시작하기</button>
@@ -1564,14 +1595,20 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- ════════════════ 사업자 가입 폼 ════════════════ -->
 <div class="page" id="page-biz-signup">
   <div class="form-hdr orange">
-    <span class="form-hdr-back" onclick="go('page-plan')">←</span>
-    <h2 id="biz-hdr-title">베이직 플랜 가입</h2>
-    <p id="biz-hdr-sub">학원 정보를 입력하고 바로 노출을 시작하세요</p>
+    <span class="form-hdr-back" onclick="go('page-type')">←</span>
+    <h2>학원 관계자 가입</h2>
+    <p>무료로 내 학원을 등록하고 바로 노출하세요</p>
   </div>
   <div class="form-body">
-    <div class="plan-sum" id="plan-sum">
-      <div><div class="ps-l">선택하신 플랜</div><div class="ps-pl" id="ps-pn">베이직</div></div>
-      <div class="ps-pr" id="ps-pr">33,000원/월</div>
+    <!-- 혜택 요약 -->
+    <div style="background:#FFF8F5;border:1.5px solid #FDBA74;border-radius:12px;padding:14px 16px;margin-bottom:16px;">
+      <div style="font-size:13px;font-weight:800;color:#92400E;margin-bottom:8px;">🏫 가입하면 바로 이용 가능해요</div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <div style="font-size:12px;color:#374151;">✅ 지도에 학원 핀 노출</div>
+        <div style="font-size:12px;color:#374151;">✅ 학원 정보 · 소식 직접 관리</div>
+        <div style="font-size:12px;color:#374151;">✅ 학부모 리뷰 · 문의 확인</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:4px;">💡 추가 기능은 가입 후 대시보드에서 업그레이드</div>
+      </div>
     </div>
     <div style="background:#FFF8F0;border:1.5px solid #FDBA74;border-radius:12px;padding:12px 14px;margin-bottom:16px;font-size:13px;color:#92400E;">
       ⚠️ 사업자등록증 확인 후 승인됩니다 (영업일 1~2일 소요)
@@ -1591,7 +1628,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     </div>
     <div class="fg"><label>월 수강료</label><input type="text" id="biz-price" placeholder="예) 180,000"></div>
     <div class="fg"><label>비밀번호 <span style="color:red">*</span></label><input type="password" id="biz-pw" placeholder="6자 이상"></div>
-    <button class="sub-btn orange" onclick="completeBizSignupAndPay()">가입 신청 · 승인 대기</button>
+    <button class="sub-btn orange" onclick="completeBizSignup()">무료로 학원 등록 신청하기</button>
     <div class="sub-note">가입 신청 후 사업자등록증 확인 및 승인까지 영업일 1~2일 소요됩니다</div>
   </div>
 </div>
@@ -1609,7 +1646,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div class="ds"><div class="ds-n" id="db-wish-cnt">-</div><div class="ds-l">관심 학부모</div></div>
     <div class="ds"><div class="ds-n" id="db-review-cnt">-</div><div class="ds-l">받은 리뷰</div></div>
   </div>
-  <div class="up-banner" id="up-banner" style="display:none" onclick="openPayModal('premium')">
+  <div class="up-banner" id="up-banner" onclick="openPayModal('premium')">
     <div><h4>🚀 프리미엄으로 업그레이드</h4><p>SNS 연동 · 상담예약 · 상단 고정 노출</p></div>
     <button class="up-sm">월 55,000원</button>
   </div>
@@ -1756,13 +1793,23 @@ async function initAuth(){
 
 async function onLogin(user){
   currentUser = user;
-  loadWishFromLocal(); // 유저별 관심목록 불러오기
-  const { data } = await sb.from('academies').select('*').eq('owner_id', user.id).maybeSingle();
-  if(data) currentAcademy = data;
+  loadWishFromLocal();
+
+  // profiles에서 role 확인
+  try {
+    const { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle();
+    currentUser._role = profile?.role || user.user_metadata?.role || 'user';
+  } catch(e){ currentUser._role = user.user_metadata?.role || 'user'; }
+
+  // owner면 학원 정보 불러오기
+  if(currentUser._role === 'owner' || currentUser._role === 'academy'){
+    const { data } = await sb.from('academies').select('*').eq('owner_id', user.id).maybeSingle();
+    if(data) currentAcademy = data;
+    if(data) setTimeout(loadDashboardData, 300);
+  }
+
   updateHeaderUI();
   resetReviewCache();
-  // 대시보드 데이터 자동 로드
-  if(data) setTimeout(loadDashboardData, 300);
 }
 
 function onLogout(){
@@ -1873,7 +1920,7 @@ async function completeBizSignupAndPay(){
     // 1. Supabase 회원가입
     const { data:authData, error:authErr } = await sb.auth.signUp({
       email, password: pw,
-      options:{ data:{ role:'academy', academy_name:name } }
+      options:{ data:{ role:'owner', academy_name:name } }
     });
     if(authErr) throw authErr;
 
@@ -1920,7 +1967,7 @@ async function completeBizSignupAndPay(){
   }
 }
 
-function completeBizSignup(){ completeBizSignupAndPay(); }
+function completeBizSignup(){ selectedPlan='free'; completeBizSignupAndPay(); }
 
 /* Supabase DB에서 학원 목록 불러오기 */
 async function loadAcademiesFromDB(){
@@ -3127,6 +3174,12 @@ function resetReviewCache(){ _userHasReview = null; }
 function goMyPage(){
   if(!currentUser){
     openLoginModal();
+    return;
+  }
+  // owner면 대시보드로 바로
+  if(currentUser._role === 'owner' || currentAcademy){
+    go('page-dashboard');
+    setTimeout(loadDashboardData, 200);
     return;
   }
   // 프로필 정보 업데이트
