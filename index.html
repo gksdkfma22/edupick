@@ -4153,7 +4153,10 @@ async function loginWithKakao(){
       provider: 'kakao',
       options: {
         redirectTo: 'https://edu-pick.co.kr',
-        scopes: 'profile_nickname profile_image'
+        scopes: 'profile_nickname profile_image',
+        queryParams: {
+          scope: 'profile_nickname profile_image'
+        }
       }
     });
     if(error) throw error;
