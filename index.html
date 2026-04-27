@@ -1626,6 +1626,10 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <label>비밀번호</label>
       <input type="password" id="login-pw" placeholder="비밀번호 입력">
     </div>
+    <!-- 비밀번호 찾기 -->
+    <div style="text-align:right;margin:-6px 0 10px;">
+      <span onclick="forgotPassword()" style="font-size:12px;color:#176ED3;cursor:pointer;font-weight:700;">비밀번호 찾기</span>
+    </div>
     <div class="modal-btns">
       <button class="mb-cancel" onclick="document.getElementById('login-modal-ov').classList.remove('open')">취소</button>
       <button class="mb-save" onclick="doLogin()">로그인</button>
@@ -1640,6 +1644,9 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         <img src="https://developers.kakao.com/assets/img/about/logos/kakaolink/kakaolink_btn_small.png" style="width:20px;height:20px;">
         카카오로 로그인
       </button>
+    </div>
+    <div style="text-align:center;margin-top:12px;font-size:12px;color:#8A94A6;">
+      계정이 없으신가요? <span onclick="document.getElementById('login-modal-ov').classList.remove('open');go('page-type')" style="color:#176ED3;font-weight:700;cursor:pointer;">회원가입</span>
     </div>
   </div>
 </div>
@@ -3440,6 +3447,28 @@ function openAppleMap(){
     window.open(`https://maps.apple.com/?q=${encodeURIComponent(a.name)}&ll=${a.lat},${a.lng}`, '_blank');
   } else if(a.address){
     window.open(`https://maps.apple.com/?q=${encodeURIComponent(a.address)}`, '_blank');
+  }
+}
+
+
+/* ════ 비밀번호 찾기 ════ */
+async function forgotPassword(){
+  const email = document.getElementById('login-email')?.value?.trim();
+  if(!email){
+    showToast('이메일을 먼저 입력해주세요');
+    document.getElementById('login-email')?.focus();
+    return;
+  }
+  if(!sb){ showToast('서버 연결 중...'); return; }
+  try {
+    const { error } = await sb.auth.resetPasswordForEmail(email, {
+      redirectTo: 'https://edu-pick.co.kr'
+    });
+    if(error) throw error;
+    showToast('✅ 비밀번호 재설정 링크를 이메일로 보냈어요!');
+    document.getElementById('login-modal-ov').classList.remove('open');
+  } catch(e){
+    showToast('오류: ' + (e.message || '다시 시도해주세요'));
   }
 }
 
