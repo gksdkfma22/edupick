@@ -2097,21 +2097,31 @@ async function completeUserSignup(){
 
 /* 사업자 가입 + 학원 DB 저장 */
 async function completeBizSignupAndPay(){
-  const name    = document.getElementById('biz-name')?.value?.trim() || '';
-  const addr    = document.getElementById('biz-addr')?.value?.trim() || '';
+  const name    = document.getElementById('biz-name')?.value?.trim();
+  const owner   = document.getElementById('biz-owner')?.value?.trim();
+  const regNo   = document.getElementById('biz-reg-no')?.value?.trim();
+  const phone   = document.getElementById('biz-phone')?.value?.trim();
+  const addr    = document.getElementById('biz-addr')?.value?.trim();
   const subj    = document.getElementById('biz-subj')?.value || '영어';
-  const emailEl = document.getElementById('biz-email') || document.querySelector('#page-biz-signup input[type=email]');
-  const pwEl    = document.getElementById('biz-pw')    || document.querySelector('#page-biz-signup input[type=password]');
-  const email   = emailEl?.value?.trim() || '';
-  const pw      = pwEl?.value || '';
+  const price   = document.getElementById('biz-price')?.value?.trim();
+  const emailEl = document.getElementById('biz-email');
+  const pwEl    = document.getElementById('biz-pw');
+  const email   = emailEl?.value?.trim();
+  const pw      = pwEl?.value;
 
-  if(!name){ showToast('학원명을 입력해주세요'); return; }
-  if(!email){ showToast('이메일을 입력해주세요'); return; }
+  // 필수 항목 검증
+  if(!name)  { showToast('학원명을 입력해주세요'); return; }
+  if(!owner) { showToast('대표자명을 입력해주세요'); return; }
+  if(!regNo) { showToast('사업자등록번호를 입력해주세요'); return; }
+  if(!phone) { showToast('연락처를 입력해주세요'); return; }
+  if(!addr)  { showToast('학원 주소를 입력해주세요'); return; }
+  if(!email) { showToast('이메일을 입력해주세요'); return; }
   if(!pw || pw.length < 6){ showToast('비밀번호는 6자 이상이어야 해요'); return; }
-  if(!sb){ showToast('잠시 후 다시 시도해주세요 (서버 연결 중)'); return; }
+  if(!sb)    { showToast('잠시 후 다시 시도해주세요'); return; }
 
   try {
-    showToast('가입 중...');
+    showToast('가입 신청 중...');
+
     // 1. Supabase 회원가입
     const { data:authData, error:authErr } = await sb.auth.signUp({
       email, password: pw,
@@ -2121,43 +2131,38 @@ async function completeBizSignupAndPay(){
 
     // 2. 바로 로그인 시도
     const { error:loginErr } = await sb.auth.signInWithPassword({ email, password: pw });
-    if(loginErr) console.warn('자동 로그인 실패 (이메일 인증 필요할 수 있음):', loginErr.message);
+    if(loginErr) console.warn('자동 로그인 실패:', loginErr.message);
 
-    // 3. 학원 정보 DB 저장
+    // 3. 학원 정보 DB 저장 (is_active: false → 관리자 승인 후 노출)
     const userId = authData.user?.id || currentUser?.id;
     if(userId){
       const { error: dbErr } = await sb.from('academies').insert({
-        owner_id: userId,
-        name, address: addr, subject: subj,
-        plan: selectedPlan, city: addr,
-        lat: 36.8151, lng: 127.1139,
-        is_active: true,
+        owner_id:   userId,
+        name,
+        address:    addr,
+        city:       '천안시 서북구',
+        subject:    subj,
+        plan:       selectedPlan || 'free',
+        lat:        36.8151,
+        lng:        127.1139,
+        is_active:  false,  // ← 관리자 승인 전까지 지도 미노출
+        phone,
+        description: `대표자: ${owner} | 사업자등록번호: ${regNo}`,
       });
       if(dbErr) console.error('DB 저장 오류:', dbErr);
     }
 
-    // 4. 대시보드 UI 업데이트
-    document.getElementById('db-acad-name').textContent = name;
-    document.getElementById('di-name').textContent = name;
-    document.getElementById('di-subj').textContent = subj;
-    document.getElementById('db-loc').textContent = '📍 ' + addr;
-
-    const pills = { free:'🆓 무료 플랜', basic:'🗺 베이직 플랜', premium:'⭐ 프리미엄 플랜' };
-    const pillEl = document.getElementById('db-plan-pill');
-    if(pillEl) pillEl.textContent = pills[selectedPlan] || pills['free'];
-
-    showToast('🎉 가입 완료!');
-
-    if(selectedPlan !== 'free') openPayModal(selectedPlan);
-    else go('page-dashboard'); setTimeout(loadDashboardData, 500);
+    showToast('🎉 가입 신청 완료! 승인 후 대시보드가 활성화됩니다.');
+    go('page-dashboard');
+    setTimeout(loadDashboardData, 500);
 
   } catch(e){
     console.error('가입 오류:', e);
-    // 에러 메시지 한국어로
     let msg = e.message || '다시 시도해주세요';
     if(msg.includes('already registered')) msg = '이미 가입된 이메일이에요';
-    if(msg.includes('invalid')) msg = '이메일 형식을 확인해주세요';
-    if(msg.includes('weak')) msg = '비밀번호가 너무 단순해요';
+    if(msg.includes('Database error'))     msg = '서버 오류입니다. 잠시 후 다시 시도해주세요';
+    if(msg.includes('invalid'))            msg = '이메일 형식을 확인해주세요';
+    if(msg.includes('weak'))               msg = '비밀번호가 너무 단순해요';
     showToast('오류: ' + msg);
   }
 }
@@ -3543,42 +3548,6 @@ function selectPlan(plan){
   document.getElementById('ps-pn').textContent=info.pn;
   document.getElementById('ps-pr').textContent=info.pr;
   go('page-biz-signup');
-}
-
-function completeBizSignupAndPay(){
-  // 학원 정보 먼저 저장
-  const name = document.getElementById('biz-name').value || '내 학원';
-  const addr = document.getElementById('biz-addr').value || '천안시';
-  const subj = document.getElementById('biz-subj').value;
-  document.getElementById('db-acad-name').textContent = name;
-  document.getElementById('di-name').textContent = name;
-  document.getElementById('di-subj').textContent = subj;
-  document.getElementById('db-loc').textContent = '📍 ' + addr;
-  // 결제 모달 열기
-  openPayModal(selectedPlan);
-}
-
-function completeBizSignup(){
-  const name=document.getElementById('biz-name').value||'내 학원';
-  const addr=document.getElementById('biz-addr').value||'천안시';
-  const subj=document.getElementById('biz-subj').value;
-  document.getElementById('db-acad-name').textContent=name;
-  document.getElementById('di-name').textContent=name;
-  document.getElementById('di-subj').textContent=subj;
-  document.getElementById('db-loc').textContent='📍 '+addr;
-  const pills={free:'🆓 무료 플랜',basic:'🗺 베이직 플랜',premium:'⭐ 프리미엄 플랜'};
-  document.getElementById('db-plan-pill').textContent=pills[selectedPlan];
-  const isBasic=selectedPlan==='free'||selectedPlan==='basic';
-  // 베이직/무료: 소식·시간표 가능 여부
-  const timetableOk=selectedPlan!=='free';
-  const newsOk=selectedPlan!=='free';
-  document.getElementById('db-sec-timetable').style.display=timetableOk?'block':'none';
-  document.getElementById('db-sec-news').style.display=newsOk?'block':'none';
-  document.getElementById('up-banner').style.display=isBasic?'flex':'none';
-  if(selectedPlan==='premium'){unlockSection('sns-sec');unlockSection('rsv-sec');}
-  else{lockSection('sns-sec');lockSection('rsv-sec');}
-  showToast('🎉 가입 완료! 대시보드에 오신 걸 환영합니다');
-  go('page-dashboard');
 }
 
 function lockSection(id){
