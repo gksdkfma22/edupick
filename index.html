@@ -1010,11 +1010,28 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 
 <!-- Info Edit Modal -->
 <div class="modal-ov" id="modal-info" onclick="closeModal('info',event)">
-  <div class="modal-box">
+  <div class="modal-box" style="max-height:85vh;overflow-y:auto;">
     <div class="modal-title">📋 학원 정보 수정</div>
-    <div class="mfg"><label>학원명</label><input type="text" id="mi-name" value="탑클래스 영어학원"></div>
-    <div class="mfg"><label>월 수강료</label><input type="text" value="200,000"></div>
-    <div class="mfg"><label>연락처</label><input type="tel" value="010-1234-5678"></div>
+    <div class="mfg"><label>학원명 *</label><input type="text" id="mi-name" placeholder="탑클래스 영어학원"></div>
+    <div class="mfg"><label>주요 과목</label>
+      <select id="mi-subj">
+        <option>영어</option><option>수학</option><option>국어</option>
+        <option>음악</option><option>미술</option><option>체육</option>
+        <option>과학</option><option>기타</option>
+      </select>
+    </div>
+    <div class="mfg"><label>학급</label>
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="mi-g-elem" value="초등"> 초등</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="mi-g-mid" value="중등"> 중등</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="mi-g-high" value="고등"> 고등</label>
+      </div>
+    </div>
+    <div class="mfg"><label>월 수강료 (원)</label><input type="number" id="mi-price" placeholder="180000"></div>
+    <div class="mfg"><label>연락처</label><input type="tel" id="mi-phone" placeholder="010-0000-0000"></div>
+    <div class="mfg"><label>학원 주소</label><input type="text" id="mi-addr" placeholder="천안시 서북구 불당동..."></div>
+    <div class="mfg"><label>블로그 URL</label><input type="url" id="mi-blog" placeholder="https://blog.naver.com/..."></div>
+    <div class="mfg"><label>한 줄 소개</label><input type="text" id="mi-desc" placeholder="예) 10년 경력 원장이 직접 가르치는 소수정예 학원"></div>
     <div class="modal-btns">
       <button class="mb-cancel" onclick="closeModal('info')">취소</button>
       <button class="mb-save" onclick="saveInfo()">저장</button>
@@ -1784,7 +1801,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <button class="up-sm">월 55,000원</button>
   </div>
   <div class="db-sec">
-    <div class="db-sh">📋 학원 정보 <button onclick="openModal('info')">수정</button></div>
+    <div class="db-sh">📋 학원 정보</div>
     <div class="db-profile-upload" id="db-profile-wrap" style="padding:12px 0;display:flex;align-items:center;gap:12px;">
       <div id="db-profile-preview" style="width:64px;height:64px;border-radius:12px;background:#F4F6FB;border:1.5px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:28px;overflow:hidden;">🏫</div>
       <div>
@@ -1795,12 +1812,15 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         <div style="font-size:11px;color:#8A94A6;margin-top:4px;">모든 플랜 가능 · 최대 2MB</div>
       </div>
     </div>
-    <div class="info-card">
-      <div class="ir"><span class="ir-l">학원명</span><span class="ir-v" id="di-name">내 학원</span></div>
-      <div class="ir"><span class="ir-l">과목</span><span class="ir-v" id="di-subj">영어</span></div>
-      <div class="ir"><span class="ir-l">월 수강료</span><span class="ir-v" id="di-price" style="color:var(--red)">-</span></div>
-      <div class="ir"><span class="ir-l">연락처</span><span class="ir-v" id="di-phone">-</span></div>
-      <div class="ir"><span class="ir-l">블로그 URL</span><button class="ir-e" onclick="showToast('블로그 URL을 수정했습니다')">변경</button></div>
+    <div class="info-card" id="db-info-list">
+      <div class="ir"><span class="ir-l">학원명</span><span class="ir-v" id="di-name">-</span><button class="ir-e" onclick="openInfoEdit('name')">수정</button></div>
+      <div class="ir"><span class="ir-l">과목</span><span class="ir-v" id="di-subj">-</span><button class="ir-e" onclick="openInfoEdit('subject')">수정</button></div>
+      <div class="ir"><span class="ir-l">학급</span><span class="ir-v" id="di-grade">-</span><button class="ir-e" onclick="openInfoEdit('grade')">수정</button></div>
+      <div class="ir"><span class="ir-l">월 수강료</span><span class="ir-v" id="di-price" style="color:var(--red)">-</span><button class="ir-e" onclick="openInfoEdit('price')">수정</button></div>
+      <div class="ir"><span class="ir-l">연락처</span><span class="ir-v" id="di-phone">-</span><button class="ir-e" onclick="openInfoEdit('phone')">수정</button></div>
+      <div class="ir"><span class="ir-l">주소</span><span class="ir-v" id="di-addr" style="font-size:12px;">-</span><button class="ir-e" onclick="openInfoEdit('address')">수정</button></div>
+      <div class="ir"><span class="ir-l">블로그</span><span class="ir-v" id="di-blog" style="font-size:11px;color:#176ED3;">-</span><button class="ir-e" onclick="openInfoEdit('blog')">수정</button></div>
+      <div class="ir"><span class="ir-l">한 줄 소개</span><span class="ir-v" id="di-desc" style="font-size:12px;">-</span><button class="ir-e" onclick="openInfoEdit('desc')">수정</button></div>
     </div>
   </div>
   <div class="db-sec" id="db-sec-timetable">
@@ -3263,10 +3283,15 @@ async function loadDashboardData(){
 
   // 6. 학원 정보 표시
   const ac = currentAcademy;
-  const priceEl = document.getElementById('di-price');
-  const phoneEl = document.getElementById('di-phone');
-  if(priceEl) priceEl.textContent = ac.price ? ac.price.toLocaleString('ko-KR') + '원' : '-';
-  if(phoneEl) phoneEl.textContent = ac.phone || '-';
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val || '-'; };
+  set('di-name',  ac.name);
+  set('di-subj',  ac.subject);
+  set('di-grade', Array.isArray(ac.grade) ? ac.grade.join(', ') : (ac.grade||'-'));
+  set('di-price', ac.price ? ac.price.toLocaleString('ko-KR') + '원' : '-');
+  set('di-phone', ac.phone);
+  set('di-addr',  ac.address);
+  set('di-blog',  ac.blog);
+  set('di-desc',  ac.description);
 }
 
 
@@ -4211,11 +4236,87 @@ function openLoginModal(){
 /* ════ MODALS ════ */
 function openModal(t){document.getElementById('modal-'+t).classList.add('open');}
 function closeModal(t,e){if(!e||e.target===document.getElementById('modal-'+t))document.getElementById('modal-'+t).classList.remove('open');}
-function saveInfo(){
-  const n=document.getElementById('mi-name').value;
-  document.getElementById('di-name').textContent=n;
-  document.getElementById('db-acad-name').textContent=n;
-  showToast('학원 정보를 저장했습니다');closeModal('info');
+/* ════ 학원 정보 수정 ════ */
+function openInfoEdit(field){
+  if(!currentAcademy){ showToast('학원 정보가 없어요'); return; }
+  const a = currentAcademy;
+
+  // 모달 필드에 현재 값 채우기
+  const name  = document.getElementById('mi-name');
+  const subj  = document.getElementById('mi-subj');
+  const price = document.getElementById('mi-price');
+  const phone = document.getElementById('mi-phone');
+  const addr  = document.getElementById('mi-addr');
+  const blog  = document.getElementById('mi-blog');
+  const desc  = document.getElementById('mi-desc');
+
+  if(name)  name.value  = a.name    || '';
+  if(subj)  subj.value  = a.subject || '영어';
+  if(price) price.value = a.price   || '';
+  if(phone) phone.value = a.phone   || '';
+  if(addr)  addr.value  = a.address || '';
+  if(blog)  blog.value  = a.blog    || '';
+  if(desc)  desc.value  = a.description || '';
+
+  // 학급 체크박스
+  const grades = Array.isArray(a.grade) ? a.grade : (a.grade||'').split(',').map(g=>g.trim());
+  document.getElementById('mi-g-elem').checked = grades.includes('초등');
+  document.getElementById('mi-g-mid').checked  = grades.includes('중등');
+  document.getElementById('mi-g-high').checked = grades.includes('고등');
+
+  openModal('info');
+}
+
+async function saveInfo(){
+  if(!currentAcademy || !sb){ showToast('저장 실패: 연결 오류'); return; }
+
+  const name  = document.getElementById('mi-name')?.value?.trim();
+  const subj  = document.getElementById('mi-subj')?.value;
+  const price = parseInt(document.getElementById('mi-price')?.value || '0');
+  const phone = document.getElementById('mi-phone')?.value?.trim();
+  const addr  = document.getElementById('mi-addr')?.value?.trim();
+  const blog  = document.getElementById('mi-blog')?.value?.trim();
+  const desc  = document.getElementById('mi-desc')?.value?.trim();
+
+  const grades = [];
+  if(document.getElementById('mi-g-elem')?.checked) grades.push('초등');
+  if(document.getElementById('mi-g-mid')?.checked)  grades.push('중등');
+  if(document.getElementById('mi-g-high')?.checked) grades.push('고등');
+  const grade = grades.join(',') || '초등,중등,고등';
+
+  if(!name){ showToast('학원명을 입력해주세요'); return; }
+
+  try {
+    await withRetry(async () => {
+      const { error } = await sb.from('academies').update({
+        name, subject: subj, grade, price, phone, address: addr, blog, description: desc
+      }).eq('id', currentAcademy.id);
+      if(error) throw error;
+    }, 3, 1500, '학원 정보 저장');
+
+    // 로컬 currentAcademy 업데이트
+    currentAcademy = { ...currentAcademy, name, subject: subj, grade, price, phone, address: addr, blog, description: desc };
+
+    // 화면 업데이트
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val || '-'; };
+    set('di-name',  name);
+    set('di-subj',  subj);
+    set('di-grade', grade);
+    set('di-price', price ? price.toLocaleString('ko-KR') + '원' : '-');
+    set('di-phone', phone);
+    set('di-addr',  addr);
+    set('di-blog',  blog);
+    set('di-desc',  desc);
+
+    // 헤더 학원명도 업데이트
+    const nameEl = document.getElementById('db-acad-name');
+    if(nameEl) nameEl.textContent = name;
+
+    showToast('✅ 학원 정보가 저장됐어요!');
+    closeModal('info');
+  } catch(e){
+    showToast('저장 실패: ' + (e.message || '다시 시도해주세요'));
+  }
 }
 
 /* ════ FAQ ════ */
