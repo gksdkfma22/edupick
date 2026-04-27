@@ -2458,10 +2458,16 @@ function render(){
   document.getElementById('cnt').textContent=items.length;
   document.getElementById('no-r').style.display=(!items.length)?'block':'none';
 
+  // 전체 아이템 저장 (더보기용)
+  window._allItems = items;
+  curPage = 1;
+  const pagedItems = items.slice(0, PAGE_SIZE);
+  const hasMore = items.length > PAGE_SIZE;
+
   // List
   const listEl=document.getElementById('list');
   listEl.innerHTML='';
-  items.forEach((a,i)=>{
+  pagedItems.forEach((a,i)=>{
     const avg=avgStars(a.reviews);
     const liked=wishSet.has(a.id);
     const planCls=a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
