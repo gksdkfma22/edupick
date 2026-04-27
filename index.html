@@ -1545,7 +1545,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- ════════════════ 회원유형 ════════════════ -->
 <div class="page" id="page-type">
   <div class="page-hdr">
-    <span class="page-hdr-back" onclick="goBack()">←</span>
+    <span class="page-hdr-back" onclick="go('page-home')">←</span>
     <h2>가입 유형 선택</h2>
     <p>어떤 목적으로 이용하실 건가요?</p>
   </div>
@@ -1618,7 +1618,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- ════════════════ 일반 가입 ════════════════ -->
 <div class="page" id="page-user-signup">
   <div class="form-hdr blue">
-    <span class="form-hdr-back" onclick="go('page-type')">←</span>
+    <span class="form-hdr-back" onclick="go('page-home')">←</span>
     <h2>학부모 · 학생 가입</h2>
     <p>완전 무료 · 1분 가입</p>
   </div>
@@ -1745,7 +1745,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- ════════════════ 사업자 가입 폼 ════════════════ -->
 <div class="page" id="page-biz-signup">
   <div class="form-hdr orange">
-    <span class="form-hdr-back" onclick="go('page-type')">←</span>
+    <span class="form-hdr-back" onclick="go('page-home')">←</span>
     <h2>학원 관계자 가입</h2>
     <p>무료로 내 학원을 등록하고 바로 노출하세요</p>
   </div>
@@ -3995,6 +3995,77 @@ async function exportCSV(table){
   }
 }
 
+
+/* ════ 관리자 학원 수정 ════ */
+function openAdminEdit(id){
+  const a = adminData.find(x => x.id === id);
+  if(!a){ showToast('학원 정보를 찾을 수 없어요'); return; }
+
+  document.getElementById('ae-id').value    = a.id;
+  document.getElementById('ae-name').value  = a.name    || '';
+  document.getElementById('ae-addr').value  = a.address || '';
+  document.getElementById('ae-city').value  = a.city    || '';
+  document.getElementById('ae-subj').value  = a.subject || '영어';
+  document.getElementById('ae-price').value = a.price   || '';
+  document.getElementById('ae-phone').value = a.phone   || '';
+  document.getElementById('ae-plan').value  = a.plan    || 'free';
+  document.getElementById('ae-lat').value   = a.lat     || '';
+  document.getElementById('ae-lng').value   = a.lng     || '';
+  document.getElementById('ae-blog').value  = a.blog    || '';
+  document.getElementById('ae-desc').value  = a.description || '';
+
+  const grades = Array.isArray(a.grade) ? a.grade : (a.grade||'').split(',').map(g=>g.trim());
+  document.getElementById('ae-g-elem').checked = grades.includes('초등');
+  document.getElementById('ae-g-mid').checked  = grades.includes('중등');
+  document.getElementById('ae-g-high').checked = grades.includes('고등');
+
+  openModal('admin-edit');
+}
+
+async function saveAdminEdit(){
+  const id    = document.getElementById('ae-id')?.value;
+  const name  = document.getElementById('ae-name')?.value?.trim();
+  const addr  = document.getElementById('ae-addr')?.value?.trim();
+  const city  = document.getElementById('ae-city')?.value?.trim();
+  const subj  = document.getElementById('ae-subj')?.value;
+  const price = parseInt(document.getElementById('ae-price')?.value || '0');
+  const phone = document.getElementById('ae-phone')?.value?.trim();
+  const plan  = document.getElementById('ae-plan')?.value;
+  const lat   = parseFloat(document.getElementById('ae-lat')?.value || '0');
+  const lng   = parseFloat(document.getElementById('ae-lng')?.value || '0');
+  const blog  = document.getElementById('ae-blog')?.value?.trim();
+  const desc  = document.getElementById('ae-desc')?.value?.trim();
+
+  const grades = [];
+  if(document.getElementById('ae-g-elem')?.checked) grades.push('초등');
+  if(document.getElementById('ae-g-mid')?.checked)  grades.push('중등');
+  if(document.getElementById('ae-g-high')?.checked) grades.push('고등');
+  const grade = grades.join(',') || '초등,중등,고등';
+
+  if(!name){ showToast('학원명을 입력해주세요'); return; }
+  if(!id)  { showToast('오류: ID 없음'); return; }
+
+  try {
+    await withRetry(async () => {
+      const { error } = await sb.from('academies').update({
+        name, address: addr, city, subject: subj, grade,
+        price, phone, plan, lat, lng, blog, description: desc
+      }).eq('id', id);
+      if(error) throw error;
+    }, 3, 1500, '학원 정보 저장');
+
+    // adminData 로컬 업데이트
+    const idx = adminData.findIndex(x => x.id === id);
+    if(idx >= 0) adminData[idx] = { ...adminData[idx], name, address: addr, city, subject: subj, grade, price, phone, plan, lat, lng, blog, description: desc };
+
+    showToast('✅ 학원 정보가 수정됐어요!');
+    closeModal('admin-edit');
+    renderAdminList(adminCurrentFilter);
+  } catch(e){
+    showToast('저장 실패: ' + (e.message || '다시 시도해주세요'));
+  }
+}
+
 /* ════ 관리자 페이지 ════ */
 
 /* ════ 관리자 섹션 전환 ════ */
@@ -4156,7 +4227,7 @@ function renderAdminList(filter){
         ` : `
           <button class="admin-btn-reject" onclick="revokeAcademy('${a.id}')">🔒 승인 취소</button>
         `}
-        <button class="admin-btn-detail" onclick="showAdminDetail('${a.id}')">상세</button>
+        <button onclick="openAdminEdit('${a.id}')" style="flex:1;padding:8px;border-radius:8px;border:1.5px solid #176ED3;background:#EEF5FF;color:#176ED3;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">✏️ 정보 수정</button>
       </div>
     </div>
   `).join('');
@@ -4659,6 +4730,49 @@ function completePay(){
   setTimeout(()=> go('page-dashboard'), 400);
 }
 </script>
+
+
+<!-- ════ 관리자 학원 수정 모달 ════ -->
+<div class="modal-ov" id="modal-admin-edit" onclick="closeModal('admin-edit',event)">
+  <div class="modal-box" style="max-height:88vh;overflow-y:auto;">
+    <div class="modal-title">✏️ 학원 정보 수정 (관리자)</div>
+    <input type="hidden" id="ae-id">
+    <div class="mfg"><label>학원명 *</label><input type="text" id="ae-name"></div>
+    <div class="mfg"><label>주소</label><input type="text" id="ae-addr"></div>
+    <div class="mfg"><label>도시</label><input type="text" id="ae-city" placeholder="천안시 서북구"></div>
+    <div class="mfg"><label>과목</label>
+      <select id="ae-subj">
+        <option>영어</option><option>수학</option><option>국어</option>
+        <option>음악</option><option>미술</option><option>체육</option>
+        <option>과학</option><option>기타</option>
+      </select>
+    </div>
+    <div class="mfg"><label>학급</label>
+      <div style="display:flex;gap:10px;margin-top:6px;">
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="ae-g-elem" value="초등"> 초등</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="ae-g-mid" value="중등"> 중등</label>
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="ae-g-high" value="고등"> 고등</label>
+      </div>
+    </div>
+    <div class="mfg"><label>월 수강료 (원)</label><input type="number" id="ae-price"></div>
+    <div class="mfg"><label>연락처</label><input type="tel" id="ae-phone"></div>
+    <div class="mfg"><label>플랜</label>
+      <select id="ae-plan">
+        <option value="free">무료</option>
+        <option value="basic">베이직</option>
+        <option value="premium">프리미엄</option>
+      </select>
+    </div>
+    <div class="mfg"><label>위도 (lat)</label><input type="number" id="ae-lat" step="0.000001"></div>
+    <div class="mfg"><label>경도 (lng)</label><input type="number" id="ae-lng" step="0.000001"></div>
+    <div class="mfg"><label>블로그 URL</label><input type="url" id="ae-blog"></div>
+    <div class="mfg"><label>한 줄 소개</label><input type="text" id="ae-desc"></div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('admin-edit')">취소</button>
+      <button class="mb-save" onclick="saveAdminEdit()">저장</button>
+    </div>
+  </div>
+</div>
 
 <!-- PWA 설치 배너 -->
 <div id="pwa-banner" style="display:none;">
