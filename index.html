@@ -502,7 +502,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
    LANDING PAGE
 ══════════════════════════════════ */
 #page-landing{background:var(--white);}
-.lnav{position:fixed;top:0;left:0;right:0;z-index:600;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,30,91,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);}
+.lnav{position:fixed;top:0;left:0;right:0;z-index:700;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,30,91,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);}
 .lnav .logo{font-size:20px;}
 .lnav-r{display:flex;gap:8px;}
 .lnav-btn{padding:6px 13px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;}
@@ -510,13 +510,13 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .lnav-btn.s{background:var(--orange);color:#fff;}
 
 .hero{background:linear-gradient(160deg,#061E5B 0%,#0A3D91 55%,#1A5FD4 100%);padding:86px 24px 48px;text-align:center;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");}
+.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none;}
 .hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,90,31,.25);border:1px solid rgba(255,90,31,.4);border-radius:20px;padding:5px 14px;color:#FFB299;font-size:12px;font-weight:700;margin-bottom:18px;}
 .hero h1{font-size:30px;font-weight:900;color:#fff;line-height:1.25;letter-spacing:-1px;margin-bottom:12px;}
 .hero h1 em{color:var(--orange);font-style:normal;}
 .hero-sub{font-size:15px;color:rgba(255,255,255,.72);line-height:1.6;margin-bottom:28px;}
-.hero-btns{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto 28px;}
-.hcta{padding:15px;border-radius:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;}
+.hero-btns{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto 28px;position:relative;z-index:1;}
+.hcta{padding:15px;border-radius:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;position:relative;z-index:2;}
 .hcta.pr{background:var(--orange);color:#fff;box-shadow:0 4px 20px rgba(255,90,31,.45);}
 .hcta.sc{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);}
 .hero-stats{display:flex;justify-content:center;gap:24px;}
@@ -1418,7 +1418,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <!-- ════════════════ LANDING ════════════════ -->
 <div class="page" id="page-landing">
   <div class="lnav">
-    <div class="logo" onclick="go('page-home')">에듀<em>픽</em></div>
+    <div onclick="go('page-home')" style="font-size:20px;font-weight:900;color:#fff;cursor:pointer;letter-spacing:-0.5px;">에듀픽</div>
     <div class="lnav-r">
       <button class="lnav-btn g" onclick="openLoginModal()">로그인</button>
       <button class="lnav-btn s" onclick="go('page-biz-signup')">학원 등록</button>
