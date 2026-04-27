@@ -930,6 +930,35 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
           <div class="sh-cell"><div class="sh-lbl">위치</div><div class="sh-val" id="sh-city" style="font-size:12px"></div></div>
         </div>
         <div id="sh-grade-badges" style="padding:0 20px;margin-bottom:14px;"></div>
+
+        <!-- 주소 + 층수 + 지도 버튼 -->
+        <div id="sh-addr-section" style="padding:0 20px;margin-bottom:16px;display:none;">
+          <div style="background:#F8F9FB;border-radius:12px;padding:12px 14px;">
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+              <div style="flex:1;">
+                <div style="font-size:11px;color:#8A94A6;font-weight:700;margin-bottom:4px;">📍 주소</div>
+                <div id="sh-address-text" style="font-size:13px;color:#1A1A2E;font-weight:600;line-height:1.5;"></div>
+                <div id="sh-floor-text" style="font-size:12px;color:#6B7280;margin-top:3px;"></div>
+              </div>
+              <button onclick="copyAddress()" style="flex-shrink:0;padding:7px 12px;border-radius:8px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;color:#374151;cursor:pointer;font-family:inherit;">
+                📋 복사
+              </button>
+            </div>
+            <!-- 지도 앱 연동 버튼 -->
+            <div style="display:flex;gap:8px;margin-top:10px;">
+              <button onclick="openKakaoMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#FEE500;color:#1A1A2E;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span style="font-size:14px;">🗺</span> 카카오맵
+              </button>
+              <button onclick="openNaverMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#03C75A;color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span style="font-size:14px;">📍</span> 네이버지도
+              </button>
+              <button onclick="openAppleMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#1A1A2E;color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
+                <span style="font-size:14px;">🍎</span> 애플지도
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div class="sh-cta-wrap">
           <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
         </div>
@@ -2149,8 +2178,13 @@ async function loadAcademiesFromDB(){
       blog: r.blog||'', image: r.image||'',
       lat: r.lat||0, lng: r.lng||0,
       reviews: (r.reviews||[]).filter(rv => !rv.status || rv.status === 'active').map(rv=>({ nick:rv.nickname||'익명', stars:rv.stars||5, body:rv.body||'', date:rv.created_at?.slice(5,10)||'', mine: rv.user_id===currentUser?.id })),
-      claimed: !!r.owner_id,  // 업체가 소유권 주장했는지
+      claimed:  !!r.owner_id,
       owner_id: r.owner_id || null,
+      address:  r.address || '',
+      floor:    r.floor || '',
+      phone:    r.phone || '',
+      blog:     r.blog || '',
+      description: r.description || '',
     })).filter(r=>r.name&&r.lat&&r.lng);
     return DATA.length > 0;
   } catch(e){ return false; }
@@ -2840,6 +2874,18 @@ function openSheet(id){
   document.getElementById('sh-price').textContent=a.price.toLocaleString('ko-KR')+'원';
   document.getElementById('sh-dist').textContent=d+'km';
   document.getElementById('sh-city').textContent=a.city;
+
+  // 주소 + 층수 표시
+  const addrSection = document.getElementById('sh-addr-section');
+  const addrText    = document.getElementById('sh-address-text');
+  const floorText   = document.getElementById('sh-floor-text');
+  if(a.address && addrSection){
+    addrSection.style.display = 'block';
+    if(addrText) addrText.textContent = a.address;
+    if(floorText) floorText.textContent = a.floor ? a.floor + '층' : '';
+  } else if(addrSection){
+    addrSection.style.display = 'none';
+  }
   // 학급 뱃지
   document.getElementById('sh-grade-badges').innerHTML=gradeBadgesHtml(a.grade);
   // heart
@@ -3346,6 +3392,55 @@ function loadMoreItems(){
   }
 
   isLoadingMore = false;
+}
+
+
+/* ════ 주소 복사 + 지도 연동 ════ */
+function copyAddress(){
+  const a = sheetAcademy;
+  if(!a?.address){ showToast('주소 정보가 없어요'); return; }
+  const text = a.address + (a.floor ? ' ' + a.floor + '층' : '');
+  if(navigator.clipboard){
+    navigator.clipboard.writeText(text).then(()=> showToast('✅ 주소가 복사됐어요!'));
+  } else {
+    const el = document.createElement('textarea');
+    el.value = text;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    showToast('✅ 주소가 복사됐어요!');
+  }
+}
+
+function openKakaoMap(){
+  const a = sheetAcademy;
+  if(!a) return;
+  if(a.lat && a.lng){
+    window.open(`https://map.kakao.com/link/map/${encodeURIComponent(a.name)},${a.lat},${a.lng}`, '_blank');
+  } else if(a.address){
+    window.open(`https://map.kakao.com/link/search/${encodeURIComponent(a.address)}`, '_blank');
+  }
+}
+
+function openNaverMap(){
+  const a = sheetAcademy;
+  if(!a) return;
+  if(a.lat && a.lng){
+    window.open(`https://map.naver.com/v5/search/${encodeURIComponent(a.address||a.name)}?c=${a.lng},${a.lat},15,0,0,0,dh`, '_blank');
+  } else if(a.address){
+    window.open(`https://map.naver.com/v5/search/${encodeURIComponent(a.address)}`, '_blank');
+  }
+}
+
+function openAppleMap(){
+  const a = sheetAcademy;
+  if(!a) return;
+  if(a.lat && a.lng){
+    window.open(`https://maps.apple.com/?q=${encodeURIComponent(a.name)}&ll=${a.lat},${a.lng}`, '_blank');
+  } else if(a.address){
+    window.open(`https://maps.apple.com/?q=${encodeURIComponent(a.address)}`, '_blank');
+  }
 }
 
 /* ════ 시간표 관리 ════ */
