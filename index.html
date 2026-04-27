@@ -2881,8 +2881,8 @@ function openSheet(id){
   const floorText   = document.getElementById('sh-floor-text');
   if(a.address && addrSection){
     addrSection.style.display = 'block';
-    if(addrText) addrText.textContent = a.address;
-    if(floorText) floorText.textContent = a.floor ? a.floor + '층' : '';
+    if(addrText) addrText.textContent = a.address + (a.floor ? ', ' + a.floor + '층' : '');
+    if(floorText) floorText.textContent = '';
   } else if(addrSection){
     addrSection.style.display = 'none';
   }
