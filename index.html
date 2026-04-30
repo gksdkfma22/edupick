@@ -1467,6 +1467,47 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 </div>
 
+
+<!-- ════════════════ 승인 대기 페이지 ════════════════ -->
+<div class="page" id="page-pending">
+  <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#F8F9FB;text-align:center;">
+    <div style="font-size:64px;margin-bottom:20px;">⏳</div>
+    <h2 style="font-size:22px;font-weight:900;color:#1A1A2E;margin-bottom:12px;">가입 신청 완료!</h2>
+    <p style="font-size:15px;color:#6B7280;line-height:1.7;margin-bottom:24px;">
+      사업자 정보 확인 후 승인해드릴게요.<br>
+      <strong style="color:#176ED3;">영업일 1~2일</strong> 소요됩니다.
+    </p>
+    <div style="background:#fff;border-radius:16px;padding:20px 24px;width:100%;max-width:320px;box-shadow:0 2px 12px rgba(0,0,0,.08);margin-bottom:24px;">
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#374151;">
+          <span style="font-size:20px;">✅</span> 가입 신청 접수 완료
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#374151;">
+          <span style="font-size:20px;">🔍</span> 사업자 정보 확인 중
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:14px;color:#C0C8D8;">
+          <span style="font-size:20px;">🏫</span> 대시보드 활성화 (승인 후)
+        </div>
+      </div>
+    </div>
+    <p style="font-size:13px;color:#8A94A6;margin-bottom:20px;">
+      승인 완료 시 가입 이메일로 알려드려요
+    </p>
+    <button onclick="checkApprovalStatus()" style="
+      padding:13px 28px;border-radius:12px;border:1.5px solid #176ED3;
+      background:#fff;color:#176ED3;font-size:14px;font-weight:800;
+      cursor:pointer;font-family:inherit;margin-bottom:12px;width:100%;max-width:320px;">
+      🔄 승인 상태 확인하기
+    </button>
+    <button onclick="sbLogout()" style="
+      padding:13px 28px;border-radius:12px;border:1.5px solid #E0E4EF;
+      background:#fff;color:#6B7280;font-size:14px;font-weight:700;
+      cursor:pointer;font-family:inherit;width:100%;max-width:320px;">
+      로그아웃
+    </button>
+  </div>
+</div>
+
 <!-- ════════════════ LANDING ════════════════ -->
 <div class="page" id="page-landing">
   <div class="lnav">
@@ -2002,11 +2043,19 @@ async function onLogin(user){
   // owner면 학원 정보 불러오기
   if(currentUser._role === 'owner' || currentUser._role === 'academy'){
     const { data } = await sb.from('academies').select('*').eq('owner_id', user.id).maybeSingle();
-    if(data) currentAcademy = data;
-    if(data) setTimeout(loadDashboardData, 300);
-    // 통계 탭 표시
-    const statTab = document.getElementById('db-stat-tab');
-    if(statTab) statTab.style.display = '';
+    if(data){
+      currentAcademy = data;
+      // 통계 탭 표시
+      const statTab = document.getElementById('db-stat-tab');
+      if(statTab) statTab.style.display = '';
+      // 승인 여부 체크
+      if(data.is_active){
+        setTimeout(loadDashboardData, 300);
+      } else {
+        // 미승인 → 대기 화면
+        setTimeout(() => go('page-pending'), 300);
+      }
+    }
   }
 
   updateHeaderUI();
@@ -2159,8 +2208,7 @@ async function completeBizSignupAndPay(){
     }
 
     showToast('🎉 가입 신청 완료! 승인 후 대시보드가 활성화됩니다.');
-    go('page-dashboard');
-    setTimeout(loadDashboardData, 500);
+    go('page-pending');  // 승인 대기 화면으로 이동
 
   } catch(e){
     console.error('가입 오류:', e);
@@ -3488,6 +3536,22 @@ async function forgotPassword(){
     document.getElementById('login-modal-ov').classList.remove('open');
   } catch(e){
     showToast('오류: ' + (e.message || '다시 시도해주세요'));
+  }
+}
+
+
+/* ════ 승인 상태 확인 ════ */
+async function checkApprovalStatus(){
+  if(!sb || !currentUser){ showToast('로그인이 필요해요'); return; }
+  showToast('확인 중...');
+  const { data } = await sb.from('academies').select('is_active').eq('owner_id', currentUser.id).maybeSingle();
+  if(data?.is_active){
+    showToast('✅ 승인됐어요! 대시보드로 이동합니다.');
+    currentAcademy = { ...currentAcademy, is_active: true };
+    go('page-dashboard');
+    setTimeout(loadDashboardData, 300);
+  } else {
+    showToast('⏳ 아직 검토 중이에요. 조금만 기다려주세요!');
   }
 }
 
