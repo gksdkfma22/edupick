@@ -227,6 +227,8 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .chip.sm .chip-lbl{font-size:12px;font-weight:700;color:#6B7280;white-space:nowrap;text-align:center;}
 .chip.sm.on{background:#2563EB;}
 .chip.sm.on .chip-lbl{color:#fff;font-weight:800;}
+.chip.sm.grade-on.유아{background:#10B981;}
+.chip.sm.grade-on.유아 .chip-lbl{color:#fff;font-weight:800;}
 .chip.sm.grade-on.초등{background:#F59E0B;}
 .chip.sm.grade-on.초등 .chip-lbl{color:#fff;font-weight:800;}
 .chip.sm.grade-on.중등{background:#8B5CF6;}
@@ -778,17 +780,14 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <button class="chip" onclick="setFilter('국어',this)">
       <div class="chip-ico" style="background:#F0FDF4;font-size:22px;font-weight:900;color:#16A34A;">가</div><div class="chip-lbl">국어</div>
     </button>
-    <button class="chip" onclick="setFilter('음악',this)">
-      <div class="chip-ico" style="background:#FFF0F9;font-size:22px;font-weight:900;color:#DB2777;">♪</div><div class="chip-lbl">음악</div>
-    </button>
-    <button class="chip" onclick="setFilter('미술',this)">
-      <div class="chip-ico" style="background:#FFF7ED;font-size:22px;font-weight:900;color:#EA580C;">✏</div><div class="chip-lbl">미술</div>
-    </button>
-    <button class="chip" onclick="setFilter('체육',this)">
-      <div class="chip-ico" style="background:#F0FDF4;font-size:22px;font-weight:900;color:#16A34A;">⚽</div><div class="chip-lbl">체육</div>
-    </button>
     <button class="chip" onclick="setFilter('과학',this)">
       <div class="chip-ico" style="background:#F5F3FF;font-size:22px;font-weight:900;color:#7C3AED;">⚗</div><div class="chip-lbl">과학</div>
+    </button>
+    <button class="chip" onclick="setFilter('컴퓨터',this)">
+      <div class="chip-ico" style="background:#EFF6FF;font-size:22px;">💻</div><div class="chip-lbl">컴퓨터</div>
+    </button>
+    <button class="chip" onclick="setFilter('예체능',this)">
+      <div class="chip-ico" style="background:#FFF0F9;font-size:22px;">🎨</div><div class="chip-lbl">예체능</div>
     </button>
     <button class="chip" onclick="setFilter('기타',this)">
       <div class="chip-ico" style="background:#F8F9FA;font-size:20px;font-weight:900;color:#6B7280;">···</div><div class="chip-lbl">기타</div>
@@ -799,6 +798,9 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <span class="fbar2-label">학급</span>
     <button class="chip sm on" id="gchip-전체" onclick="setGrade('전체',this)">
       <div class="chip-ico">📋</div><div class="chip-lbl">전체</div>
+    </button>
+    <button class="chip sm" id="gchip-유아" onclick="setGrade('유아',this)">
+      <div class="chip-ico">🍼</div><div class="chip-lbl">유아</div>
     </button>
     <button class="chip sm" id="gchip-초등" onclick="setGrade('초등',this)">
       <div class="chip-ico">🟡</div><div class="chip-lbl">초등</div>
@@ -1045,12 +1047,13 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div class="mfg"><label>주요 과목</label>
       <select id="mi-subj">
         <option>영어</option><option>수학</option><option>국어</option>
-        <option>음악</option><option>미술</option><option>체육</option>
-        <option>과학</option><option>기타</option>
+        <option>과학</option><option>컴퓨터</option><option>예체능</option>
+        <option>음악</option><option>미술</option><option>체육</option><option>기타</option>
       </select>
     </div>
     <div class="mfg"><label>학급</label>
       <div style="display:flex;gap:10px;margin-top:6px;">
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="mi-g-baby" value="유아"> 유아</label>
         <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="mi-g-elem" value="초등"> 초등</label>
         <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="mi-g-mid" value="중등"> 중등</label>
         <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="mi-g-high" value="고등"> 고등</label>
@@ -2326,7 +2329,7 @@ async function fetchFromSheet(silent){
       if(typeof grade === 'string'){
         grade = grade.split(',').map(g=>g.trim()).filter(Boolean);
       }
-      if(!Array.isArray(grade) || !grade.length) grade = ['초등','중등','고등'];
+      if(!Array.isArray(grade) || !grade.length) grade = ['유아','초등','중등','고등'];
       return {
         id:      r.id      || (i + 1),
         name:    String(r.name    || '').trim(),
@@ -2532,7 +2535,7 @@ function gradeBadgesHtml(grades){
 function render(){
   const kw=curSearch.trim().toLowerCase();
   let items=DATA
-    .filter(a=>curFilter==='전체'||a.subject===curFilter)
+    .filter(a=> matchFilter(a))
     .filter(a=>curGrade==='전체'||(a.grade&&a.grade.includes(curGrade)))
     .filter(a=>!kw||a.name.toLowerCase().includes(kw)||a.subject.includes(kw)||(a.grade&&a.grade.some(g=>g.includes(kw))))
     .map(a=>({...a,distKm:km(userLat,userLng,a.lat,a.lng),avg:parseFloat(avgStars(a.reviews))||0}));
@@ -2666,7 +2669,7 @@ function setGrade(grade, btn){
   curGrade=grade;
   // 학급 칩 색상 처리
   document.querySelectorAll('.fbar2 .chip').forEach(b=>{
-    b.classList.remove('on','grade-on','초등','중등','고등');
+    b.classList.remove('on','grade-on','유아','초등','중등','고등');
   });
   if(grade==='전체'){
     btn.classList.add('on');
@@ -3516,7 +3519,7 @@ function renderTimetable(){
     return;
   }
 
-  const gradeColor = { 초등:'#FEF3C7|#B45309', 중등:'#EDE9FE|#6D28D9', 고등:'#FEE2E2|#B91C1C' };
+  const gradeColor = { 유아:'#D1FAE5|#065F46', 초등:'#FEF3C7|#B45309', 중등:'#EDE9FE|#6D28D9', 고등:'#FEE2E2|#B91C1C' };
 
   el.innerHTML = timetableList.map(t => {
     const [bg, color] = (gradeColor[t.grade] || '#F4F6FB|#374151').split('|');
@@ -4108,6 +4111,7 @@ function openAdminEdit(id){
   document.getElementById('ae-desc').value  = a.description || '';
 
   const grades = Array.isArray(a.grade) ? a.grade : (a.grade||'').split(',').map(g=>g.trim());
+  document.getElementById('ae-g-baby').checked = grades.includes('유아');
   document.getElementById('ae-g-elem').checked = grades.includes('초등');
   document.getElementById('ae-g-mid').checked  = grades.includes('중등');
   document.getElementById('ae-g-high').checked = grades.includes('고등');
@@ -4130,6 +4134,7 @@ async function saveAdminEdit(){
   const desc  = document.getElementById('ae-desc')?.value?.trim();
 
   const grades = [];
+  if(document.getElementById('ae-g-baby')?.checked) grades.push('유아');
   if(document.getElementById('ae-g-elem')?.checked) grades.push('초등');
   if(document.getElementById('ae-g-mid')?.checked)  grades.push('중등');
   if(document.getElementById('ae-g-high')?.checked) grades.push('고등');
@@ -4424,6 +4429,7 @@ function openInfoEdit(field){
 
   // 학급 체크박스
   const grades = Array.isArray(a.grade) ? a.grade : (a.grade||'').split(',').map(g=>g.trim());
+  document.getElementById('mi-g-baby').checked = grades.includes('유아');
   document.getElementById('mi-g-elem').checked = grades.includes('초등');
   document.getElementById('mi-g-mid').checked  = grades.includes('중등');
   document.getElementById('mi-g-high').checked = grades.includes('고등');
@@ -4443,6 +4449,7 @@ async function saveInfo(){
   const desc  = document.getElementById('mi-desc')?.value?.trim();
 
   const grades = [];
+  if(document.getElementById('mi-g-baby')?.checked) grades.push('유아');
   if(document.getElementById('mi-g-elem')?.checked) grades.push('초등');
   if(document.getElementById('mi-g-mid')?.checked)  grades.push('중등');
   if(document.getElementById('mi-g-high')?.checked) grades.push('고등');
@@ -4836,12 +4843,13 @@ function completePay(){
     <div class="mfg"><label>과목</label>
       <select id="ae-subj">
         <option>영어</option><option>수학</option><option>국어</option>
-        <option>음악</option><option>미술</option><option>체육</option>
-        <option>과학</option><option>기타</option>
+        <option>과학</option><option>컴퓨터</option><option>예체능</option>
+        <option>음악</option><option>미술</option><option>체육</option><option>기타</option>
       </select>
     </div>
     <div class="mfg"><label>학급</label>
       <div style="display:flex;gap:10px;margin-top:6px;">
+        <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="ae-g-baby" value="유아"> 유아</label>
         <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="ae-g-elem" value="초등"> 초등</label>
         <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="ae-g-mid" value="중등"> 중등</label>
         <label style="display:flex;align-items:center;gap:4px;font-size:13px;font-weight:600;cursor:pointer;"><input type="checkbox" id="ae-g-high" value="고등"> 고등</label>
