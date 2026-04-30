@@ -780,6 +780,9 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <button class="chip" onclick="setFilter('국어',this)">
       <div class="chip-ico" style="background:#F0FDF4;font-size:22px;font-weight:900;color:#16A34A;">가</div><div class="chip-lbl">국어</div>
     </button>
+    <button class="chip" onclick="setFilter('논술',this)">
+      <div class="chip-ico" style="background:#FFF8EE;font-size:22px;">✍️</div><div class="chip-lbl">논술</div>
+    </button>
     <button class="chip" onclick="setFilter('과학',this)">
       <div class="chip-ico" style="background:#F5F3FF;font-size:22px;font-weight:900;color:#7C3AED;">⚗</div><div class="chip-lbl">과학</div>
     </button>
@@ -1047,7 +1050,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div class="mfg"><label>주요 과목</label>
       <select id="mi-subj">
         <option>영어</option><option>수학</option><option>국어</option>
-        <option>과학</option><option>컴퓨터</option><option>예체능</option>
+        <option>논술</option><option>과학</option><option>컴퓨터</option><option>예체능</option>
         <option>음악</option><option>미술</option><option>체육</option><option>기타</option>
       </select>
     </div>
@@ -2232,8 +2235,8 @@ async function saveReviewToDB(academyId, stars, nick, body){
 const GAS_URL = '여기에_Apps_Script_URL_붙여넣기';
 
 /* ════ 상수 ════ */
-const ICONS  = {영어:"A",수학:"π",국어:"가",음악:"♪",미술:"✏",체육:"⚽",예체능:"🎨",과학:"⚗",기타:"···"};
-const COLORS = {영어:"#EEF6FF",수학:"#FFFBEB",국어:"#F0FDF4",음악:"#FFF0F9",미술:"#FFF7ED",체육:"#ECFDF5",예체능:"#FCE7F3",과학:"#F5F3FF",기타:"#F8F9FA"};
+const ICONS  = {영어:"A",수학:"π",국어:"가",음악:"♪",미술:"✏",체육:"⚽",예체능:"🎨",과학:"⚗",논술:"✍️",컴퓨터:"💻",기타:"···"};
+const COLORS = {영어:"#EEF6FF",수학:"#FFFBEB",국어:"#F0FDF4",음악:"#FFF0F9",미술:"#FFF7ED",체육:"#ECFDF5",예체능:"#FCE7F3",과학:"#F5F3FF",논술:"#FFF8EE",컴퓨터:"#EFF6FF",기타:"#F8F9FA"};
 const PLAN_LABELS = {free:"무료",basic:"베이직",premium:"⭐ 프리미엄"};
 const CACHE_KEY  = 'edupick_data';
 const CACHE_TTL  = 5 * 60 * 1000; // 5분 캐시
@@ -2659,6 +2662,14 @@ function render(){
 }
 
 /* ════ FILTER / SEARCH / SORT ════ */
+function matchFilter(a){
+  if(curFilter==='전체') return true;
+  if(curFilter==='예체능') return ['음악','미술','체육','예체능','발레','무용','태권도','수영','댄스','피아노','바이올린'].some(s => a.subject?.includes(s));
+  if(curFilter==='컴퓨터') return ['컴퓨터','코딩','IT','프로그래밍','로봇'].some(s => a.subject?.includes(s));
+  if(curFilter==='논술') return ['논술','독서','문해','토론'].some(s => a.subject?.includes(s));
+  return a.subject?.includes(curFilter);
+}
+
 function setFilter(cat,btn){
   curFilter=cat;
   document.querySelectorAll('.fbar .chip').forEach(b=>b.classList.remove('on'));
@@ -4843,7 +4854,7 @@ function completePay(){
     <div class="mfg"><label>과목</label>
       <select id="ae-subj">
         <option>영어</option><option>수학</option><option>국어</option>
-        <option>과학</option><option>컴퓨터</option><option>예체능</option>
+        <option>논술</option><option>과학</option><option>컴퓨터</option><option>예체능</option>
         <option>음악</option><option>미술</option><option>체육</option><option>기타</option>
       </select>
     </div>
