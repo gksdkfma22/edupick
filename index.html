@@ -2996,7 +2996,8 @@ function openSheet(id){
   document.getElementById('sh-rcnt').textContent=a.reviews.length?`(${a.reviews.length}건)`:'리뷰 없음';
   // grid
   // sh-subj는 위에서 처리됨
-  document.getElementById('sh-price').textContent=a.price.toLocaleString('ko-KR')+'원';
+  document.getElementById('sh-price').textContent = a.price ? a.price.toLocaleString('ko-KR')+'원' : '문의';
+  document.getElementById('sh-price').style.color = a.price ? 'var(--red)' : '#8A94A6';
   document.getElementById('sh-dist').textContent=d+'km';
   document.getElementById('sh-city').textContent=a.city;
 
@@ -3458,7 +3459,7 @@ async function loadDashboardData(){
   set('di-name',  ac.name);
   set('di-subj',  ac.subject);
   set('di-grade', Array.isArray(ac.grade) ? ac.grade.join(', ') : (ac.grade||'-'));
-  set('di-price', ac.price ? ac.price.toLocaleString('ko-KR') + '원' : '-');
+  set('di-price', ac.price ? ac.price.toLocaleString('ko-KR') + '원' : '비공개 (수정 권장)');
   set('di-phone', ac.phone);
   set('di-addr',  ac.address);
   set('di-blog',  ac.blog);
@@ -3493,7 +3494,7 @@ function loadMoreItems(){
         <div class="ac-info">
           <div class="ac-nm">${a.name}${a.claimed?'<span style="font-size:9px;background:#10B981;color:#fff;padding:1px 5px;border-radius:6px;margin-left:4px;font-weight:800;">✓인증</span>':''}</div>
           <div class="ac-sub">${a.subject} · ${dist}km</div>
-          <div class="ac-pr">${a.price.toLocaleString('ko-KR')}원/월</div>
+          <div class="ac-pr" style="color:${a.price ? 'var(--red)' : '#8A94A6'}">${a.price ? a.price.toLocaleString('ko-KR')+'원/월' : '수강료 문의'}</div>
         </div>
       </div>
       <div class="ac-right">
