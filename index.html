@@ -2751,7 +2751,7 @@ function matchFilter(a){
   if(curFilter==='컴퓨터') return ['컴퓨터','코딩','IT','프로그래밍','로봇'].some(s => a.subject?.includes(s));
   if(curFilter==='논술') return ['논술','독서','문해','토론'].some(s => a.subject?.includes(s));
   if(curFilter==='입시') return ['입시','수능','내신','재수','반수','입시전문'].some(s => a.subject?.includes(s));
-  return a.subject?.includes(curFilter);
+  return (a.subject||'').split(',').some(s => s.trim() === curFilter);
 }
 
 function setFilter(cat,btn){
@@ -2945,8 +2945,23 @@ function openSheet(id){
   sheetAcademy=a;
   const d=km(userLat,userLng,a.lat,a.lng);
   const avg=avgStars(a.reviews);
-  document.getElementById('sh-ico').style.background=COLORS[a.subject]||'#f3f4f6';
-  document.getElementById('sh-ico').textContent=ICONS[a.subject]||'📚';
+  // 과목 아이콘 (첫번째 과목 기준)
+  const subjects = (a.subject||'기타').split(',').map(s=>s.trim());
+  const firstSubj = subjects[0];
+  document.getElementById('sh-ico').style.background = COLORS[firstSubj]||'#f3f4f6';
+  document.getElementById('sh-ico').textContent = ICONS[firstSubj]||'📚';
+
+  // 과목 뱃지 (복수 표시)
+  const subjEl = document.getElementById('sh-subj');
+  if(subjects.length > 1){
+    subjEl.innerHTML = subjects.map(s => `
+      <span style="display:inline-flex;align-items:center;gap:3px;background:${COLORS[s]||'#F4F6FB'};
+        padding:3px 8px;border-radius:8px;font-size:12px;font-weight:700;margin:2px 2px 2px 0;">
+        ${ICONS[s]||'📚'} ${s}
+      </span>`).join('');
+  } else {
+    subjEl.textContent = a.subject;
+  }
   document.getElementById('sh-nm').textContent=a.name;
   // plan tag
   const pt=document.getElementById('sh-plan-tag');
@@ -2980,7 +2995,7 @@ function openSheet(id){
   document.getElementById('sh-rat').textContent=avg>0?avg:'';
   document.getElementById('sh-rcnt').textContent=a.reviews.length?`(${a.reviews.length}건)`:'리뷰 없음';
   // grid
-  document.getElementById('sh-subj').textContent=a.subject;
+  // sh-subj는 위에서 처리됨
   document.getElementById('sh-price').textContent=a.price.toLocaleString('ko-KR')+'원';
   document.getElementById('sh-dist').textContent=d+'km';
   document.getElementById('sh-city').textContent=a.city;
