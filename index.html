@@ -2152,13 +2152,23 @@ async function doLogin(){
   if(!email||!pw){ showToast('이메일과 비밀번호를 입력해주세요'); return; }
   try {
     showToast('로그인 중...');
-    const { error } = await sb.auth.signInWithPassword({ email, password: pw });
+    const { data, error } = await sb.auth.signInWithPassword({ email, password: pw });
     if(error) throw error;
     document.getElementById('login-modal-ov').classList.remove('open');
     showToast('✅ 로그인 성공!');
-    setTimeout(()=>{ currentAcademy ? go('page-dashboard') : go('page-home'); }, 600);
+    // 로그인 성공 시에만 페이지 이동
+    setTimeout(()=>{
+      if(currentUser?.email === ADMIN_EMAIL) go('page-admin-dashboard');
+      else if(currentAcademy) go('page-dashboard');
+      // 일반 유저는 그냥 홈 유지
+    }, 600);
   } catch(e){
-    showToast('로그인 실패: ' + (e.message?.includes('Invalid') ? '이메일/비밀번호 확인' : e.message));
+    // 실패 시 페이지 이동 없이 토스트만 표시
+    let msg = '이메일/비밀번호를 확인해주세요';
+    if(e.message?.includes('Invalid')) msg = '이메일 또는 비밀번호가 틀렸어요';
+    if(e.message?.includes('Email not confirmed')) msg = '이메일 인증이 필요해요';
+    if(e.message?.includes('Too many')) msg = '잠시 후 다시 시도해주세요';
+    showToast('❌ ' + msg);
   }
 }
 /* 일반 유저 가입 */
