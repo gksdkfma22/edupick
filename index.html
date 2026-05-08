@@ -2389,7 +2389,17 @@ async function loadData(){
 
   // 1. Supabase DB 우선 시도
   const fromDB = await loadAcademiesFromDB();
-  if(fromDB){ hideLoading(); render(); return; }
+  if(fromDB){
+    hideLoading();
+    render();
+    setTimeout(()=>{
+      try{
+        if(map){ map.relayout(); }
+        if(clusterer){ clusterer.redraw(); }
+      }catch(e){}
+    }, 300);
+    return Promise.resolve();
+  }
 
   // 2. 캐시 확인
   try {
@@ -2505,7 +2515,12 @@ function go(id){
   if(!next){ console.error('페이지 없음:', id); return; }
   next.classList.add('active');
   next.scrollTop=0;
-  if(id==='page-home' && map) setTimeout(()=>{ try{map.relayout();}catch(e){} },80);
+  if(id==='page-home' && map) setTimeout(()=>{
+    try{
+      map.relayout();
+      if(clusterer) clusterer.redraw();
+    }catch(e){}
+  }, 100);
   if(id==='page-wish') renderWishList();
   if(id==='page-admin-dashboard') loadAdminDashboard();
 }
@@ -4730,7 +4745,12 @@ window.addEventListener('DOMContentLoaded', function(){
     initAuth().then(()=>{
       kakao.maps.load(function(){
         try { initKakaoMap(); } catch(e){ console.error('카카오맵 오류:', e); }
-        loadData();
+        loadData().then(()=>{
+          // 데이터 로드 완료 후 지도 강제 리사이즈
+          setTimeout(()=>{
+            try{ if(map){ map.relayout(); } if(clusterer){ clusterer.redraw(); } }catch(e){}
+          }, 500);
+        });
       });
     });
   } else {
@@ -4740,7 +4760,11 @@ window.addEventListener('DOMContentLoaded', function(){
       initAuth().then(()=>{
         kakao.maps.load(function(){
           try { initKakaoMap(); } catch(e){ console.error('카카오맵 오류:', e); }
-          loadData();
+          loadData().then(()=>{
+            setTimeout(()=>{
+              try{ if(map){ map.relayout(); } if(clusterer){ clusterer.redraw(); } }catch(e){}
+            }, 500);
+          });
         });
       });
     };
