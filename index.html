@@ -2274,15 +2274,18 @@ function completeBizSignup(){ selectedPlan='free'; completeBizSignupAndPay(); }
 async function loadAcademiesFromDB(){
   if(!sb) return false;
   try {
+    // 1단계: 학원 기본 정보만 빠르게 로드 (리뷰 제외)
     const { data, error } = await withRetry(async () => {
       const res = await sb.from('academies')
-        .select('*, reviews(*)')
+        .select('id,name,city,subject,grade,price,plan,blog,image,lat,lng,owner_id,address,floor,phone,description')
         .eq('is_active', true)
-        .order('plan', { ascending: false }); // premium 먼저
+        .order('plan', { ascending: false });
       if(res.error) throw res.error;
       return res;
     }, 3, 1500, '학원 데이터');
+
     if(!data?.length) return false;
+
     DATA = data.map(r=>({
       id: r.id, name: r.name||'', city: r.city||r.address||'',
       subject: r.subject||'영어',
@@ -2290,17 +2293,20 @@ async function loadAcademiesFromDB(){
       price: r.price||0, plan: r.plan||'free',
       blog: r.blog||'', image: r.image||'',
       lat: r.lat||0, lng: r.lng||0,
-      reviews: (r.reviews||[]).filter(rv => !rv.status || rv.status === 'active').map(rv=>({ nick:rv.nickname||'익명', stars:rv.stars||5, body:rv.body||'', date:rv.created_at?.slice(5,10)||'', mine: rv.user_id===currentUser?.id })),
+      reviews: [], // 리뷰는 나중에 로드
       claimed:  !!r.owner_id,
       owner_id: r.owner_id || null,
       address:  r.address || '',
       floor:    r.floor || '',
       phone:    r.phone || '',
-      blog:     r.blog || '',
       description: r.description || '',
     })).filter(r=>r.name&&r.lat&&r.lng);
+
     return DATA.length > 0;
-  } catch(e){ return false; }
+  } catch(e){
+    console.error('학원 데이터 로딩 실패:', e);
+    return false;
+  }
 }
 
 /* 소식 저장 */
@@ -2650,7 +2656,13 @@ function render(){
   let items=DATA
     .filter(a=> matchFilter(a))
     .filter(a=>curGrade==='전체'||(a.grade&&a.grade.includes(curGrade)))
-    .filter(a=>!kw||a.name.toLowerCase().includes(kw)||a.subject.includes(kw)||(a.grade&&a.grade.some(g=>g.includes(kw))))
+    .filter(a=>{
+      if(!kw) return true;
+      const nameMatch    = a.name?.toLowerCase().includes(kw);
+      const subjectMatch = a.subject?.toLowerCase().includes(kw);
+      const addrMatch    = a.address?.toLowerCase().includes(kw);
+      return nameMatch || subjectMatch || addrMatch;
+    })
     .map(a=>({...a,distKm:km(userLat,userLng,a.lat,a.lng),avg:parseFloat(avgStars(a.reviews))||0}));
 
   // 정렬: 프리미엄 항상 상단, 그 다음 선택 정렬
@@ -2970,6 +2982,33 @@ function removeWish(id,btn){
 function openSheet(id){
   const a=DATA.find(x=>x.id===id); if(!a) return;
   sheetAcademy=a;
+
+  // 리뷰 없으면 DB에서 로드
+  if(a.reviews.length === 0 && sb){
+    sb.from('reviews')
+      .select('*')
+      .eq('academy_id', id)
+      .in('status', ['active', null])
+      .eq('is_approved', true)
+      .order('created_at', {ascending: false})
+      .then(({data: rvs}) => {
+        if(rvs?.length){
+          a.reviews = rvs.filter(rv => !rv.status || rv.status === 'active')
+            .map(rv=>({
+              nick: rv.nickname||'익명',
+              stars: rv.stars||5,
+              body: rv.body||'',
+              date: rv.created_at?.slice(5,10)||'',
+              mine: rv.user_id===currentUser?.id,
+              verified: rv.is_verified
+            }));
+          // 리뷰 영역 갱신
+          const reviewEl = document.getElementById('sh-reviews');
+          if(reviewEl) renderReviews(a, reviewEl);
+        }
+      }).catch(()=>{});
+  }
+
   const d=km(userLat,userLng,a.lat,a.lng);
   const avg=avgStars(a.reviews);
   // 과목 아이콘 (첫번째 과목 기준)
@@ -3045,25 +3084,7 @@ function openSheet(id){
   document.getElementById('sh-heart').textContent=wishSet.has(a.id)?'❤️':'🤍';
   // reviews
   const rv=document.getElementById('sh-reviews');
-  if(a.reviews.length){
-    rv.innerHTML=a.reviews.map((r,idx)=>`
-      <div class="review-card">
-        <div class="rv-top">
-          <div>
-            <span class="rv-author">${r.nick}${r.mine?'<span class="rv-mine-badge">내 리뷰</span>':''}</span>
-            <div class="rv-date">${r.date}</div>
-          </div>
-          ${r.mine?`<div class="rv-actions">
-            <button class="rv-act-btn edit" onclick="editReview(${a.id},${idx})">수정</button>
-            <button class="rv-act-btn del"  onclick="deleteReview(${a.id},${idx})">삭제</button>
-          </div>`:''}
-        </div>
-        <div class="rv-stars">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
-        <div class="rv-body">${r.body}</div>
-      </div>`).join('');
-  } else {
-    rv.innerHTML='<div class="no-review">아직 리뷰가 없어요. 첫 리뷰를 남겨보세요!</div>';
-  }
+  renderReviews(a, rv);
   // CTA
   const cta=document.getElementById('sh-cta');
   if(a.plan==='premium'&&a.blog){cta.textContent='블로그 / 상세보기';cta.className='sh-cta o';}
@@ -3651,6 +3672,34 @@ async function checkApprovalStatus(){
   } else {
     showToast('⏳ 아직 검토 중이에요. 조금만 기다려주세요!');
   }
+}
+
+
+/* ════ 리뷰 렌더링 함수 ════ */
+function renderReviews(a, el){
+  if(!el) return;
+  if(!a.reviews || !a.reviews.length){
+    el.innerHTML='<div class="no-review">아직 리뷰가 없어요. 첫 리뷰를 남겨보세요!</div>';
+    return;
+  }
+  el.innerHTML = a.reviews.map((r,idx)=>`
+    <div class="review-card">
+      <div class="rv-top">
+        <div>
+          <span class="rv-author">${r.nick||'익명'}${r.mine?'<span class="rv-mine-badge">내 리뷰</span>':''}</span>
+          <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+            ${r.verified ? '<span class="rv-badge verified">✅ 인증리뷰</span>' : '<span class="rv-badge normal">📝 일반리뷰</span>'}
+          </div>
+          <div class="rv-date">${r.date||''}</div>
+        </div>
+        ${r.mine?`<div class="rv-actions">
+          <button class="rv-act-btn edit" onclick="editReview('${a.id}',${idx})">수정</button>
+          <button class="rv-act-btn del"  onclick="deleteReview('${a.id}',${idx})">삭제</button>
+        </div>`:''}
+      </div>
+      <div class="rv-stars">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
+      <div class="rv-body">${r.body||''}</div>
+    </div>`).join('');
 }
 
 /* ════ 시간표 관리 ════ */
