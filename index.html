@@ -3241,15 +3241,32 @@ async function submitReview(){
     if(sb){
       try {
         await withRetry(async () => {
+          // 영수증 파일 업로드
+          let receiptUrl = null;
+          if(receipt && isVerified){
+            try {
+              const ext  = receipt.name.split('.').pop();
+              const path = `${currentUser.id}/${a.id}_${Date.now()}.${ext}`;
+              const { data: uploadData, error: uploadErr } = await sb.storage
+                .from('receipts')
+                .upload(path, receipt, { upsert: true });
+              if(!uploadErr && uploadData){
+                const { data: urlData } = sb.storage.from('receipts').getPublicUrl(path);
+                receiptUrl = urlData?.publicUrl || null;
+              }
+            } catch(e){ console.warn('영수증 업로드 실패:', e); }
+          }
+
           const { error } = await sb.from('reviews').insert({
-            academy_id:  a.id,
-            user_id:     currentUser?.id || null,
-            nickname:    nick,
-            stars:       currentRating,
-            body:        body,
-            is_approved: false,
-            is_verified: isVerified,
-            status:      'pending',
+            academy_id:   a.id,
+            user_id:      currentUser?.id || null,
+            nickname:     nick,
+            stars:        currentRating,
+            body:         body,
+            is_approved:  false,
+            is_verified:  isVerified,
+            status:       'pending',
+            receipt_url:  receiptUrl,
           });
           if(error){
             console.error('리뷰 저장 오류:', error);
@@ -4140,6 +4157,7 @@ async function loadAllReviews(){
           </div>
           ${statusBadge}
         </div>
+        ${r.receipt_url ? `<div style="margin:4px 0;"><a href="${r.receipt_url}" target="_blank" style="font-size:12px;color:#176ED3;font-weight:700;">📎 영수증 보기</a></div>` : ''}
         <div style="font-size:13px;color:#374151;padding:8px 0;border-top:1px solid #F0F1F6;margin-top:6px;">${r.body||''}</div>
         ${r.admin_memo ? `<div style="font-size:11px;color:#8A94A6;background:#F8F9FA;padding:6px 10px;border-radius:8px;margin-top:4px;">📝 처리사유: ${r.admin_memo}</div>` : ''}
         <div class="admin-btns" style="flex-wrap:wrap;gap:6px;">
