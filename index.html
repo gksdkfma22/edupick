@@ -28,7 +28,7 @@
 <!-- Splash Screen (iOS) -->
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <!-- 카카오맵 SDK -->
-<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6&libraries=clusterer"></script>
+<script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6&libraries=clusterer&autoload=false"></script>
 <!-- 토스페이먼츠 SDK v1 -->
 <script src="https://js.tosspayments.com/v1/payment"></script>
 <!-- Supabase SDK (직접 로드) -->
@@ -3194,8 +3194,12 @@ async function submitReview(){
             body:        body,
             is_approved: false,
             is_verified: isVerified,
+            status:      'pending',
           });
-          if(error) throw error;
+          if(error){
+            console.error('리뷰 저장 오류:', error);
+            throw error;
+          }
         }, 3, 1500, '리뷰 등록');
         resetReviewCache(); // 리뷰 작성 완료 → 캐시 초기화
         _userHasReview = true; // 즉시 반영
@@ -4718,33 +4722,38 @@ window.addEventListener('appinstalled', ()=>{
 /* ════ INIT ════ */
 // 1단계: 카카오맵 먼저 초기화 (SDK가 head에서 동기 로드됨)
 window.addEventListener('DOMContentLoaded', function(){
-  // 카카오맵 초기화
-  try {
-    initKakaoMap();
-  } catch(e) {
-    console.error('카카오맵 초기화 실패:', e);
-  }
-
-  // 배너 초기화
   initBanner();
   checkPaymentResult();
 
-  // 2단계: Supabase SDK 동적 로드 후 나머지 초기화
-  const sbScript = document.createElement('script');
-  sbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
-  sbScript.onload = function(){
-    // Supabase 로드 완료 후 실행
-    initAuth();
-    loadData();
-  };
-  sbScript.onerror = function(){
-    // Supabase 로드 실패해도 샘플 데이터로 동작
-    console.warn('Supabase 로드 실패, 샘플 데이터 사용');
-    DATA = getSampleData();
-    hideLoading();
-    render();
-  };
-  document.head.appendChild(sbScript);
+  // Supabase 먼저 초기화
+  if(window.supabase){
+    initAuth().then(()=>{
+      kakao.maps.load(function(){
+        try { initKakaoMap(); } catch(e){ console.error('카카오맵 오류:', e); }
+        loadData();
+      });
+    });
+  } else {
+    const sbScript = document.createElement('script');
+    sbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
+    sbScript.onload = function(){
+      initAuth().then(()=>{
+        kakao.maps.load(function(){
+          try { initKakaoMap(); } catch(e){ console.error('카카오맵 오류:', e); }
+          loadData();
+        });
+      });
+    };
+    sbScript.onerror = function(){
+      console.warn('Supabase 로드 실패');
+      kakao.maps.load(function(){
+        try { initKakaoMap(); } catch(e){}
+        hideLoading();
+        render();
+      });
+    };
+    document.head.appendChild(sbScript);
+  }
 });
 
 /* ════ 배너 슬라이더 ════ */
