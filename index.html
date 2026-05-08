@@ -3144,7 +3144,22 @@ function openReviewModal(){
   editingReviewIdx = null;
   currentRating = 0;
   setStarRating(0);
-  document.getElementById('rv-nick').value = '';
+
+  // 닉네임 자동 채우기 (카카오/소셜 로그인 정보 우선)
+  const nickEl = document.getElementById('rv-nick');
+  if(nickEl && currentUser){
+    const autoNick =
+      currentUser.user_metadata?.full_name ||
+      currentUser.user_metadata?.name ||
+      currentUser.user_metadata?.nickname ||
+      currentUser.user_metadata?.preferred_username ||
+      '';
+    nickEl.value = autoNick;
+    nickEl.placeholder = autoNick ? autoNick : '예) 천안맘 김○○';
+  } else if(nickEl){
+    nickEl.value = '';
+  }
+
   document.getElementById('rv-body').value = '';
   document.getElementById('rv-modal-title').textContent = '✍️ 리뷰 작성';
   document.getElementById('rv-submit-btn').textContent = '등록';
