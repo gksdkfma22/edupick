@@ -2062,7 +2062,11 @@ async function initAuth(){
   const { data:{ session } } = await sb.auth.getSession();
   if(session) await onLogin(session.user);
   sb.auth.onAuthStateChange(async(event, session)=>{
-    if(event==='SIGNED_IN')  await onLogin(session.user);
+    if(event==='SIGNED_IN'){
+      const isKakao = session?.user?.app_metadata?.provider === 'kakao';
+      await onLogin(session.user);
+      if(isKakao) showToast('✅ 카카오 로그인 완료!');
+    }
     if(event==='SIGNED_OUT') onLogout();
   });
 }
@@ -5012,11 +5016,14 @@ async function processPayment(){
 /* 결제 완료 후 URL 파라미터 처리 */
 function checkPaymentResult(){
   // 카카오 OAuth 로그인 후 세션 복구
+  // ⚠️ access_token이 있으면 Supabase가 처리할 때까지 URL 건드리지 않음
   const hash = window.location.hash;
   if(hash && hash.includes('access_token')){
-    showToast('✅ 카카오 로그인 완료!');
-    // URL 정리
-    history.replaceState(null, '', window.location.pathname);
+    // Supabase가 자동으로 세션 처리함 - URL만 나중에 정리
+    setTimeout(()=>{
+      history.replaceState(null, '', window.location.pathname);
+    }, 2000);
+    return; // 결제 체크는 건너뜀
   }
 
   const p = new URLSearchParams(window.location.search);
