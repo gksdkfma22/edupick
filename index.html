@@ -3038,7 +3038,6 @@ function openSheet(id){
     sb.from('reviews')
       .select('*')
       .eq('academy_id', id)
-      .in('status', ['active', null])
       .eq('is_approved', true)
       .order('created_at', {ascending: false})
       .then(({data: rvs}) => {
@@ -4521,7 +4520,7 @@ async function loadAdminReviews(){
 async function approveReview(id){
   if(!sb){ showToast('서버 연결 필요'); return; }
   const { data, error } = await sb.from('reviews')
-    .update({ is_approved: true })
+    .update({ is_approved: true, status: 'active' })
     .eq('id', id)
     .select();
   if(error){
