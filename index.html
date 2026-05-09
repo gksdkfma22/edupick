@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
@@ -7,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 
 <!-- PWA -->
+
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#176ED3">
 <meta name="naver-site-verification" content="1ab528f559edc1be8a3ee47fd68fd506aed841a2" />
@@ -14,6 +16,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 
 <!-- iOS PWA -->
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="에듀픽">
@@ -26,6 +29,7 @@
 <link rel="shortcut icon" href="icon-192x192.png">
 
 <!-- Splash Screen (iOS) -->
+
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <!-- 카카오맵 SDK -->
 <script type="text/javascript" src="//dapi.kakao.com/v2/maps/sdk.js?appkey=167db07829b0a947b7be0215070ffff6&libraries=clusterer&autoload=false"></script>
@@ -58,43 +62,41 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 @keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.45)}100%{transform:scale(1)}}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-
 /* ══ 비로그인 블러 처리 ══ */
 .blur-wrap{position:relative;}
 .blur-content{transition:.3s;}
 .blur-content.blurred{filter:blur(6px);user-select:none;pointer-events:none;}
 .blur-overlay{
-  position:absolute;inset:0;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:10px;z-index:10;
+position:absolute;inset:0;
+display:flex;flex-direction:column;align-items:center;justify-content:center;
+gap:10px;z-index:10;
 }
 .blur-overlay-box{
-  background:#fff;border-radius:16px;padding:18px 22px;text-align:center;
-  box-shadow:0 8px 32px rgba(0,0,0,.15);max-width:260px;
+background:#fff;border-radius:16px;padding:18px 22px;text-align:center;
+box-shadow:0 8px 32px rgba(0,0,0,.15);max-width:260px;
 }
 .blur-overlay-box .bl-ico{font-size:32px;margin-bottom:8px;}
 .blur-overlay-box h4{font-size:15px;font-weight:800;color:#1A1A2E;margin-bottom:6px;}
 .blur-overlay-box p{font-size:12px;color:#8A94A6;line-height:1.6;margin-bottom:14px;}
 .blur-overlay-box .bl-btn{
-  width:100%;padding:11px;border-radius:11px;border:none;
-  background:#176ED3;color:#fff;font-size:14px;font-weight:800;
-  cursor:pointer;font-family:inherit;
+width:100%;padding:11px;border-radius:11px;border:none;
+background:#176ED3;color:#fff;font-size:14px;font-weight:800;
+cursor:pointer;font-family:inherit;
 }
 .blur-overlay-box .bl-btn2{
-  width:100%;padding:9px;border-radius:11px;border:1.5px solid #E0E4EF;
-  background:#fff;color:#6B7280;font-size:13px;font-weight:700;
-  cursor:pointer;font-family:inherit;margin-top:6px;
+width:100%;padding:9px;border-radius:11px;border:1.5px solid #E0E4EF;
+background:#fff;color:#6B7280;font-size:13px;font-weight:700;
+cursor:pointer;font-family:inherit;margin-top:6px;
 }
-
 
 /* ══ 관리자 페이지 ══ */
 .admin-tab{padding:7px 16px;border-radius:20px;border:1.5px solid #E0E4EF;
-  background:#fff;font-size:12px;font-weight:700;color:#6B7280;
-  cursor:pointer;font-family:inherit;transition:.15s;}
+background:#fff;font-size:12px;font-weight:700;color:#6B7280;
+cursor:pointer;font-family:inherit;transition:.15s;}
 .admin-tab.on{background:#1E293B;color:#fff;border-color:#1E293B;}
 
 .admin-card{background:#fff;border-radius:16px;padding:16px;margin-bottom:12px;
-  box-shadow:0 2px 10px rgba(0,0,0,.06);border:1.5px solid #F0F1F6;}
+box-shadow:0 2px 10px rgba(0,0,0,.06);border:1.5px solid #F0F1F6;}
 .admin-card.pending{border-color:#F59E0B;background:linear-gradient(135deg,#FFFBEB,#fff);}
 .admin-card.approved{border-color:#10B981;background:linear-gradient(135deg,#ECFDF5,#fff);}
 .admin-card-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
@@ -106,32 +108,30 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .admin-info span{color:#1A1A2E;font-weight:600;}
 .admin-btns{display:flex;gap:8px;margin-top:12px;}
 .admin-btn-approve{flex:1;padding:10px;border-radius:10px;border:none;
-  background:#10B981;color:#fff;font-size:13px;font-weight:800;
-  cursor:pointer;font-family:inherit;}
+background:#10B981;color:#fff;font-size:13px;font-weight:800;
+cursor:pointer;font-family:inherit;}
 .admin-btn-reject{padding:10px 16px;border-radius:10px;border:1.5px solid #EF4444;
-  background:#fff;color:#EF4444;font-size:13px;font-weight:700;
-  cursor:pointer;font-family:inherit;}
+background:#fff;color:#EF4444;font-size:13px;font-weight:700;
+cursor:pointer;font-family:inherit;}
 .admin-btn-detail{padding:10px 16px;border-radius:10px;border:1.5px solid #E0E4EF;
-  background:#fff;color:#6B7280;font-size:13px;font-weight:700;
-  cursor:pointer;font-family:inherit;}
-
+background:#fff;color:#6B7280;font-size:13px;font-weight:700;
+cursor:pointer;font-family:inherit;}
 
 /* ══ 리뷰 뱃지 ══ */
 .rv-badge{display:inline-flex;align-items:center;gap:3px;
-  font-size:10px;font-weight:800;padding:2px 7px;border-radius:10px;margin-bottom:4px;}
+font-size:10px;font-weight:800;padding:2px 7px;border-radius:10px;margin-bottom:4px;}
 .rv-badge.normal{background:#F4F6FB;color:#6B7280;}
 .rv-badge.verified{background:#EEF5FF;color:#176ED3;}
 
-
 /* ══ PWA 설치 배너 ══ */
 #pwa-banner{
-  position:fixed;bottom:72px;left:12px;right:12px;z-index:9998;
-  background:#1A1A2E;color:#fff;
-  border-radius:16px;padding:14px 16px;
-  display:flex;align-items:center;gap:12px;
-  box-shadow:0 8px 30px rgba(0,0,0,.3);
-  transform:translateY(120px);opacity:0;
-  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+position:fixed;bottom:72px;left:12px;right:12px;z-index:9998;
+background:#1A1A2E;color:#fff;
+border-radius:16px;padding:14px 16px;
+display:flex;align-items:center;gap:12px;
+box-shadow:0 8px 30px rgba(0,0,0,.3);
+transform:translateY(120px);opacity:0;
+transition:all .4s cubic-bezier(.34,1.56,.64,1);
 }
 #pwa-banner.show{transform:translateY(0);opacity:1;}
 #pwa-banner .pwa-ico{font-size:28px;flex-shrink:0;}
@@ -139,66 +139,66 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 #pwa-banner .pwa-ttl{font-size:14px;font-weight:800;margin-bottom:2px;}
 #pwa-banner .pwa-sub{font-size:11px;color:rgba(255,255,255,.6);}
 #pwa-banner .pwa-btn{background:#176ED3;border:none;color:#fff;
-  padding:8px 14px;border-radius:10px;font-size:12px;font-weight:800;
-  cursor:pointer;font-family:inherit;white-space:nowrap;}
+padding:8px 14px;border-radius:10px;font-size:12px;font-weight:800;
+cursor:pointer;font-family:inherit;white-space:nowrap;}
 #pwa-banner .pwa-x{background:none;border:none;color:rgba(255,255,255,.5);
-  font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;}
+font-size:18px;cursor:pointer;padding:4px;flex-shrink:0;}
 
 /* ─── TOAST ─── */
 .toast{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(14px);
-  background:#0F172A;color:#fff;padding:11px 22px;border-radius:12px;
-  font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:all .25s;white-space:nowrap;
-  box-shadow:0 4px 20px rgba(0,0,0,.25);}
+background:#0F172A;color:#fff;padding:11px 22px;border-radius:12px;
+font-size:13px;font-weight:600;z-index:9999;opacity:0;transition:all .25s;white-space:nowrap;
+box-shadow:0 4px 20px rgba(0,0,0,.25);}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* ══════════════════════════════════
-   HOME PAGE
+HOME PAGE
 ══════════════════════════════════ */
 #page-home{padding-bottom:64px;}
 .hdr{position:fixed;top:0;left:0;right:0;z-index:999;height:52px;
-  background:#176ED3;display:flex;align-items:center;justify-content:space-between;padding:0 15px;
-  box-shadow:0 2px 12px rgba(23,110,211,.3);}
+background:#176ED3;display:flex;align-items:center;justify-content:space-between;padding:0 15px;
+box-shadow:0 2px 12px rgba(23,110,211,.3);}
 .logo{display:flex;align-items:center;gap:6px;cursor:pointer;text-decoration:none;}
 .logo-mark{
-  width:32px;height:32px;background:#fff;border-radius:8px;
-  display:flex;align-items:center;justify-content:center;font-size:18px;
-  box-shadow:0 2px 8px rgba(0,0,0,.15);flex-shrink:0;
+width:32px;height:32px;background:#fff;border-radius:8px;
+display:flex;align-items:center;justify-content:center;font-size:18px;
+box-shadow:0 2px 8px rgba(0,0,0,.15);flex-shrink:0;
 }
 .logo-text{display:flex;flex-direction:column;line-height:1.1;}
 .logo-text-kr{font-size:16px;font-weight:900;color:#fff;letter-spacing:-.5px;}
 .logo-text-en{font-size:9px;font-weight:700;color:rgba(255,255,255,.75);letter-spacing:.5px;}
 .hdr-r{display:flex;gap:7px;align-items:center;}
 .hbtn{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.28);color:#fff;
-  border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
-.hbtn.o{background:var(--orange);border-color:var(--orange);}
+border-radius:8px;padding:5px 11px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;}
+.hbtn.o{background:var(–orange);border-color:var(–orange);}
 
-.sbar{position:fixed;top:52px;left:0;right:0;z-index:590;background:var(--white);padding:9px 14px;border-bottom:1px solid var(--border);height:52px;}
+.sbar{position:fixed;top:52px;left:0;right:0;z-index:590;background:var(–white);padding:9px 14px;border-bottom:1px solid var(–border);height:52px;}
 .sw{position:relative;display:flex;align-items:center;}
-.si{width:100%;padding:9px 36px 9px 38px;border-radius:11px;border:1.5px solid var(--border);background:#F7F9FF;font-size:14px;font-family:inherit;color:var(--text);outline:none;}
-.si:focus{border-color:var(--blue2);}
-.si::placeholder{color:var(--muted);}
+.si{width:100%;padding:9px 36px 9px 38px;border-radius:11px;border:1.5px solid var(–border);background:#F7F9FF;font-size:14px;font-family:inherit;color:var(–text);outline:none;}
+.si:focus{border-color:var(–blue2);}
+.si::placeholder{color:var(–muted);}
 .s-ic{position:absolute;left:12px;font-size:15px;pointer-events:none;}
-.s-cl{position:absolute;right:10px;font-size:15px;cursor:pointer;color:var(--muted);background:none;border:none;display:none;}
+.s-cl{position:absolute;right:10px;font-size:15px;cursor:pointer;color:var(–muted);background:none;border:none;display:none;}
 
 /* 과목필터: top=104, h=82 */
 .fbar{position:fixed;top:104px;left:0;right:0;z-index:580;pointer-events:auto;
-  background:#fff;
-  display:flex;gap:0;padding:8px 6px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid #F0F1F6;height:82px;align-items:center;}
+background:#fff;
+display:flex;gap:0;padding:8px 6px;overflow-x:auto;scrollbar-width:none;
+border-bottom:1px solid #F0F1F6;height:82px;align-items:center;}
 .fbar::-webkit-scrollbar{display:none;}
 
 /* 원형 아이콘 칩 */
 .chip{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  min-width:62px;padding:0 5px;
-  border:none;background:transparent;
-  cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;
+display:flex;flex-direction:column;align-items:center;gap:5px;
+min-width:62px;padding:0 5px;
+border:none;background:transparent;
+cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;
 }
 .chip .chip-ico{
-  width:54px;height:54px;border-radius:16px;
-  background:#F4F6FB;border:2px solid transparent;
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;transition:.2s;
+width:54px;height:54px;border-radius:16px;
+background:#F4F6FB;border:2px solid transparent;
+display:flex;align-items:center;justify-content:center;
+font-size:28px;transition:.2s;
 }
 .chip .chip-lbl{font-size:11px;font-weight:700;color:#8A94A6;transition:.15s;white-space:nowrap;}
 .chip.on .chip-ico{background:#EBF3FF;border-color:#4A90E2;box-shadow:0 4px 12px rgba(74,144,226,.25);}
@@ -213,17 +213,17 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 
 /* 학급필터: top=186, h=40 */
 .fbar2{position:fixed;top:186px;left:0;right:0;z-index:579;
-  background:#fff;
-  display:flex;gap:8px;padding:6px 14px;overflow-x:auto;scrollbar-width:none;
-  border-bottom:1px solid #F0F1F6;height:40px;align-items:center;}
+background:#fff;
+display:flex;gap:8px;padding:6px 14px;overflow-x:auto;scrollbar-width:none;
+border-bottom:1px solid #F0F1F6;height:40px;align-items:center;}
 .fbar2::-webkit-scrollbar{display:none;}
 .fbar2-label{display:none;}
 
 .chip.sm{
-  padding:0 14px;height:26px;
-  display:flex;flex-direction:row;align-items:center;justify-content:center;
-  border:none;font-family:inherit;cursor:pointer;flex-shrink:0;
-  background:#F4F6FB;border-radius:13px;transition:.15s;
+padding:0 14px;height:26px;
+display:flex;flex-direction:row;align-items:center;justify-content:center;
+border:none;font-family:inherit;cursor:pointer;flex-shrink:0;
+background:#F4F6FB;border-radius:13px;transition:.15s;
 }
 .chip.sm .chip-ico{display:none;}
 .chip.sm .chip-lbl{font-size:12px;font-weight:700;color:#6B7280;white-space:nowrap;text-align:center;}
@@ -247,18 +247,18 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 
 /* vtabs: top=226, h=42 */
 .vtabs{position:fixed;top:226px;left:0;right:0;z-index:570;
-  background:#fff;padding:6px 14px;
-  display:flex;gap:8px;height:42px;align-items:center;
-  border-bottom:1px solid #EAECF5;
-  box-shadow:0 2px 8px rgba(0,0,0,.04);}
+background:#fff;padding:6px 14px;
+display:flex;gap:8px;height:42px;align-items:center;
+border-bottom:1px solid #EAECF5;
+box-shadow:0 2px 8px rgba(0,0,0,.04);}
 .vtab{flex:1;text-align:center;font-size:13px;font-weight:800;
-  color:#8A94A6;cursor:pointer;border:none;
-  background:#F2F4FA;font-family:inherit;
-  border-radius:12px;height:36px;
-  display:flex;align-items:center;justify-content:center;gap:5px;
-  transition:.2s;letter-spacing:-.3px;}
+color:#8A94A6;cursor:pointer;border:none;
+background:#F2F4FA;font-family:inherit;
+border-radius:12px;height:36px;
+display:flex;align-items:center;justify-content:center;gap:5px;
+transition:.2s;letter-spacing:-.3px;}
 .vtab.on{color:#fff;background:linear-gradient(135deg,#4A90E2,#2563EB);
-  box-shadow:0 4px 14px rgba(37,99,235,.35);}
+box-shadow:0 4px 14px rgba(37,99,235,.35);}
 .vtab:active{opacity:.8;}
 
 /* 지도: top=268 */
@@ -266,17 +266,17 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 #map{width:100%;height:100%;}
 /* 배너는 map-wrap 안에서 absolute로 하단에 위치 */
 .gps-fab{position:absolute;bottom:82px;right:14px;z-index:300;width:44px;height:44px;
-  border-radius:50%;background:#fff;border:none;
-  box-shadow:0 3px 14px rgba(0,0,0,.15);font-size:20px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;}
+border-radius:50%;background:#fff;border:none;
+box-shadow:0 3px 14px rgba(0,0,0,.15);font-size:20px;cursor:pointer;
+display:flex;align-items:center;justify-content:center;}
 
 /* 목록: top=268 */
 #list-wrap{position:fixed;top:268px;left:0;right:0;bottom:64px;z-index:100;overflow-y:auto;display:none;padding:12px 14px 10px;}
 
 /* ══ 지도 하단 배너 슬라이더 ══ */
 .map-banner-wrap{
-  position:absolute;bottom:0;left:0;right:0;z-index:200;height:72px;
-  background:var(--white);border-top:1px solid var(--border);overflow:hidden;
+position:absolute;bottom:0;left:0;right:0;z-index:200;height:72px;
+background:var(–white);border-top:1px solid var(–border);overflow:hidden;
 }
 .map-banner-track{display:flex;height:100%;transition:transform .45s cubic-bezier(.4,0,.2,1);}
 .banner-slide{min-width:100%;height:72px;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;}
@@ -284,95 +284,95 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 /* 기본 플레이스홀더 배너 */
 .banner-ph{width:100%;height:100%;display:flex;align-items:center;padding:0 18px;gap:14px;}
 .banner-ph.b1{background:linear-gradient(120deg,#0A3D91,#1658D6);}
-.banner-ph.b2{background:linear-gradient(120deg,var(--orange),#FF8A3D);}
+.banner-ph.b2{background:linear-gradient(120deg,var(–orange),#FF8A3D);}
 .banner-ph.b3{background:linear-gradient(120deg,#059669,#10B981);}
 .banner-ph-ico{font-size:32px;flex-shrink:0;}
 .banner-ph-txt h4{font-size:14px;font-weight:800;color:#fff;}
 .banner-ph-txt p{font-size:11px;color:rgba(255,255,255,.8);margin-top:2px;}
 .banner-ph-arr{margin-left:auto;font-size:20px;color:rgba(255,255,255,.7);flex-shrink:0;}
 .banner-ad-tag{position:absolute;top:5px;right:8px;background:rgba(0,0,0,.3);
-  color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
+color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:4px;}
 .banner-dots{position:absolute;bottom:5px;left:50%;transform:translateX(-50%);
-  display:flex;gap:4px;pointer-events:none;}
+display:flex;gap:4px;pointer-events:none;}
 .bdot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);transition:.3s;}
 .bdot.on{background:#fff;width:14px;}
 
 /* ══ 결제 모달 ══ */
 .pay-ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:1000;display:none;align-items:flex-end;}
 .pay-ov.open{display:flex;}
-.pay-sheet{background:var(--white);width:100%;border-radius:22px 22px 0 0;
-  padding:20px 20px 50px;animation:shUp .25s cubic-bezier(.4,0,.2,1);
-  max-height:92vh;overflow-y:auto;}
+.pay-sheet{background:var(–white);width:100%;border-radius:22px 22px 0 0;
+padding:20px 20px 50px;animation:shUp .25s cubic-bezier(.4,0,.2,1);
+max-height:92vh;overflow-y:auto;}
 .pay-hdl{width:36px;height:4px;border-radius:2px;background:#D1D5DB;margin:0 auto 20px;}
 .pay-step-title{font-size:18px;font-weight:900;margin-bottom:4px;}
-.pay-step-sub{font-size:13px;color:var(--sub);margin-bottom:20px;}
+.pay-step-sub{font-size:13px;color:var(–sub);margin-bottom:20px;}
 /* 플랜 선택 박스 */
 .pay-plan-list{display:flex;flex-direction:column;gap:10px;margin-bottom:18px;}
-.pay-plan-item{border:2px solid var(--border);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.15s;}
-.pay-plan-item.on{border-color:var(--blue);background:var(--blue3);}
-.ppi-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;}
-.ppi-radio.on{border-color:var(--blue);background:var(--blue);}
-.ppi-radio.on::after{content:'';width:7px;height:7px;border-radius:50%;background:#fff;}
+.pay-plan-item{border:2px solid var(–border);border-radius:14px;padding:14px 16px;cursor:pointer;display:flex;align-items:center;gap:12px;transition:.15s;}
+.pay-plan-item.on{border-color:var(–blue);background:var(–blue3);}
+.ppi-radio{width:18px;height:18px;border-radius:50%;border:2px solid var(–border);flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:.15s;}
+.ppi-radio.on{border-color:var(–blue);background:var(–blue);}
+.ppi-radio.on::after{content:’’;width:7px;height:7px;border-radius:50%;background:#fff;}
 .ppi-body{flex:1;}
 .ppi-name{font-size:14px;font-weight:800;}
-.ppi-feats{font-size:11px;color:var(--sub);margin-top:3px;line-height:1.5;}
-.ppi-price{font-size:16px;font-weight:900;color:var(--blue);flex-shrink:0;}
+.ppi-feats{font-size:11px;color:var(–sub);margin-top:3px;line-height:1.5;}
+.ppi-price{font-size:16px;font-weight:900;color:var(–blue);flex-shrink:0;}
 /* 결제 수단 */
 .pay-method-list{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;}
-.pm-btn{padding:12px 8px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.15s;}
-.pm-btn.on{border-color:var(--blue);background:var(--blue3);}
+.pm-btn{padding:12px 8px;border-radius:12px;border:1.5px solid var(–border);background:var(–white);cursor:pointer;font-family:inherit;display:flex;flex-direction:column;align-items:center;gap:5px;transition:.15s;}
+.pm-btn.on{border-color:var(–blue);background:var(–blue3);}
 .pm-btn .pm-ico{font-size:22px;}
-.pm-btn .pm-lbl{font-size:11px;font-weight:700;color:var(--sub);}
-.pm-btn.on .pm-lbl{color:var(--blue);}
+.pm-btn .pm-lbl{font-size:11px;font-weight:700;color:var(–sub);}
+.pm-btn.on .pm-lbl{color:var(–blue);}
 /* 카드 입력 */
 .pay-card-inputs{display:flex;flex-direction:column;gap:10px;margin-bottom:16px;}
-.pay-inp{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;color:var(--text);outline:none;}
-.pay-inp:focus{border-color:var(--blue2);}
+.pay-inp{width:100%;padding:12px 14px;border-radius:11px;border:1.5px solid var(–border);font-size:14px;font-family:inherit;color:var(–text);outline:none;}
+.pay-inp:focus{border-color:var(–blue2);}
 .pay-inp-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 /* 금액 요약 */
-.pay-summary{background:var(--bg);border-radius:12px;padding:14px 16px;margin-bottom:18px;}
-.pay-sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--sub);margin-bottom:6px;}
-.pay-sum-row.total{font-size:15px;font-weight:900;color:var(--text);border-top:1px solid var(--border);padding-top:10px;margin-top:4px;margin-bottom:0;}
-.pay-sum-row.total span:last-child{color:var(--blue);}
-.pay-cta{width:100%;padding:15px;border-radius:13px;border:none;background:var(--blue);color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(10,61,145,.3);}
+.pay-summary{background:var(–bg);border-radius:12px;padding:14px 16px;margin-bottom:18px;}
+.pay-sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(–sub);margin-bottom:6px;}
+.pay-sum-row.total{font-size:15px;font-weight:900;color:var(–text);border-top:1px solid var(–border);padding-top:10px;margin-top:4px;margin-bottom:0;}
+.pay-sum-row.total span:last-child{color:var(–blue);}
+.pay-cta{width:100%;padding:15px;border-radius:13px;border:none;background:var(–blue);color:#fff;font-size:16px;font-weight:800;font-family:inherit;cursor:pointer;box-shadow:0 4px 16px rgba(10,61,145,.3);}
 .pay-cta:active{transform:scale(.98);}
-.pay-note{text-align:center;font-size:11px;color:var(--muted);margin-top:10px;line-height:1.7;}
+.pay-note{text-align:center;font-size:11px;color:var(–muted);margin-top:10px;line-height:1.7;}
 /* 성공 화면 */
 .pay-success{text-align:center;padding:10px 0 20px;}
 .pay-s-ico{font-size:60px;margin-bottom:16px;}
 .pay-s-title{font-size:20px;font-weight:900;margin-bottom:8px;}
-.pay-s-desc{font-size:14px;color:var(--sub);line-height:1.65;margin-bottom:24px;}
-.pay-s-box{background:var(--blue3);border-radius:12px;padding:14px 16px;margin-bottom:20px;text-align:left;}
+.pay-s-desc{font-size:14px;color:var(–sub);line-height:1.65;margin-bottom:24px;}
+.pay-s-box{background:var(–blue3);border-radius:12px;padding:14px 16px;margin-bottom:20px;text-align:left;}
 .pay-s-row{display:flex;justify-content:space-between;font-size:13px;margin-bottom:5px;}
 .pay-s-row:last-child{margin-bottom:0;font-weight:800;}
-.pay-s-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(--blue);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;}
-.lstat{font-size:13px;color:var(--sub);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
-.lstat strong{color:var(--blue);font-weight:700;}
-.sort-btn{font-size:12px;color:var(--blue2);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
+.pay-s-btn{width:100%;padding:14px;border-radius:12px;border:none;background:var(–blue);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;}
+.lstat{font-size:13px;color:var(–sub);margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
+.lstat strong{color:var(–blue);font-weight:700;}
+.sort-btn{font-size:12px;color:var(–blue2);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
 
-.ad-inline{background:linear-gradient(120deg,var(--orange),var(--orange3));border-radius:var(--radius);padding:14px 18px;color:#fff;cursor:pointer;box-shadow:var(--psh);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.ad-inline{background:linear-gradient(120deg,var(–orange),var(–orange3));border-radius:var(–radius);padding:14px 18px;color:#fff;cursor:pointer;box-shadow:var(–psh);display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
 .ad-inline h3{font-size:14px;font-weight:800;}
 .ad-inline p{font-size:12px;opacity:.85;margin-top:2px;}
 
 /* Academy card — 썸네일 이미지 포함 새 레이아웃 */
 .acard{background:#fff;border-radius:18px;border:1px solid #EAECF5;
-  margin-bottom:10px;padding:0;
-  box-shadow:0 2px 12px rgba(0,0,0,.05);
-  opacity:0;transform:translateY(8px);animation:rise .26s ease forwards;
-  position:relative;overflow:hidden;}
+margin-bottom:10px;padding:0;
+box-shadow:0 2px 12px rgba(0,0,0,.05);
+opacity:0;transform:translateY(8px);animation:rise .26s ease forwards;
+position:relative;overflow:hidden;}
 .acard.prem{border:2px solid #FF8C42;box-shadow:0 4px 20px rgba(255,140,66,.15);}
-.acard.prem::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(#FF6B2B,#FFAB5A);border-radius:4px 0 0 4px;z-index:1;}
+.acard.prem::before{content:’’;position:absolute;left:0;top:0;bottom:0;width:4px;
+background:linear-gradient(#FF6B2B,#FFAB5A);border-radius:4px 0 0 4px;z-index:1;}
 .acard.basic{border:2px solid #7CB9F4;box-shadow:0 3px 14px rgba(74,144,226,.1);}
-.acard.basic::before{content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
-  background:linear-gradient(#4A90E2,#70BAFF);border-radius:4px 0 0 4px;z-index:1;}
+.acard.basic::before{content:’’;position:absolute;left:0;top:0;bottom:0;width:4px;
+background:linear-gradient(#4A90E2,#70BAFF);border-radius:4px 0 0 4px;z-index:1;}
 
 /* 카드 내부 */
 .ac-inner{display:flex;align-items:flex-start;padding:14px 14px 0 18px;gap:12px;}
 .ac-thumb{
-  width:70px;height:70px;border-radius:12px;flex-shrink:0;overflow:hidden;
-  display:flex;align-items:center;justify-content:center;font-size:28px;
-  border:1px solid #F0F2F8;
+width:70px;height:70px;border-radius:12px;flex-shrink:0;overflow:hidden;
+display:flex;align-items:center;justify-content:center;font-size:28px;
+border:1px solid #F0F2F8;
 }
 .ac-thumb img{width:100%;height:100%;object-fit:cover;}
 .ac-top{display:flex;align-items:flex-start;gap:0;flex:1;min-width:0;}
@@ -393,25 +393,25 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .heart-btn{background:none;border:none;cursor:pointer;font-size:22px;flex-shrink:0;padding:2px;line-height:1;}
 .heart-btn.liked{animation:heartPop .3s ease;}
 .ac-foot{margin:10px 14px 14px 18px;padding-top:10px;border-top:1px solid #F0F2F8;
-  display:flex;align-items:center;justify-content:space-between;}
+display:flex;align-items:center;justify-content:space-between;}
 .ac-price{color:#E53E3E;font-size:15px;font-weight:800;}
 .ac-dist{font-size:11px;color:#8A94A6;margin-top:2px;}
 .ac-btn{padding:8px 18px;border-radius:10px;font-size:12px;font-weight:700;font-family:inherit;
-  cursor:pointer;border:1.5px solid #4A90E2;background:transparent;color:#4A90E2;}
+cursor:pointer;border:1.5px solid #4A90E2;background:transparent;color:#4A90E2;}
 .ac-btn.p{background:linear-gradient(120deg,#FF6B2B,#FF9F5A);color:#fff;border:none;
-  box-shadow:0 3px 10px rgba(255,107,43,.25);}
+box-shadow:0 3px 10px rgba(255,107,43,.25);}
 .no-r{text-align:center;padding:40px 20px;color:#8A94A6;font-size:14px;display:none;}
 
 /* Bottom nav */
 .bnav{position:fixed;bottom:0;left:0;right:0;height:64px;background:#fff;
-  border-top:1px solid #EAECF5;display:flex;z-index:700;
-  box-shadow:0 -2px 12px rgba(0,0,0,.06);}
+border-top:1px solid #EAECF5;display:flex;z-index:700;
+box-shadow:0 -2px 12px rgba(0,0,0,.06);}
 .nb{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;border:none;background:none;font-family:inherit;
-  font-size:10px;font-weight:600;color:#9AA3B2;cursor:pointer;position:relative;transition:.15s;}
+gap:3px;border:none;background:none;font-family:inherit;
+font-size:10px;font-weight:600;color:#9AA3B2;cursor:pointer;position:relative;transition:.15s;}
 .nb.on{color:#176ED3;}
 .nb-ic{width:28px;height:28px;display:flex;align-items:center;justify-content:center;
-  border-radius:10px;transition:.15s;}
+border-radius:10px;transition:.15s;}
 .nb-ic svg{width:22px;height:22px;stroke-width:1.8;fill:none;stroke:#9AA3B2;stroke-linecap:round;stroke-linejoin:round;transition:.15s;}
 /* 홈 활성 */
 .nb.on.nb-home .nb-ic{background:#EEF5FF;}
@@ -424,19 +424,19 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .nb.on.nb-my .nb-ic svg{stroke:#7C3AED;}
 /* 비활성 호버 */
 .nb:not(.on):active .nb-ic{background:#F4F6FB;}
-.nb-badge{position:absolute;top:8px;right:calc(50% - 16px);background:var(--red);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center;}
+.nb-badge{position:absolute;top:8px;right:calc(50% - 16px);background:var(–red);color:#fff;font-size:9px;font-weight:800;padding:1px 5px;border-radius:8px;min-width:16px;text-align:center;}
 
 /* 카카오맵 커스텀 마커 */
 .kpin{
-  position:relative;cursor:pointer;
-  display:flex;flex-direction:column;align-items:center;
+position:relative;cursor:pointer;
+display:flex;flex-direction:column;align-items:center;
 }
 .kpin-bubble{
-  width:40px;height:40px;border-radius:50% 50% 50% 0;
-  transform:rotate(-45deg);
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 3px 10px rgba(0,0,0,.25);
-  border:2.5px solid rgba(255,255,255,.95);
+width:40px;height:40px;border-radius:50% 50% 50% 0;
+transform:rotate(-45deg);
+display:flex;align-items:center;justify-content:center;
+box-shadow:0 3px 10px rgba(0,0,0,.25);
+border:2.5px solid rgba(255,255,255,.95);
 }
 .kpin-bubble span{transform:rotate(45deg);font-size:18px;display:block;}
 .kpin.free .kpin-bubble{background:#94A3B8;}
@@ -446,159 +446,159 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 /* ══ Detail Sheet ══ */
 .sh-ov{position:fixed;inset:0;background:rgba(0,0,0,.48);z-index:800;display:none;align-items:flex-end;}
 .sh-ov.open{display:flex;}
-.sheet{background:var(--white);width:100%;border-radius:22px 22px 0 0;padding:0 0 50px;animation:shUp .22s cubic-bezier(.4,0,.2,1);max-height:92vh;overflow-y:auto;}
+.sheet{background:var(–white);width:100%;border-radius:22px 22px 0 0;padding:0 0 50px;animation:shUp .22s cubic-bezier(.4,0,.2,1);max-height:92vh;overflow-y:auto;}
 .sh-hdl{width:36px;height:4px;border-radius:2px;background:#D1D5DB;margin:14px auto 0;}
 .sh-hero{padding:18px 20px 0;}
 .sh-hero-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
 .sh-ico{width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
 .sh-nm{font-size:19px;font-weight:900;line-height:1.2;}
 .sh-plan-tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:7px;margin-top:4px;}
-.sh-plan-tag.prem{background:var(--orange);color:#fff;}
-.sh-plan-tag.basic{background:var(--blue3);color:var(--blue2);}
-.sh-plan-tag.free{background:#F1F5F9;color:var(--muted);}
+.sh-plan-tag.prem{background:var(–orange);color:#fff;}
+.sh-plan-tag.basic{background:var(–blue3);color:var(–blue2);}
+.sh-plan-tag.free{background:#F1F5F9;color:var(–muted);}
 .sh-stars-row{display:flex;align-items:center;gap:6px;margin-bottom:14px;}
-.sh-stars{color:var(--yellow);font-size:18px;letter-spacing:-1px;}
+.sh-stars{color:var(–yellow);font-size:18px;letter-spacing:-1px;}
 .sh-rat{font-size:15px;font-weight:800;}
-.sh-rcnt{font-size:13px;color:var(--muted);}
+.sh-rcnt{font-size:13px;color:var(–muted);}
 /* heart in sheet */
 .sh-heart{background:none;border:none;font-size:28px;cursor:pointer;padding:0;}
 
 .sh-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px;margin-bottom:16px;}
-.sh-cell{background:var(--bg);border-radius:12px;padding:12px 14px;}
-.sh-lbl{font-size:11px;color:var(--muted);font-weight:600;}
+.sh-cell{background:var(–bg);border-radius:12px;padding:12px 14px;}
+.sh-lbl{font-size:11px;color:var(–muted);font-weight:600;}
 .sh-val{font-size:14px;font-weight:800;margin-top:3px;}
-.sh-val.r{color:var(--red);}
+.sh-val.r{color:var(–red);}
 
 /* Reviews in sheet */
 .sh-sec-title{font-size:14px;font-weight:800;padding:0 20px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
-.sh-sec-title button{font-size:12px;color:var(--blue2);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
-.review-card{margin:0 20px 10px;background:var(--bg);border-radius:12px;padding:13px 14px;}
+.sh-sec-title button{font-size:12px;color:var(–blue2);font-weight:700;background:none;border:none;cursor:pointer;font-family:inherit;}
+.review-card{margin:0 20px 10px;background:var(–bg);border-radius:12px;padding:13px 14px;}
 .rv-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;gap:8px;}
 .rv-author{font-size:13px;font-weight:700;}
-.rv-date{font-size:11px;color:var(--muted);margin-top:2px;}
+.rv-date{font-size:11px;color:var(–muted);margin-top:2px;}
 .rv-actions{display:flex;gap:6px;flex-shrink:0;}
 .rv-act-btn{font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;cursor:pointer;font-family:inherit;border:none;}
-.rv-act-btn.edit{background:var(--blue3);color:var(--blue2);}
-.rv-act-btn.del{background:#FEE2E2;color:var(--red);}
-.rv-mine-badge{font-size:10px;font-weight:800;background:var(--green2);color:var(--green);padding:2px 6px;border-radius:5px;margin-left:4px;vertical-align:middle;}
-.rv-stars{color:var(--yellow);font-size:13px;margin-bottom:5px;}
-.rv-body{font-size:13px;color:var(--sub);line-height:1.6;}
-.no-review{padding:20px;text-align:center;color:var(--muted);font-size:13px;}
+.rv-act-btn.edit{background:var(–blue3);color:var(–blue2);}
+.rv-act-btn.del{background:#FEE2E2;color:var(–red);}
+.rv-mine-badge{font-size:10px;font-weight:800;background:var(–green2);color:var(–green);padding:2px 6px;border-radius:5px;margin-left:4px;vertical-align:middle;}
+.rv-stars{color:var(–yellow);font-size:13px;margin-bottom:5px;}
+.rv-body{font-size:13px;color:var(–sub);line-height:1.6;}
+.no-review{padding:20px;text-align:center;color:var(–muted);font-size:13px;}
 
 .sh-cta-wrap{padding:0 20px;margin-top:4px;}
-.sh-cta{width:100%;padding:14px;border-radius:13px;border:none;background:var(--blue);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;}
-.sh-cta.o{background:var(--orange);}
+.sh-cta{width:100%;padding:14px;border-radius:13px;border:none;background:var(–blue);color:#fff;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;}
+.sh-cta.o{background:var(–orange);}
 
 /* ══════════════════════════════════
-   관심목록 PAGE
+관심목록 PAGE
 ══════════════════════════════════ */
 #page-wish{padding-bottom:64px;}
-.ph{background:var(--blue);padding:52px 18px 20px;color:#fff;}
+.ph{background:var(–blue);padding:52px 18px 20px;color:#fff;}
 .ph h2{font-size:20px;font-weight:900;}
 .ph p{font-size:13px;opacity:.7;margin-top:4px;}
 .wish-list{padding:14px;}
-.wish-empty{text-align:center;padding:60px 20px;color:var(--muted);}
+.wish-empty{text-align:center;padding:60px 20px;color:var(–muted);}
 .wish-empty .wi-ico{font-size:48px;margin-bottom:14px;}
 .wish-empty p{font-size:14px;}
-.wish-empty button{margin-top:16px;padding:10px 22px;border-radius:10px;background:var(--blue);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
+.wish-empty button{margin-top:16px;padding:10px 22px;border-radius:10px;background:var(–blue);color:#fff;border:none;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;}
 
 /* ══════════════════════════════════
-   LANDING PAGE
+LANDING PAGE
 ══════════════════════════════════ */
-#page-landing{background:var(--white);}
+#page-landing{background:var(–white);}
 .lnav{position:fixed;top:0;left:0;right:0;z-index:700;height:54px;display:flex;align-items:center;justify-content:space-between;padding:0 18px;background:rgba(6,30,91,.93);backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.1);}
 .lnav .logo{font-size:20px;}
 .lnav-r{display:flex;gap:8px;}
 .lnav-btn{padding:6px 13px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;border:none;}
 .lnav-btn.g{background:transparent;border:1.5px solid rgba(255,255,255,.3);color:#fff;}
-.lnav-btn.s{background:var(--orange);color:#fff;}
+.lnav-btn.s{background:var(–orange);color:#fff;}
 
 .hero{background:linear-gradient(160deg,#061E5B 0%,#0A3D91 55%,#1A5FD4 100%);padding:86px 24px 48px;text-align:center;position:relative;overflow:hidden;}
-.hero::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");pointer-events:none;}
+.hero::before{content:’’;position:absolute;inset:0;background:url(“data:image/svg+xml,%3Csvg width=‘60’ height=‘60’ viewBox=‘0 0 60 60’ xmlns=‘http://www.w3.org/2000/svg’%3E%3Cg fill=’%23ffffff’ fill-opacity=‘0.03’%3E%3Cpath d=‘M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z’/%3E%3C/g%3E%3C/svg%3E”);pointer-events:none;}
 .hero-tag{display:inline-flex;align-items:center;gap:6px;background:rgba(255,90,31,.25);border:1px solid rgba(255,90,31,.4);border-radius:20px;padding:5px 14px;color:#FFB299;font-size:12px;font-weight:700;margin-bottom:18px;}
 .hero h1{font-size:30px;font-weight:900;color:#fff;line-height:1.25;letter-spacing:-1px;margin-bottom:12px;}
-.hero h1 em{color:var(--orange);font-style:normal;}
+.hero h1 em{color:var(–orange);font-style:normal;}
 .hero-sub{font-size:15px;color:rgba(255,255,255,.72);line-height:1.6;margin-bottom:28px;}
 .hero-btns{display:flex;flex-direction:column;gap:10px;max-width:320px;margin:0 auto 28px;position:relative;z-index:1;}
 .hcta{padding:15px;border-radius:13px;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;border:none;position:relative;z-index:2;}
-.hcta.pr{background:var(--orange);color:#fff;box-shadow:0 4px 20px rgba(255,90,31,.45);}
+.hcta.pr{background:var(–orange);color:#fff;box-shadow:0 4px 20px rgba(255,90,31,.45);}
 .hcta.sc{background:rgba(255,255,255,.12);color:#fff;border:1.5px solid rgba(255,255,255,.3);}
 .hero-stats{display:flex;justify-content:center;gap:24px;}
 .hs{text-align:center;}
 .hs-n{font-size:22px;font-weight:900;color:#fff;}
 .hs-l{font-size:11px;color:rgba(255,255,255,.6);margin-top:2px;}
 
-.sp-bar{background:var(--blue3);padding:13px 18px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
+.sp-bar{background:var(–blue3);padding:13px 18px;display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;}
 .sp-bar::-webkit-scrollbar{display:none;}
-.sp-pill{white-space:nowrap;background:var(--white);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(--blue);flex-shrink:0;box-shadow:0 1px 6px rgba(10,61,145,.1);}
+.sp-pill{white-space:nowrap;background:var(–white);border-radius:20px;padding:5px 12px;font-size:12px;font-weight:700;color:var(–blue);flex-shrink:0;box-shadow:0 1px 6px rgba(10,61,145,.1);}
 
 .section{padding:36px 22px;}
-.sec-tag{display:inline-block;background:var(--blue3);color:var(--blue2);font-size:11px;font-weight:800;padding:4px 10px;border-radius:6px;margin-bottom:10px;}
+.sec-tag{display:inline-block;background:var(–blue3);color:var(–blue2);font-size:11px;font-weight:800;padding:4px 10px;border-radius:6px;margin-bottom:10px;}
 .sec-title{font-size:22px;font-weight:900;letter-spacing:-.5px;line-height:1.3;margin-bottom:6px;}
-.sec-sub{font-size:14px;color:var(--sub);line-height:1.6;margin-bottom:24px;}
+.sec-sub{font-size:14px;color:var(–sub);line-height:1.6;margin-bottom:24px;}
 
 .why-grid{display:flex;flex-direction:column;gap:12px;}
-.why-c{background:var(--white);border-radius:var(--radius);padding:18px;border:1.5px solid var(--border);box-shadow:var(--sh);display:flex;gap:14px;align-items:flex-start;}
+.why-c{background:var(–white);border-radius:var(–radius);padding:18px;border:1.5px solid var(–border);box-shadow:var(–sh);display:flex;gap:14px;align-items:flex-start;}
 .why-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
 .why-t{font-size:15px;font-weight:800;margin-bottom:4px;}
-.why-d{font-size:13px;color:var(--sub);line-height:1.55;}
+.why-d{font-size:13px;color:var(–sub);line-height:1.55;}
 
 /* PRICING */
-.pricing-sec{padding:0 0 36px;background:var(--bg);}
+.pricing-sec{padding:0 0 36px;background:var(–bg);}
 .pricing-hdr{padding:36px 22px 20px;text-align:center;}
 .plan-cards{padding:0 16px;display:flex;flex-direction:column;gap:14px;}
-.pc{border-radius:20px;border:2px solid var(--border);background:var(--white);padding:22px 20px;position:relative;box-shadow:var(--sh);}
-.pc.hot{border-color:var(--orange);background:linear-gradient(160deg,#FFF8F5,var(--white) 60%);box-shadow:var(--psh);}
-.pc.pro{border-color:var(--blue);background:linear-gradient(160deg,#EEF4FF,var(--white) 60%);box-shadow:var(--bsh);}
+.pc{border-radius:20px;border:2px solid var(–border);background:var(–white);padding:22px 20px;position:relative;box-shadow:var(–sh);}
+.pc.hot{border-color:var(–orange);background:linear-gradient(160deg,#FFF8F5,var(–white) 60%);box-shadow:var(–psh);}
+.pc.pro{border-color:var(–blue);background:linear-gradient(160deg,#EEF4FF,var(–white) 60%);box-shadow:var(–bsh);}
 .pc-ribbon{position:absolute;top:-1px;right:22px;font-size:11px;font-weight:800;padding:5px 14px;border-radius:0 0 12px 12px;color:#fff;}
-.pc-ribbon.hot{background:var(--orange);}
-.pc-ribbon.pro{background:var(--blue);}
+.pc-ribbon.hot{background:var(–orange);}
+.pc-ribbon.pro{background:var(–blue);}
 .pc-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;}
 .pc-name{font-size:18px;font-weight:900;}
-.pc-tl{font-size:12px;color:var(--sub);margin-top:4px;}
+.pc-tl{font-size:12px;color:var(–sub);margin-top:4px;}
 .pc-pn{font-size:26px;font-weight:900;}
-.pc.free-pc .pc-pn{color:var(--green);}
-.pc.hot .pc-pn{color:var(--orange);}
-.pc.pro .pc-pn{color:var(--blue);}
-.pc-pu{font-size:12px;color:var(--muted);margin-top:2px;text-align:right;}
+.pc.free-pc .pc-pn{color:var(–green);}
+.pc.hot .pc-pn{color:var(–orange);}
+.pc.pro .pc-pn{color:var(–blue);}
+.pc-pu{font-size:12px;color:var(–muted);margin-top:2px;text-align:right;}
 .pc-feats{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;}
-.pf{display:flex;align-items:center;gap:9px;font-size:13px;color:var(--sub);}
+.pf{display:flex;align-items:center;gap:9px;font-size:13px;color:var(–sub);}
 .pf .ck{font-size:14px;flex-shrink:0;width:20px;text-align:center;}
-.pf.off{color:var(--muted);}
+.pf.off{color:var(–muted);}
 .pc-btn{width:100%;padding:13px;border-radius:12px;border:none;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;transition:.15s;}
 .pc-btn:active{transform:scale(.97);}
-.pc-btn.gr{background:var(--bg);color:var(--sub);border:1.5px solid var(--border);}
-.pc-btn.oo{background:var(--orange);color:#fff;box-shadow:0 4px 16px rgba(255,90,31,.35);}
-.pc-btn.ob{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(10,61,145,.3);}
+.pc-btn.gr{background:var(–bg);color:var(–sub);border:1.5px solid var(–border);}
+.pc-btn.oo{background:var(–orange);color:#fff;box-shadow:0 4px 16px rgba(255,90,31,.35);}
+.pc-btn.ob{background:var(–blue);color:#fff;box-shadow:0 4px 16px rgba(10,61,145,.3);}
 
 .steps{display:flex;flex-direction:column;gap:0;}
 .step{display:flex;gap:16px;padding-bottom:24px;position:relative;}
-.step:not(:last-child)::before{content:'';position:absolute;left:19px;top:40px;bottom:0;width:2px;background:var(--border);}
-.step-num{width:40px;height:40px;border-radius:50%;background:var(--blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;position:relative;z-index:1;}
+.step:not(:last-child)::before{content:’’;position:absolute;left:19px;top:40px;bottom:0;width:2px;background:var(–border);}
+.step-num{width:40px;height:40px;border-radius:50%;background:var(–blue);color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;position:relative;z-index:1;}
 .step-t{font-size:15px;font-weight:800;margin-bottom:4px;padding-top:8px;}
-.step-d{font-size:13px;color:var(--sub);line-height:1.55;}
+.step-d{font-size:13px;color:var(–sub);line-height:1.55;}
 
 .testi-cards{display:flex;flex-direction:column;gap:12px;}
-.tc{background:var(--white);border-radius:var(--radius);padding:18px;border:1.5px solid var(--border);box-shadow:var(--sh);}
-.tc-stars{color:var(--yellow);font-size:14px;margin-bottom:8px;}
-.tc-body{font-size:13px;color:var(--sub);line-height:1.6;margin-bottom:12px;}
+.tc{background:var(–white);border-radius:var(–radius);padding:18px;border:1.5px solid var(–border);box-shadow:var(–sh);}
+.tc-stars{color:var(–yellow);font-size:14px;margin-bottom:8px;}
+.tc-body{font-size:13px;color:var(–sub);line-height:1.6;margin-bottom:12px;}
 .tc-auth{display:flex;align-items:center;gap:10px;}
 .tc-av{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .tc-nm{font-size:13px;font-weight:700;}
-.tc-rl{font-size:11px;color:var(--muted);}
+.tc-rl{font-size:11px;color:var(–muted);}
 
 .faq-items{display:flex;flex-direction:column;gap:10px;}
-.faq-item{border-radius:12px;border:1.5px solid var(--border);overflow:hidden;}
-.faq-q{padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--white);}
-.faq-q .arr{color:var(--muted);transition:.2s;font-size:18px;}
-.faq-q.open .arr{transform:rotate(180deg);color:var(--blue);}
-.faq-a{font-size:13px;color:var(--sub);line-height:1.65;padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;}
+.faq-item{border-radius:12px;border:1.5px solid var(–border);overflow:hidden;}
+.faq-q{padding:14px 16px;font-size:14px;font-weight:700;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(–white);}
+.faq-q .arr{color:var(–muted);transition:.2s;font-size:18px;}
+.faq-q.open .arr{transform:rotate(180deg);color:var(–blue);}
+.faq-a{font-size:13px;color:var(–sub);line-height:1.65;padding:0 16px;max-height:0;overflow:hidden;transition:max-height .3s,padding .3s;}
 .faq-a.open{max-height:200px;padding:0 16px 14px;}
 
-.cta-bottom{padding:36px 22px;background:linear-gradient(135deg,#061E5B,var(--blue2));text-align:center;}
+.cta-bottom{padding:36px 22px;background:linear-gradient(135deg,#061E5B,var(–blue2));text-align:center;}
 .cta-bottom h2{font-size:22px;font-weight:900;color:#fff;margin-bottom:8px;letter-spacing:-.5px;}
 .cta-bottom p{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:22px;}
-.cta-bottom-btn{display:block;width:100%;max-width:320px;margin:0 auto 10px;padding:15px;border-radius:13px;border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;background:var(--orange);color:#fff;box-shadow:0 4px 20px rgba(255,90,31,.45);}
+.cta-bottom-btn{display:block;width:100%;max-width:320px;margin:0 auto 10px;padding:15px;border-radius:13px;border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;background:var(–orange);color:#fff;box-shadow:0 4px 20px rgba(255,90,31,.45);}
 .cta-note{font-size:12px;color:rgba(255,255,255,.5);margin-top:8px;}
 
 .footer{background:#061E5B;padding:24px 22px;text-align:center;}
@@ -608,147 +608,149 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .footer-copy{font-size:11px;color:rgba(255,255,255,.3);}
 
 /* ══════════════════════════════════
-   회원유형 PAGE
+회원유형 PAGE
 ══════════════════════════════════ */
-.page-hdr{background:linear-gradient(135deg,var(--blue),var(--blue2));padding:50px 20px 24px;color:#fff;}
+.page-hdr{background:linear-gradient(135deg,var(–blue),var(–blue2));padding:50px 20px 24px;color:#fff;}
 .page-hdr-back{font-size:22px;cursor:pointer;margin-bottom:12px;display:inline-block;opacity:.8;}
 .page-hdr h2{font-size:22px;font-weight:900;letter-spacing:-.5px;}
 .page-hdr p{font-size:13px;opacity:.72;margin-top:5px;}
 .type-list{padding:20px 16px;display:flex;flex-direction:column;gap:13px;}
-.type-card{border-radius:var(--radius);border:2px solid var(--border);background:var(--white);padding:20px;cursor:pointer;box-shadow:var(--sh);display:flex;gap:14px;align-items:flex-start;transition:.18s;}
+.type-card{border-radius:var(–radius);border:2px solid var(–border);background:var(–white);padding:20px;cursor:pointer;box-shadow:var(–sh);display:flex;gap:14px;align-items:flex-start;transition:.18s;}
 .type-card:active{transform:scale(.98);}
-.type-card.u{border-color:var(--blue3);}
-.type-card.b{border-color:var(--orange2);}
+.type-card.u{border-color:var(–blue3);}
+.type-card.b{border-color:var(–orange2);}
 .ty-ico{width:48px;height:42px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0;}
-.ty-ico.u{background:var(--blue3);}
-.ty-ico.b{background:var(--orange2);}
+.ty-ico.u{background:var(–blue3);}
+.ty-ico.b{background:var(–orange2);}
 .ty-nm{font-size:16px;font-weight:800;margin-bottom:4px;}
 .ty-badge{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:6px;margin-bottom:7px;}
-.ty-badge.free{background:var(--green2);color:var(--green);}
-.ty-badge.paid{background:var(--orange2);color:var(--orange);}
-.ty-desc{font-size:13px;color:var(--sub);line-height:1.6;}
-.ty-arr{margin-top:10px;font-size:13px;font-weight:700;color:var(--blue2);}
-.login-row{text-align:center;padding:20px;font-size:13px;color:var(--muted);}
-.login-row span{color:var(--blue2);font-weight:700;cursor:pointer;}
+.ty-badge.free{background:var(–green2);color:var(–green);}
+.ty-badge.paid{background:var(–orange2);color:var(–orange);}
+.ty-desc{font-size:13px;color:var(–sub);line-height:1.6;}
+.ty-arr{margin-top:10px;font-size:13px;font-weight:700;color:var(–blue2);}
+.login-row{text-align:center;padding:20px;font-size:13px;color:var(–muted);}
+.login-row span{color:var(–blue2);font-weight:700;cursor:pointer;}
 
 /* ══════════════════════════════════
-   FORM PAGES
+FORM PAGES
 ══════════════════════════════════ */
 .form-hdr{padding:50px 20px 26px;color:#fff;}
-.form-hdr.blue{background:linear-gradient(135deg,var(--blue),var(--blue2));}
-.form-hdr.orange{background:linear-gradient(135deg,#7C2D00,var(--orange));}
+.form-hdr.blue{background:linear-gradient(135deg,var(–blue),var(–blue2));}
+.form-hdr.orange{background:linear-gradient(135deg,#7C2D00,var(–orange));}
 .form-hdr-back{font-size:22px;cursor:pointer;margin-bottom:12px;display:inline-block;opacity:.8;}
 .form-hdr h2{font-size:22px;font-weight:900;}
 .form-hdr p{font-size:13px;opacity:.72;margin-top:5px;}
 .form-body{padding:22px 18px 50px;display:flex;flex-direction:column;gap:15px;}
 .fg{display:flex;flex-direction:column;gap:6px;}
-.fg label{font-size:12px;font-weight:800;color:var(--sub);letter-spacing:.3px;}
-.fg input,.fg select,.fg textarea{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;color:var(--text);outline:none;background:var(--white);}
-.fg input:focus,.fg select:focus{border-color:var(--blue2);box-shadow:0 0 0 3px rgba(22,88,214,.1);}
-.fg .hint{font-size:11px;color:var(--muted);}
-.plan-sum{background:var(--blue3);border-radius:12px;padding:14px 16px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
-.ps-l{font-size:13px;color:var(--sub);}
-.ps-pl{font-size:14px;font-weight:800;color:var(--blue);}
-.ps-pr{font-size:14px;font-weight:900;color:var(--blue);}
+.fg label{font-size:12px;font-weight:800;color:var(–sub);letter-spacing:.3px;}
+.fg input,.fg select,.fg textarea{width:100%;padding:13px 14px;border-radius:12px;border:1.5px solid var(–border);font-size:14px;font-family:inherit;color:var(–text);outline:none;background:var(–white);}
+.fg input:focus,.fg select:focus{border-color:var(–blue2);box-shadow:0 0 0 3px rgba(22,88,214,.1);}
+.fg .hint{font-size:11px;color:var(–muted);}
+.plan-sum{background:var(–blue3);border-radius:12px;padding:14px 16px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;}
+.ps-l{font-size:13px;color:var(–sub);}
+.ps-pl{font-size:14px;font-weight:800;color:var(–blue);}
+.ps-pr{font-size:14px;font-weight:900;color:var(–blue);}
 .divr{display:flex;align-items:center;gap:10px;margin:4px 0;}
-.divr hr{flex:1;border:none;border-top:1px solid var(--border);}
-.divr span{font-size:12px;color:var(--muted);}
-.social-btn{width:100%;padding:13px;border-radius:12px;border:1.5px solid var(--border);background:var(--white);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;color:var(--text);}
+.divr hr{flex:1;border:none;border-top:1px solid var(–border);}
+.divr span{font-size:12px;color:var(–muted);}
+.social-btn{width:100%;padding:13px;border-radius:12px;border:1.5px solid var(–border);background:var(–white);font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:9px;color:var(–text);}
 .sub-btn{width:100%;padding:15px;border-radius:13px;border:none;font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:4px;}
-.sub-btn.blue{background:var(--blue);color:#fff;box-shadow:0 4px 16px rgba(10,61,145,.3);}
-.sub-btn.orange{background:var(--orange);color:#fff;box-shadow:0 4px 16px rgba(255,90,31,.3);}
-.sub-note{text-align:center;font-size:12px;color:var(--muted);}
+.sub-btn.blue{background:var(–blue);color:#fff;box-shadow:0 4px 16px rgba(10,61,145,.3);}
+.sub-btn.orange{background:var(–orange);color:#fff;box-shadow:0 4px 16px rgba(255,90,31,.3);}
+.sub-note{text-align:center;font-size:12px;color:var(–muted);}
 
 /* ══════════════════════════════════
-   플랜 PAGE
+플랜 PAGE
 ══════════════════════════════════ */
-.plan-hdr{background:linear-gradient(150deg,#061E5B,var(--blue2));padding:50px 22px 28px;text-align:center;color:#fff;}
+.plan-hdr{background:linear-gradient(150deg,#061E5B,var(–blue2));padding:50px 22px 28px;text-align:center;color:#fff;}
 .plan-hdr-back{font-size:22px;cursor:pointer;text-align:left;margin-bottom:14px;opacity:.8;}
 .plan-hdr h2{font-size:24px;font-weight:900;letter-spacing:-.5px;}
 .plan-hdr p{font-size:14px;opacity:.72;margin-top:6px;}
 .plan-body{padding:20px 16px 50px;display:flex;flex-direction:column;gap:14px;}
 
 /* ══════════════════════════════════
-   DASHBOARD PAGE
+DASHBOARD PAGE
 ══════════════════════════════════ */
 #page-dashboard{padding-bottom:80px;}
-.db-hdr{background:linear-gradient(135deg,var(--blue),var(--blue2));padding:48px 20px 22px;color:#fff;}
+.db-hdr{background:linear-gradient(135deg,var(–blue),var(–blue2));padding:48px 20px 22px;color:#fff;}
 .db-hdr-back{font-size:22px;cursor:pointer;margin-bottom:10px;display:inline-block;opacity:.8;}
 .db-plan-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:20px;padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:10px;}
 .db-acad-name{font-size:22px;font-weight:900;}
 .db-loc{font-size:13px;opacity:.7;margin-top:3px;}
 .db-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;padding:14px;}
-.ds{background:var(--white);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:var(--sh);}
-.ds-n{font-size:22px;font-weight:900;color:var(--blue);}
-.ds-l{font-size:11px;color:var(--muted);margin-top:3px;font-weight:600;}
-.up-banner{margin:0 14px 16px;background:linear-gradient(120deg,var(--blue),var(--blue2));border-radius:var(--radius);padding:14px 16px;color:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
+.ds{background:var(–white);border-radius:14px;padding:14px 12px;text-align:center;box-shadow:var(–sh);}
+.ds-n{font-size:22px;font-weight:900;color:var(–blue);}
+.ds-l{font-size:11px;color:var(–muted);margin-top:3px;font-weight:600;}
+.up-banner{margin:0 14px 16px;background:linear-gradient(120deg,var(–blue),var(–blue2));border-radius:var(–radius);padding:14px 16px;color:#fff;display:flex;align-items:center;justify-content:space-between;cursor:pointer;}
 .up-banner h4{font-size:13px;font-weight:800;}
 .up-banner p{font-size:11px;opacity:.8;margin-top:2px;}
-.up-sm{background:#fff;color:var(--blue);font-size:11px;font-weight:800;padding:7px 12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;margin-left:10px;}
+.up-sm{background:#fff;color:var(–blue);font-size:11px;font-weight:800;padding:7px 12px;border-radius:8px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;margin-left:10px;}
 .db-sec{padding:0 14px;margin-bottom:18px;}
 .db-sh{font-size:14px;font-weight:800;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;}
-.db-sh button{font-size:12px;font-weight:700;color:var(--blue2);background:none;border:none;cursor:pointer;font-family:inherit;}
-.pro-tag{font-size:10px;background:var(--orange2);color:var(--orange);padding:2px 7px;border-radius:6px;font-weight:800;margin-left:4px;}
-.info-card{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);padding:4px 16px;box-shadow:var(--sh);}
-.ir{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--border);}
+.db-sh button{font-size:12px;font-weight:700;color:var(–blue2);background:none;border:none;cursor:pointer;font-family:inherit;}
+.pro-tag{font-size:10px;background:var(–orange2);color:var(–orange);padding:2px 7px;border-radius:6px;font-weight:800;margin-left:4px;}
+.info-card{background:var(–white);border-radius:var(–radius);border:1.5px solid var(–border);padding:4px 16px;box-shadow:var(–sh);}
+.ir{display:flex;align-items:center;justify-content:space-between;padding:12px 0;border-bottom:1px solid var(–border);}
 .ir:last-child{border-bottom:none;}
-.ir-l{font-size:13px;color:var(--sub);font-weight:600;}
+.ir-l{font-size:13px;color:var(–sub);font-weight:600;}
 .ir-v{font-size:13px;font-weight:700;}
-.ir-e{font-size:12px;color:var(--blue2);font-weight:700;cursor:pointer;background:none;border:none;font-family:inherit;}
-.timetable{background:var(--white);border-radius:var(--radius);border:1.5px solid var(--border);overflow:hidden;box-shadow:var(--sh);}
-.tt-head{display:grid;grid-template-columns:44px repeat(5,1fr);background:var(--blue);color:#fff;font-size:11px;font-weight:700;}
+.ir-e{font-size:12px;color:var(–blue2);font-weight:700;cursor:pointer;background:none;border:none;font-family:inherit;}
+.timetable{background:var(–white);border-radius:var(–radius);border:1.5px solid var(–border);overflow:hidden;box-shadow:var(–sh);}
+.tt-head{display:grid;grid-template-columns:44px repeat(5,1fr);background:var(–blue);color:#fff;font-size:11px;font-weight:700;}
 .tt-head div,.tt-row div{padding:7px 2px;text-align:center;}
-.tt-row{display:grid;grid-template-columns:44px repeat(5,1fr);font-size:11px;border-top:1px solid var(--border);}
-.tt-row .tt-t{font-weight:700;background:#F8FAFF;color:var(--text);}
-.tt-cls{background:var(--blue3);color:var(--blue);border-radius:5px;font-size:9px;font-weight:700;padding:3px 1px;margin:2px;}
-.news-c{background:var(--white);border-radius:12px;border:1.5px solid var(--border);padding:13px 15px;margin-bottom:9px;box-shadow:var(--sh);}
-.news-d{font-size:11px;color:var(--muted);margin-bottom:3px;}
+.tt-row{display:grid;grid-template-columns:44px repeat(5,1fr);font-size:11px;border-top:1px solid var(–border);}
+.tt-row .tt-t{font-weight:700;background:#F8FAFF;color:var(–text);}
+.tt-cls{background:var(–blue3);color:var(–blue);border-radius:5px;font-size:9px;font-weight:700;padding:3px 1px;margin:2px;}
+.news-c{background:var(–white);border-radius:12px;border:1.5px solid var(–border);padding:13px 15px;margin-bottom:9px;box-shadow:var(–sh);}
+.news-d{font-size:11px;color:var(–muted);margin-bottom:3px;}
 .news-t{font-size:14px;font-weight:700;}
-.rsv-c{background:var(--white);border-radius:12px;border:1.5px solid var(--border);padding:13px 15px;margin-bottom:9px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;}
+.rsv-c{background:var(–white);border-radius:12px;border:1.5px solid var(–border);padding:13px 15px;margin-bottom:9px;box-shadow:var(–sh);display:flex;align-items:center;justify-content:space-between;}
 .rsv-nm{font-size:14px;font-weight:700;}
-.rsv-tm{font-size:12px;color:var(--sub);margin-top:2px;}
+.rsv-tm{font-size:12px;color:var(–sub);margin-top:2px;}
 .rsv-b{font-size:11px;font-weight:700;padding:4px 10px;border-radius:8px;}
-.rsv-b.new{background:var(--orange2);color:var(--orange);}
-.rsv-b.done{background:var(--green2);color:var(--green);}
-.sns-r{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--border);}
+.rsv-b.new{background:var(–orange2);color:var(–orange);}
+.rsv-b.done{background:var(–green2);color:var(–green);}
+.sns-r{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(–border);}
 .sns-r:last-child{border-bottom:none;}
 .sns-ic{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
 .sns-nm{font-size:14px;font-weight:700;flex:1;}
-.sns-st{font-size:11px;color:var(--muted);}
+.sns-st{font-size:11px;color:var(–muted);}
 .sns-btn{font-size:12px;font-weight:700;padding:5px 12px;border-radius:8px;cursor:pointer;font-family:inherit;}
-.sns-btn.on{background:var(--green2);color:var(--green);border:none;}
-.sns-btn.off{background:var(--bg);color:var(--sub);border:1px solid var(--border);}
+.sns-btn.on{background:var(–green2);color:var(–green);border:none;}
+.sns-btn.off{background:var(–bg);color:var(–sub);border:1px solid var(–border);}
 .locked{position:relative;}
-.lock-cover{position:absolute;inset:0;background:rgba(255,255,255,.9);border-radius:var(--radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;backdrop-filter:blur(3px);}
+.lock-cover{position:absolute;inset:0;background:rgba(255,255,255,.9);border-radius:var(–radius);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;backdrop-filter:blur(3px);}
 .lock-cover .lk-ic{font-size:26px;}
-.lock-cover p{font-size:13px;font-weight:700;color:var(--sub);}
-.lock-cover button{background:var(--orange);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
-.db-bnav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(--white);border-top:1px solid var(--border);display:flex;z-index:700;box-shadow:0 -4px 16px rgba(10,61,145,.07);}
+.lock-cover p{font-size:13px;font-weight:700;color:var(–sub);}
+.lock-cover button{background:var(–orange);color:#fff;border:none;border-radius:9px;padding:8px 18px;font-size:13px;font-weight:800;cursor:pointer;font-family:inherit;}
+.db-bnav{position:fixed;bottom:0;left:0;right:0;height:64px;background:var(–white);border-top:1px solid var(–border);display:flex;z-index:700;box-shadow:0 -4px 16px rgba(10,61,145,.07);}
 
 /* MODALS */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:900;display:none;align-items:center;justify-content:center;padding:20px;}
 .modal-ov.open{display:flex;}
-.modal-box{background:var(--white);border-radius:20px;padding:24px 22px;width:100%;max-width:360px;animation:popIn .2s ease;}
+.modal-box{background:var(–white);border-radius:20px;padding:24px 22px;width:100%;max-width:360px;animation:popIn .2s ease;}
 .modal-title{font-size:17px;font-weight:800;margin-bottom:16px;}
 .mfg{display:flex;flex-direction:column;gap:6px;margin-bottom:13px;}
-.mfg label{font-size:12px;font-weight:700;color:var(--sub);}
-.mfg input,.mfg textarea,.mfg select{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(--border);font-size:14px;font-family:inherit;color:var(--text);outline:none;}
+.mfg label{font-size:12px;font-weight:700;color:var(–sub);}
+.mfg input,.mfg textarea,.mfg select{width:100%;padding:11px 13px;border-radius:10px;border:1.5px solid var(–border);font-size:14px;font-family:inherit;color:var(–text);outline:none;}
 .mfg textarea{resize:vertical;min-height:80px;}
-.mfg input:focus,.mfg textarea:focus{border-color:var(--blue2);}
+.mfg input:focus,.mfg textarea:focus{border-color:var(–blue2);}
 .modal-btns{display:flex;gap:10px;}
 .modal-btns button{flex:1;padding:12px;border-radius:11px;font-size:14px;font-weight:800;font-family:inherit;cursor:pointer;border:none;}
-.mb-cancel{background:var(--bg);color:var(--sub);}
-.mb-save{background:var(--blue);color:#fff;}
+.mb-cancel{background:var(–bg);color:var(–sub);}
+.mb-save{background:var(–blue);color:#fff;}
 
 /* Star rating input */
 .star-input{display:flex;gap:6px;font-size:28px;cursor:pointer;}
 .star-input span{color:#D1D5DB;transition:.1s;}
-.star-input span.on{color:var(--yellow);}
+.star-input span.on{color:var(–yellow);}
 </style>
+
 </head>
 <body>
 
 <!-- ════════════════ HOME ════════════════ -->
+
 <div class="page active" id="page-home">
   <div class="hdr">
     <div class="logo" onclick="go('page-landing')">
@@ -905,6 +907,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- Detail Sheet -->
+
 <div class="sh-ov" id="sh-ov" onclick="closeSheet(event)">
   <div class="sheet" id="sheet-content">
     <div class="sh-hdl"></div>
@@ -941,73 +944,77 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         </div>
         <div id="sh-grade-badges" style="padding:0 20px;margin-bottom:14px;"></div>
 
-        <!-- 주소 + 층수 + 지도 버튼 -->
-        <div id="sh-addr-section" style="padding:0 20px;margin-bottom:16px;display:none;">
-          <div style="background:#F8F9FB;border-radius:12px;padding:12px 14px;">
-            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
-              <div style="flex:1;">
-                <div style="font-size:11px;color:#8A94A6;font-weight:700;margin-bottom:4px;">📍 주소</div>
-                <div id="sh-address-text" style="font-size:13px;color:#1A1A2E;font-weight:600;line-height:1.5;"></div>
-                <div id="sh-floor-text" style="font-size:12px;color:#6B7280;margin-top:3px;"></div>
-              </div>
-              <button onclick="copyAddress()" style="flex-shrink:0;padding:7px 12px;border-radius:8px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;color:#374151;cursor:pointer;font-family:inherit;">
-                📋 복사
-              </button>
-            </div>
-            <!-- 지도 앱 연동 버튼 -->
-            <div style="display:flex;gap:8px;margin-top:10px;">
-              <button onclick="openKakaoMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#FEE500;color:#1A1A2E;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
-                <span style="font-size:14px;">🗺</span> 카카오맵
-              </button>
-              <button onclick="openNaverMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#03C75A;color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
-                <span style="font-size:14px;">📍</span> 네이버지도
-              </button>
-              <button onclick="openAppleMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#1A1A2E;color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
-                <span style="font-size:14px;">🍎</span> 애플지도
-              </button>
-            </div>
+```
+    <!-- 주소 + 층수 + 지도 버튼 -->
+    <div id="sh-addr-section" style="padding:0 20px;margin-bottom:16px;display:none;">
+      <div style="background:#F8F9FB;border-radius:12px;padding:12px 14px;">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+          <div style="flex:1;">
+            <div style="font-size:11px;color:#8A94A6;font-weight:700;margin-bottom:4px;">📍 주소</div>
+            <div id="sh-address-text" style="font-size:13px;color:#1A1A2E;font-weight:600;line-height:1.5;"></div>
+            <div id="sh-floor-text" style="font-size:12px;color:#6B7280;margin-top:3px;"></div>
           </div>
+          <button onclick="copyAddress()" style="flex-shrink:0;padding:7px 12px;border-radius:8px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;color:#374151;cursor:pointer;font-family:inherit;">
+            📋 복사
+          </button>
         </div>
-
-        <div class="sh-cta-wrap">
-          <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
-        </div>
-      </div>
-      <!-- 비로그인 오버레이 -->
-      <div class="blur-overlay" id="sh-blur-overlay" style="display:none;">
-        <div class="blur-overlay-box">
-          <div class="bl-ico">🔒</div>
-          <h4>로그인 후 확인하세요</h4>
-          <p>수강료·연락처·상세 정보는<br>가입 회원에게만 공개됩니다</p>
-          <button class="bl-btn" onclick="closeSheet(event);go('page-user-signup')">무료 가입하기</button>
-          <button class="bl-btn2" onclick="closeSheet(event);openLoginModal()">이미 계정이 있어요</button>
+        <!-- 지도 앱 연동 버튼 -->
+        <div style="display:flex;gap:8px;margin-top:10px;">
+          <button onclick="openKakaoMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#FEE500;color:#1A1A2E;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
+            <span style="font-size:14px;">🗺</span> 카카오맵
+          </button>
+          <button onclick="openNaverMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#03C75A;color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
+            <span style="font-size:14px;">📍</span> 네이버지도
+          </button>
+          <button onclick="openAppleMap()" style="flex:1;padding:9px;border-radius:9px;border:none;background:#1A1A2E;color:#fff;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:4px;">
+            <span style="font-size:14px;">🍎</span> 애플지도
+          </button>
         </div>
       </div>
     </div>
 
-    <!-- ② 리뷰 섹션 (로그인+리뷰 작성 시 열람 가능) -->
-    <div class="sh-sec-title">
-      💬 학부모 리뷰
-      <button id="sh-review-write-btn" onclick="openReviewModal()" style="display:none;">리뷰 작성</button>
+    <div class="sh-cta-wrap">
+      <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
     </div>
-    <div class="blur-wrap" id="sh-review-blur-wrap">
-      <div class="blur-content" id="sh-review-content">
-        <div id="sh-reviews"></div>
-      </div>
-      <!-- 리뷰 블러 오버레이 (로그인했지만 리뷰 없을 때) -->
-      <div class="blur-overlay" id="sh-review-overlay" style="display:none;">
-        <div class="blur-overlay-box">
-          <div class="bl-ico">✍️</div>
-          <h4>리뷰 작성 후 열람 가능</h4>
-          <p>다른 학부모의 리뷰를 보려면<br>먼저 리뷰 1개를 작성해주세요</p>
-          <button class="bl-btn" onclick="document.getElementById('sh-review-overlay').style.display='none';openReviewModal()">리뷰 작성하기</button>
-        </div>
-      </div>
+  </div>
+  <!-- 비로그인 오버레이 -->
+  <div class="blur-overlay" id="sh-blur-overlay" style="display:none;">
+    <div class="blur-overlay-box">
+      <div class="bl-ico">🔒</div>
+      <h4>로그인 후 확인하세요</h4>
+      <p>수강료·연락처·상세 정보는<br>가입 회원에게만 공개됩니다</p>
+      <button class="bl-btn" onclick="closeSheet(event);go('page-user-signup')">무료 가입하기</button>
+      <button class="bl-btn2" onclick="closeSheet(event);openLoginModal()">이미 계정이 있어요</button>
     </div>
   </div>
 </div>
 
+<!-- ② 리뷰 섹션 (로그인+리뷰 작성 시 열람 가능) -->
+<div class="sh-sec-title">
+  💬 학부모 리뷰
+  <button id="sh-review-write-btn" onclick="openReviewModal()" style="display:none;">리뷰 작성</button>
+</div>
+<div class="blur-wrap" id="sh-review-blur-wrap">
+  <div class="blur-content" id="sh-review-content">
+    <div id="sh-reviews"></div>
+  </div>
+  <!-- 리뷰 블러 오버레이 (로그인했지만 리뷰 없을 때) -->
+  <div class="blur-overlay" id="sh-review-overlay" style="display:none;">
+    <div class="blur-overlay-box">
+      <div class="bl-ico">✍️</div>
+      <h4>리뷰 작성 후 열람 가능</h4>
+      <p>다른 학부모의 리뷰를 보려면<br>먼저 리뷰 1개를 작성해주세요</p>
+      <button class="bl-btn" onclick="document.getElementById('sh-review-overlay').style.display='none';openReviewModal()">리뷰 작성하기</button>
+    </div>
+  </div>
+</div>
+```
+
+  </div>
+</div>
+
 <!-- Review Write / Edit Modal -->
+
 <div class="modal-ov" id="modal-review" onclick="closeModal('review',event)">
   <div class="modal-box">
     <div class="modal-title" id="rv-modal-title">✍️ 리뷰 작성</div>
@@ -1048,6 +1055,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- Info Edit Modal -->
+
 <div class="modal-ov" id="modal-info" onclick="closeModal('info',event)">
   <div class="modal-box" style="max-height:85vh;overflow-y:auto;">
     <div class="modal-title">📋 학원 정보 수정</div>
@@ -1135,117 +1143,122 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 <div class="toast" id="toast"></div>
 
 <!-- ════════════════ 결제 모달 ════════════════ -->
+
 <div class="pay-ov" id="pay-ov" onclick="closePayModal(event)">
   <div class="pay-sheet">
     <div class="pay-hdl"></div>
 
-    <!-- STEP 1: 플랜 선택 -->
-    <div id="pay-step1">
-      <div class="pay-step-title">💳 플랜 선택 및 결제</div>
-      <div class="pay-step-sub">구독은 언제든 취소 가능 · 약정 없음</div>
-      <div class="pay-plan-list">
-        <!-- 무료 -->
-        <div class="pay-plan-item" id="ppi-free" onclick="selectPayPlan('free')">
-          <div class="ppi-radio" id="ppr-free"></div>
-          <div class="ppi-body">
-            <div class="ppi-name">🆓 무료 플랜</div>
-            <div class="ppi-feats">지도 핀 표시만 · 회색 핀</div>
-          </div>
-          <div class="ppi-price" style="color:var(--green)">무료</div>
-        </div>
-        <!-- 베이직 -->
-        <div class="pay-plan-item on" id="ppi-basic" onclick="selectPayPlan('basic')">
-          <div class="ppi-radio on" id="ppr-basic"></div>
-          <div class="ppi-body">
-            <div class="ppi-name">🗺 베이직</div>
-            <div class="ppi-feats">지도 파란 핀 · 소식·시간표·사진 등록 · 블로그 연동</div>
-          </div>
-          <div class="ppi-price">33,000원</div>
-        </div>
-        <!-- 프리미엄 -->
-        <div class="pay-plan-item" id="ppi-premium" onclick="selectPayPlan('premium')">
-          <div class="ppi-radio" id="ppr-premium"></div>
-          <div class="ppi-body">
-            <div class="ppi-name">⭐ 프리미엄</div>
-            <div class="ppi-feats">상단 고정 · SNS 자동연동 · 상담예약 · SMS알림</div>
-          </div>
-          <div class="ppi-price" style="color:var(--orange)">55,000원</div>
-        </div>
+```
+<!-- STEP 1: 플랜 선택 -->
+<div id="pay-step1">
+  <div class="pay-step-title">💳 플랜 선택 및 결제</div>
+  <div class="pay-step-sub">구독은 언제든 취소 가능 · 약정 없음</div>
+  <div class="pay-plan-list">
+    <!-- 무료 -->
+    <div class="pay-plan-item" id="ppi-free" onclick="selectPayPlan('free')">
+      <div class="ppi-radio" id="ppr-free"></div>
+      <div class="ppi-body">
+        <div class="ppi-name">🆓 무료 플랜</div>
+        <div class="ppi-feats">지도 핀 표시만 · 회색 핀</div>
       </div>
-      <button class="pay-cta" onclick="goPayStep(2)" id="pay-next-btn">다음 — 결제 수단 선택</button>
-      <div class="pay-note">VAT 포함 · 매월 자동 결제 · 언제든 해지 가능</div>
+      <div class="ppi-price" style="color:var(--green)">무료</div>
     </div>
-
-    <!-- STEP 2: 결제 수단 선택 (결제창 방식) -->
-    <div id="pay-step2" style="display:none">
-      <div class="pay-step-title">결제 수단 선택</div>
-      <div class="pay-step-sub" id="pay2-sub">베이직 플랜 · 월 33,000원</div>
-
-      <!-- 결제 수단 버튼 -->
-      <div class="pay-method-list" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;">
-        <button class="pm-btn on" id="pm-card"  onclick="selectPayMethod('card')">
-          <span class="pm-ico">💳</span><span class="pm-lbl">신용·체크카드</span>
-        </button>
-        <button class="pm-btn" id="pm-toss" onclick="selectPayMethod('toss')">
-          <span class="pm-ico">🔵</span><span class="pm-lbl">토스페이</span>
-        </button>
-        <button class="pm-btn" id="pm-naver" onclick="selectPayMethod('naver')">
-          <span class="pm-ico">🟢</span><span class="pm-lbl">네이버페이</span>
-        </button>
-        <button class="pm-btn" id="pm-kakao" onclick="selectPayMethod('kakao')">
-          <span class="pm-ico">🟡</span><span class="pm-lbl">카카오페이</span>
-        </button>
-        <button class="pm-btn" id="pm-bank" onclick="selectPayMethod('bank')">
-          <span class="pm-ico">🏦</span><span class="pm-lbl">계좌이체</span>
-        </button>
-        <button class="pm-btn" id="pm-phone" onclick="selectPayMethod('phone')">
-          <span class="pm-ico">📱</span><span class="pm-lbl">휴대폰</span>
-        </button>
+    <!-- 베이직 -->
+    <div class="pay-plan-item on" id="ppi-basic" onclick="selectPayPlan('basic')">
+      <div class="ppi-radio on" id="ppr-basic"></div>
+      <div class="ppi-body">
+        <div class="ppi-name">🗺 베이직</div>
+        <div class="ppi-feats">지도 파란 핀 · 소식·시간표·사진 등록 · 블로그 연동</div>
       </div>
-
-      <!-- 선택된 결제수단 안내 -->
-      <div id="pay-method-info" style="background:var(--blue3);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
-        <span id="pmi-ico" style="font-size:24px;">💳</span>
-        <div>
-          <div style="font-size:14px;font-weight:700;" id="pmi-name">신용·체크카드</div>
-          <div style="font-size:12px;color:var(--sub);margin-top:2px;" id="pmi-desc">결제하기 버튼을 누르면 토스 결제창이 열립니다</div>
-        </div>
-      </div>
-
-      <!-- 금액 요약 -->
-      <div class="pay-summary">
-        <div class="pay-sum-row"><span>플랜</span><span id="sum-plan">베이직</span></div>
-        <div class="pay-sum-row"><span>월 구독료</span><span id="sum-price">33,000원</span></div>
-        <div class="pay-sum-row"><span>VAT</span><span>포함</span></div>
-        <div class="pay-sum-row total"><span>결제 금액</span><span id="sum-total">33,000원</span></div>
-      </div>
-
-      <button class="pay-cta" onclick="processPayment()" id="pay-confirm-btn">결제하기</button>
-      <div class="pay-note">
-        결제 정보는 암호화되어 안전하게 처리됩니다<br>
-        구독은 마이페이지에서 언제든 해지 가능합니다
-      </div>
+      <div class="ppi-price">33,000원</div>
     </div>
-
-    <!-- STEP 3: 결제 완료 -->
-    <div id="pay-step3" style="display:none">
-      <div class="pay-success">
-        <div class="pay-s-ico">🎉</div>
-        <div class="pay-s-title">결제 완료!</div>
-        <div class="pay-s-desc">에듀픽 <strong id="suc-plan">베이직</strong> 플랜이<br>성공적으로 시작되었습니다</div>
-        <div class="pay-s-box">
-          <div class="pay-s-row"><span>플랜</span><span id="suc-plan2">🗺 베이직</span></div>
-          <div class="pay-s-row"><span>결제 금액</span><span id="suc-price">33,000원/월</span></div>
-          <div class="pay-s-row"><span>다음 결제일</span><span id="suc-next">2025.08.09</span></div>
-          <div class="pay-s-row"><span>결제 수단</span><span id="suc-method">신용카드</span></div>
-        </div>
-        <button class="pay-s-btn" onclick="completePay()">대시보드로 이동</button>
+    <!-- 프리미엄 -->
+    <div class="pay-plan-item" id="ppi-premium" onclick="selectPayPlan('premium')">
+      <div class="ppi-radio" id="ppr-premium"></div>
+      <div class="ppi-body">
+        <div class="ppi-name">⭐ 프리미엄</div>
+        <div class="ppi-feats">상단 고정 · SNS 자동연동 · 상담예약 · SMS알림</div>
       </div>
+      <div class="ppi-price" style="color:var(--orange)">55,000원</div>
     </div>
+  </div>
+  <button class="pay-cta" onclick="goPayStep(2)" id="pay-next-btn">다음 — 결제 수단 선택</button>
+  <div class="pay-note">VAT 포함 · 매월 자동 결제 · 언제든 해지 가능</div>
+</div>
+
+<!-- STEP 2: 결제 수단 선택 (결제창 방식) -->
+<div id="pay-step2" style="display:none">
+  <div class="pay-step-title">결제 수단 선택</div>
+  <div class="pay-step-sub" id="pay2-sub">베이직 플랜 · 월 33,000원</div>
+
+  <!-- 결제 수단 버튼 -->
+  <div class="pay-method-list" style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:18px;">
+    <button class="pm-btn on" id="pm-card"  onclick="selectPayMethod('card')">
+      <span class="pm-ico">💳</span><span class="pm-lbl">신용·체크카드</span>
+    </button>
+    <button class="pm-btn" id="pm-toss" onclick="selectPayMethod('toss')">
+      <span class="pm-ico">🔵</span><span class="pm-lbl">토스페이</span>
+    </button>
+    <button class="pm-btn" id="pm-naver" onclick="selectPayMethod('naver')">
+      <span class="pm-ico">🟢</span><span class="pm-lbl">네이버페이</span>
+    </button>
+    <button class="pm-btn" id="pm-kakao" onclick="selectPayMethod('kakao')">
+      <span class="pm-ico">🟡</span><span class="pm-lbl">카카오페이</span>
+    </button>
+    <button class="pm-btn" id="pm-bank" onclick="selectPayMethod('bank')">
+      <span class="pm-ico">🏦</span><span class="pm-lbl">계좌이체</span>
+    </button>
+    <button class="pm-btn" id="pm-phone" onclick="selectPayMethod('phone')">
+      <span class="pm-ico">📱</span><span class="pm-lbl">휴대폰</span>
+    </button>
+  </div>
+
+  <!-- 선택된 결제수단 안내 -->
+  <div id="pay-method-info" style="background:var(--blue3);border-radius:12px;padding:14px 16px;margin-bottom:16px;display:flex;align-items:center;gap:10px;">
+    <span id="pmi-ico" style="font-size:24px;">💳</span>
+    <div>
+      <div style="font-size:14px;font-weight:700;" id="pmi-name">신용·체크카드</div>
+      <div style="font-size:12px;color:var(--sub);margin-top:2px;" id="pmi-desc">결제하기 버튼을 누르면 토스 결제창이 열립니다</div>
+    </div>
+  </div>
+
+  <!-- 금액 요약 -->
+  <div class="pay-summary">
+    <div class="pay-sum-row"><span>플랜</span><span id="sum-plan">베이직</span></div>
+    <div class="pay-sum-row"><span>월 구독료</span><span id="sum-price">33,000원</span></div>
+    <div class="pay-sum-row"><span>VAT</span><span>포함</span></div>
+    <div class="pay-sum-row total"><span>결제 금액</span><span id="sum-total">33,000원</span></div>
+  </div>
+
+  <button class="pay-cta" onclick="processPayment()" id="pay-confirm-btn">결제하기</button>
+  <div class="pay-note">
+    결제 정보는 암호화되어 안전하게 처리됩니다<br>
+    구독은 마이페이지에서 언제든 해지 가능합니다
+  </div>
+</div>
+
+<!-- STEP 3: 결제 완료 -->
+<div id="pay-step3" style="display:none">
+  <div class="pay-success">
+    <div class="pay-s-ico">🎉</div>
+    <div class="pay-s-title">결제 완료!</div>
+    <div class="pay-s-desc">에듀픽 <strong id="suc-plan">베이직</strong> 플랜이<br>성공적으로 시작되었습니다</div>
+    <div class="pay-s-box">
+      <div class="pay-s-row"><span>플랜</span><span id="suc-plan2">🗺 베이직</span></div>
+      <div class="pay-s-row"><span>결제 금액</span><span id="suc-price">33,000원/월</span></div>
+      <div class="pay-s-row"><span>다음 결제일</span><span id="suc-next">2025.08.09</span></div>
+      <div class="pay-s-row"><span>결제 수단</span><span id="suc-method">신용카드</span></div>
+    </div>
+    <button class="pay-s-btn" onclick="completePay()">대시보드로 이동</button>
+  </div>
+</div>
+```
+
   </div>
 </div>
 
 <!-- ════════════════ 관심목록 ════════════════ -->
+
 <div class="page" id="page-wish">
   <div class="ph">
     <h2>❤️ 관심 학원</h2>
@@ -1266,6 +1279,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- ════════════════ MY 페이지 ════════════════ -->
+
 <div class="page" id="page-my">
   <div class="hdr" style="background:#176ED3;">
     <div class="logo" onclick="go('page-home')">
@@ -1287,72 +1301,75 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <button onclick="sbLogout()" style="padding:7px 12px;border-radius:8px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;color:#6B7280;cursor:pointer;font-family:inherit;">로그아웃</button>
     </div>
 
-    <!-- 메뉴 리스트 -->
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px;">
-      <div onclick="goMyReviews()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:20px;">✍️</span>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">내 리뷰 관리</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">작성한 리뷰 확인 및 삭제</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-      <div onclick="goMySchedule()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:20px;">📅</span>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">학원 일정 관리</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">관심 학원 일정 및 시간표</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-      <div onclick="goWish()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:20px;">❤️</span>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">관심목록</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">관심 등록한 학원 모아보기</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-      <div onclick="go('page-home')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:20px;">🔍</span>
-          <div>
-            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">학원 찾기</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">지도에서 학원 검색</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
+```
+<!-- 메뉴 리스트 -->
+<div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px;">
+  <div onclick="goMyReviews()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:20px;">✍️</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1A1A2E;">내 리뷰 관리</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">작성한 리뷰 확인 및 삭제</div>
       </div>
     </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+  <div onclick="goMySchedule()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:20px;">📅</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1A1A2E;">학원 일정 관리</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">관심 학원 일정 및 시간표</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+  <div onclick="goWish()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:20px;">❤️</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1A1A2E;">관심목록</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">관심 등록한 학원 모아보기</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+  <div onclick="go('page-home')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:20px;">🔍</span>
+      <div>
+        <div style="font-size:14px;font-weight:700;color:#1A1A2E;">학원 찾기</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">지도에서 학원 검색</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+</div>
 
-    <!-- 사업자 대시보드 버튼 (사업자일 때만 표시) -->
-    <div id="my-biz-btn" style="display:none;">
-      <button onclick="go('page-dashboard')" style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#176ED3,#4A90E2);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:16px;">
-        🏫 학원 대시보드 바로가기
-      </button>
-    </div>
+<!-- 사업자 대시보드 버튼 (사업자일 때만 표시) -->
+<div id="my-biz-btn" style="display:none;">
+  <button onclick="go('page-dashboard')" style="width:100%;padding:14px;border-radius:14px;border:none;background:linear-gradient(135deg,#176ED3,#4A90E2);color:#fff;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit;margin-bottom:16px;">
+    🏫 학원 대시보드 바로가기
+  </button>
+</div>
 
-    <!-- 내 리뷰 섹션 -->
-    <div id="my-reviews-section" style="display:none;">
-      <div style="font-size:15px;font-weight:800;margin-bottom:12px;">✍️ 내 리뷰</div>
-      <div id="my-reviews-list">
-        <div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">작성한 리뷰가 없어요</div>
-      </div>
-    </div>
+<!-- 내 리뷰 섹션 -->
+<div id="my-reviews-section" style="display:none;">
+  <div style="font-size:15px;font-weight:800;margin-bottom:12px;">✍️ 내 리뷰</div>
+  <div id="my-reviews-list">
+    <div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">작성한 리뷰가 없어요</div>
+  </div>
+</div>
 
-    <!-- 학원 일정 섹션 -->
-    <div id="my-schedule-section" style="display:none;">
-      <div style="font-size:15px;font-weight:800;margin-bottom:12px;">📅 관심 학원 시간표</div>
-      <div id="my-schedule-list">
-        <div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">관심 학원을 먼저 등록해주세요</div>
-      </div>
-    </div>
+<!-- 학원 일정 섹션 -->
+<div id="my-schedule-section" style="display:none;">
+  <div style="font-size:15px;font-weight:800;margin-bottom:12px;">📅 관심 학원 시간표</div>
+  <div id="my-schedule-list">
+    <div style="text-align:center;padding:30px;color:#8A94A6;font-size:13px;">관심 학원을 먼저 등록해주세요</div>
+  </div>
+</div>
+```
+
   </div>
 
   <nav class="bnav">
@@ -1369,6 +1386,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- ════════════════ 관리자 전용 대시보드 ════════════════ -->
+
 <div class="page" id="page-admin-dashboard">
   <div class="hdr" style="background:#1E293B;">
     <div style="font-size:16px;font-weight:900;color:#fff;">🛡 관리자 대시보드</div>
@@ -1387,93 +1405,96 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </div>
     </div>
 
-    <!-- CSV 백업 버튼 -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
-      <button onclick="exportCSV('academies')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
-        📥 학원 백업
-      </button>
-      <button onclick="exportCSV('reviews')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
-        📥 리뷰 백업
-      </button>
-      <button onclick="exportCSV('profiles')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
-        📥 회원 백업
-      </button>
-    </div>
+```
+<!-- CSV 백업 버튼 -->
+<div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+  <button onclick="exportCSV('academies')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+    📥 학원 백업
+  </button>
+  <button onclick="exportCSV('reviews')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+    📥 리뷰 백업
+  </button>
+  <button onclick="exportCSV('profiles')" style="flex:1;padding:10px;border-radius:10px;border:1.5px solid #E0E4EF;background:#fff;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;">
+    📥 회원 백업
+  </button>
+</div>
 
-    <!-- 빠른 통계 -->
-    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;" id="admin-quick-stats">
-      <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <div style="font-size:22px;font-weight:900;color:#176ED3;" id="aq-academy">-</div>
-        <div style="font-size:11px;color:#6B7280;margin-top:4px;">🏫 등록 학원</div>
-      </div>
-      <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <div style="font-size:22px;font-weight:900;color:#F59E0B;" id="aq-pending">-</div>
-        <div style="font-size:11px;color:#6B7280;margin-top:4px;">⏳ 승인 대기</div>
-      </div>
-      <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
-        <div style="font-size:22px;font-weight:900;color:#EF4444;" id="aq-review">-</div>
-        <div style="font-size:11px;color:#6B7280;margin-top:4px;">💬 리뷰 대기</div>
-      </div>
-    </div>
-
-    <!-- 메뉴 리스트 -->
-    <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);">
-      <div onclick="goAdminSection('academy')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:22px;">🏫</span>
-          <div>
-            <div style="font-size:14px;font-weight:800;color:#1A1A2E;">전체 학원 관리</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">학원 승인 · 거절 · 관리</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-      <div onclick="goAdminSection('review')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:22px;">💬</span>
-          <div>
-            <div style="font-size:14px;font-weight:800;color:#1A1A2E;">리뷰 승인 · 관리</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">리뷰 승인 · 숨김 · 삭제</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-      <div onclick="goAdminSection('allreview')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:22px;">📋</span>
-          <div>
-            <div style="font-size:14px;font-weight:800;color:#1A1A2E;">전체 리뷰 관리</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">게시중 리뷰 숨김 · 삭제 처리</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-      <div onclick="goAdminSection('claim')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:22px;">🔑</span>
-          <div>
-            <div style="font-size:14px;font-weight:800;color:#1A1A2E;">소유권 신청 관리</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">원장님 인증 신청 승인</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-      <div onclick="goAdminUsers()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;">
-        <div style="display:flex;align-items:center;gap:12px;">
-          <span style="font-size:22px;">👥</span>
-          <div>
-            <div style="font-size:14px;font-weight:800;color:#1A1A2E;">사용자 관리</div>
-            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">가입 회원 목록 확인</div>
-          </div>
-        </div>
-        <span style="color:#C0C8D8;font-size:18px;">›</span>
-      </div>
-    </div>
+<!-- 빠른 통계 -->
+<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px;" id="admin-quick-stats">
+  <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+    <div style="font-size:22px;font-weight:900;color:#176ED3;" id="aq-academy">-</div>
+    <div style="font-size:11px;color:#6B7280;margin-top:4px;">🏫 등록 학원</div>
+  </div>
+  <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+    <div style="font-size:22px;font-weight:900;color:#F59E0B;" id="aq-pending">-</div>
+    <div style="font-size:11px;color:#6B7280;margin-top:4px;">⏳ 승인 대기</div>
+  </div>
+  <div style="background:#fff;border-radius:14px;padding:14px;text-align:center;box-shadow:0 2px 8px rgba(0,0,0,.06);">
+    <div style="font-size:22px;font-weight:900;color:#EF4444;" id="aq-review">-</div>
+    <div style="font-size:11px;color:#6B7280;margin-top:4px;">💬 리뷰 대기</div>
   </div>
 </div>
 
+<!-- 메뉴 리스트 -->
+<div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);">
+  <div onclick="goAdminSection('academy')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:22px;">🏫</span>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#1A1A2E;">전체 학원 관리</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">학원 승인 · 거절 · 관리</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+  <div onclick="goAdminSection('review')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:22px;">💬</span>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#1A1A2E;">리뷰 승인 · 관리</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">리뷰 승인 · 숨김 · 삭제</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+  <div onclick="goAdminSection('allreview')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:22px;">📋</span>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#1A1A2E;">전체 리뷰 관리</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">게시중 리뷰 숨김 · 삭제 처리</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+  <div onclick="goAdminSection('claim')" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:22px;">🔑</span>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#1A1A2E;">소유권 신청 관리</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">원장님 인증 신청 승인</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+  <div onclick="goAdminUsers()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span style="font-size:22px;">👥</span>
+      <div>
+        <div style="font-size:14px;font-weight:800;color:#1A1A2E;">사용자 관리</div>
+        <div style="font-size:12px;color:#8A94A6;margin-top:1px;">가입 회원 목록 확인</div>
+      </div>
+    </div>
+    <span style="color:#C0C8D8;font-size:18px;">›</span>
+  </div>
+</div>
+```
+
+  </div>
+</div>
 
 <!-- ════════════════ 승인 대기 페이지 ════════════════ -->
+
 <div class="page" id="page-pending">
   <div style="min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 24px;background:#F8F9FB;text-align:center;">
     <div style="font-size:64px;margin-bottom:20px;">⏳</div>
@@ -1514,6 +1535,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- ════════════════ LANDING ════════════════ -->
+
 <div class="page" id="page-landing">
   <div class="lnav">
     <div onclick="go('page-home')" style="font-size:20px;font-weight:900;color:#fff;cursor:pointer;letter-spacing:-0.5px;">에듀픽</div>
@@ -1524,6 +1546,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 
   <!-- 히어로 -->
+
   <div class="hero">
     <div class="hero-tag">🏫 학원 관계자 전용</div>
     <h1>우리 학원 정보를 등록하고<br><em>학부모들에게</em> 홍보하세요</h1>
@@ -1538,6 +1561,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 
   <!-- 베타 오픈 배너 -->
+
   <div style="background:linear-gradient(135deg,#FF5A1F,#FF8C42);padding:16px 20px;margin:0;position:relative;overflow:hidden;">
     <div style="position:absolute;top:-20px;right:-20px;width:120px;height:120px;background:rgba(255,255,255,.08);border-radius:50%;"></div>
     <div style="position:absolute;bottom:-30px;left:30px;width:80px;height:80px;background:rgba(255,255,255,.06);border-radius:50%;"></div>
@@ -1568,6 +1592,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 
   <!-- 혜택 -->
+
   <div class="section" style="background:#fff;">
     <div class="sec-tag">에듀픽 혜택</div>
     <div class="sec-title">등록만 해도 이런 게 가능해요</div>
@@ -1604,6 +1629,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 
   <!-- 3단계 -->
+
   <div class="section" style="background:var(--bg);">
     <div class="sec-tag">HOW IT WORKS</div>
     <div class="sec-title" style="margin-bottom:22px;">등록까지 딱 3단계</div>
@@ -1624,6 +1650,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 
   <!-- 후기 -->
+
   <div class="section" style="background:var(--white);">
     <div class="sec-tag">REVIEWS</div>
     <div class="sec-title" style="margin-bottom:18px;">원장님들의 후기</div>
@@ -1634,6 +1661,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
 
   <!-- CTA -->
+
   <div class="cta-bottom">
     <div style="display:inline-block;background:rgba(255,255,255,.15);border-radius:20px;padding:4px 14px;font-size:12px;font-weight:800;color:#fff;margin-bottom:14px;">🎉 베타 오픈 기념 한정 혜택</div>
     <h2>지금 등록하면<br>베이직 3개월 무료!</h2>
@@ -1656,6 +1684,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- ════════════════ 회원유형 ════════════════ -->
+
 <div class="page" id="page-type">
   <div class="page-hdr">
     <span class="page-hdr-back" onclick="go('page-home')">←</span>
@@ -1679,26 +1708,30 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </div>
     </div>
 
-    <!-- 학원 관계자 카드 -->
-    <div class="type-card b" onclick="go('page-biz-signup')" style="border-color:var(--orange);background:linear-gradient(135deg,#FFF8F5,#fff);">
-      <div class="ty-ico b">🏫</div>
-      <div style="flex:1;">
-        <div class="ty-nm">학원 관계자 (원장님)</div>
-        <span class="ty-badge" style="background:#FFF0EA;color:#FF5A1F;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;">무료로 시작</span>
-        <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
-          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 내 학원 정보 무료 등록</div>
-          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 지도에 핀으로 바로 노출</div>
-          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 소식 · 시간표 직접 관리</div>
-          <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 학부모 리뷰 · 문의 확인</div>
-        </div>
-        <div class="ty-arr" style="margin-top:14px;color:var(--orange);font-weight:900;">무료로 내 학원 등록하기 →</div>
-      </div>
+```
+<!-- 학원 관계자 카드 -->
+<div class="type-card b" onclick="go('page-biz-signup')" style="border-color:var(--orange);background:linear-gradient(135deg,#FFF8F5,#fff);">
+  <div class="ty-ico b">🏫</div>
+  <div style="flex:1;">
+    <div class="ty-nm">학원 관계자 (원장님)</div>
+    <span class="ty-badge" style="background:#FFF0EA;color:#FF5A1F;font-size:10px;font-weight:800;padding:2px 8px;border-radius:6px;">무료로 시작</span>
+    <div style="margin-top:10px;display:flex;flex-direction:column;gap:6px;">
+      <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 내 학원 정보 무료 등록</div>
+      <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 지도에 핀으로 바로 노출</div>
+      <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 소식 · 시간표 직접 관리</div>
+      <div style="font-size:13px;color:#374151;display:flex;align-items:center;gap:6px;">✅ 학부모 리뷰 · 문의 확인</div>
     </div>
+    <div class="ty-arr" style="margin-top:14px;color:var(--orange);font-weight:900;">무료로 내 학원 등록하기 →</div>
+  </div>
+</div>
+```
+
   </div>
   <div class="login-row">이미 계정이 있으신가요? <span onclick="openLoginModal()">로그인</span></div>
 </div>
 
 <!-- 로그인 모달 -->
+
 <div class="modal-ov" id="login-modal-ov" onclick="if(event.target===this)this.classList.remove('open')">
   <div class="modal-box">
     <div class="modal-title">🔐 로그인</div>
@@ -1736,6 +1769,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- ════════════════ 일반 가입 ════════════════ -->
+
 <div class="page" id="page-user-signup">
   <div class="form-hdr blue">
     <span class="form-hdr-back" onclick="go('page-home')">←</span>
@@ -1762,20 +1796,24 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </div>
     </div>
 
-    <div class="fg"><label>이름</label><input type="text" id="user-name" placeholder="홍길동"></div>
-    <div class="fg"><label>이메일</label><input type="email" id="user-email" placeholder="example@email.com"></div>
-    <div class="fg"><label>비밀번호</label><input type="password" id="user-pw" placeholder="6자 이상"><div class="hint">6자 이상</div></div>
-    <div class="fg"><label>관심 지역</label>
-      <select id="user-region"><option value="">선택</option><option>천안시 서북구</option><option>천안시 동남구</option><option>아산시</option></select>
-    </div>
-    <button class="sub-btn blue" onclick="completeUserSignup()" style="font-size:16px;padding:14px;">✅ 무료로 시작하기</button>
-    <div class="divr"><hr><span>또는</span><hr></div>
-    <button class="social-btn" onclick="loginWithKakao()">🟡 카카오로 시작하기</button>
-    <button class="social-btn" onclick="showToast('네이버 로그인 준비 중')">🟢 네이버로 시작하기</button>
+```
+<div class="fg"><label>이름</label><input type="text" id="user-name" placeholder="홍길동"></div>
+<div class="fg"><label>이메일</label><input type="email" id="user-email" placeholder="example@email.com"></div>
+<div class="fg"><label>비밀번호</label><input type="password" id="user-pw" placeholder="6자 이상"><div class="hint">6자 이상</div></div>
+<div class="fg"><label>관심 지역</label>
+  <select id="user-region"><option value="">선택</option><option>천안시 서북구</option><option>천안시 동남구</option><option>아산시</option></select>
+</div>
+<button class="sub-btn blue" onclick="completeUserSignup()" style="font-size:16px;padding:14px;">✅ 무료로 시작하기</button>
+<div class="divr"><hr><span>또는</span><hr></div>
+<button class="social-btn" onclick="loginWithKakao()">🟡 카카오로 시작하기</button>
+<button class="social-btn" onclick="showToast('네이버 로그인 준비 중')">🟢 네이버로 시작하기</button>
+```
+
   </div>
 </div>
 
 <!-- ════════════════ 플랜 선택 ════════════════ -->
+
 <div class="page" id="page-plan">
   <div class="plan-hdr">
     <div class="plan-hdr-back" onclick="goBack()">←</div>
@@ -1784,85 +1822,88 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
   <div class="plan-body">
 
-    <!-- FREE -->
-    <div class="pc free-pc">
-      <div class="pc-head">
-        <div>
-          <div class="pc-name">🟢 무료</div>
-          <div class="pc-tl" style="font-weight:700;color:#475569;">부담 없는 시작, 우리 학원 위치 알리기</div>
-        </div>
-        <div><div class="pc-pn">0원</div><div class="pc-pu">무료</div></div>
-      </div>
-      <div class="pc-feats">
-        <div class="pf"><span class="ck">✅</span>에듀픽 지도에 우리 학원 핀 노출</div>
-        <div class="pf"><span class="ck">✅</span>학원명 · 과목 · 위치 기본 정보 표시</div>
-        <div class="pf"><span class="ck">✅</span>실시간 학부모 리뷰 확인 가능</div>
-        <div class="pf off"><span class="ck">❌</span>소식 · 시간표 직접 관리 불가</div>
-        <div class="pf off"><span class="ck">❌</span>SNS 연동 / 상담 예약 불가</div>
-      </div>
-      <button class="pc-btn gr" onclick="selectPlan('free');go('page-biz-signup')">무료로 시작하기</button>
+```
+<!-- FREE -->
+<div class="pc free-pc">
+  <div class="pc-head">
+    <div>
+      <div class="pc-name">🟢 무료</div>
+      <div class="pc-tl" style="font-weight:700;color:#475569;">부담 없는 시작, 우리 학원 위치 알리기</div>
     </div>
+    <div><div class="pc-pn">0원</div><div class="pc-pu">무료</div></div>
+  </div>
+  <div class="pc-feats">
+    <div class="pf"><span class="ck">✅</span>에듀픽 지도에 우리 학원 핀 노출</div>
+    <div class="pf"><span class="ck">✅</span>학원명 · 과목 · 위치 기본 정보 표시</div>
+    <div class="pf"><span class="ck">✅</span>실시간 학부모 리뷰 확인 가능</div>
+    <div class="pf off"><span class="ck">❌</span>소식 · 시간표 직접 관리 불가</div>
+    <div class="pf off"><span class="ck">❌</span>SNS 연동 / 상담 예약 불가</div>
+  </div>
+  <button class="pc-btn gr" onclick="selectPlan('free');go('page-biz-signup')">무료로 시작하기</button>
+</div>
 
-    <!-- BASIC -->
-    <div class="pc hot">
-      <div class="pc-ribbon hot">인기</div>
-      <div class="pc-head">
-        <div>
-          <div class="pc-name">🔵 베이직</div>
-          <div class="pc-tl" style="font-weight:800;color:#1658D6;font-size:13px;">우리 학원 제대로 보여주는 신뢰 세팅</div>
-        </div>
-        <div>
-          <div class="pc-pn">33,000</div>
-          <div class="pc-pu">원/월 (VAT포함)</div>
-        </div>
-      </div>
-      <!-- 심리적 트리거 -->
-      <div style="background:#EEF5FF;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#1658D6;font-weight:700;">
-        💡 베이직 학원의 평균 조회수는 무료 대비 <strong>3.2배</strong> 높아요
-      </div>
-      <div class="pc-feats">
-        <div class="pf"><span class="ck">✅</span><div><strong>첫인상을 결정하는 학부모 전용 페이지</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">학원 소개와 사진으로 문의 전부터 신뢰를 만드세요</div></div></div>
-        <div class="pf"><span class="ck">✅</span><div><strong>시간표 · 공지로 학부모 신뢰 확보</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">최신 정보를 직접 관리해 '살아있는 학원'으로 보여줍니다</div></div></div>
-        <div class="pf"><span class="ck">✅</span><div><strong>네이버 검색까지 놓치지 않는 블로그 연동</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">블로그 URL 연동으로 검색 유입을 두 배로 늘리세요</div></div></div>
-        <div class="pf"><span class="ck">✅</span><div><strong>눈에 띄는 파란 핀으로 경쟁 학원과 차별화</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">회색 핀보다 클릭률이 높아 자연스럽게 더 많이 노출됩니다</div></div></div>
-      </div>
-      <button class="pc-btn oo" onclick="selectPlan('basic');openPayModal('basic')">베이직 시작하기 · 월 33,000원</button>
+<!-- BASIC -->
+<div class="pc hot">
+  <div class="pc-ribbon hot">인기</div>
+  <div class="pc-head">
+    <div>
+      <div class="pc-name">🔵 베이직</div>
+      <div class="pc-tl" style="font-weight:800;color:#1658D6;font-size:13px;">우리 학원 제대로 보여주는 신뢰 세팅</div>
     </div>
+    <div>
+      <div class="pc-pn">33,000</div>
+      <div class="pc-pu">원/월 (VAT포함)</div>
+    </div>
+  </div>
+  <!-- 심리적 트리거 -->
+  <div style="background:#EEF5FF;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#1658D6;font-weight:700;">
+    💡 베이직 학원의 평균 조회수는 무료 대비 <strong>3.2배</strong> 높아요
+  </div>
+  <div class="pc-feats">
+    <div class="pf"><span class="ck">✅</span><div><strong>첫인상을 결정하는 학부모 전용 페이지</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">학원 소개와 사진으로 문의 전부터 신뢰를 만드세요</div></div></div>
+    <div class="pf"><span class="ck">✅</span><div><strong>시간표 · 공지로 학부모 신뢰 확보</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">최신 정보를 직접 관리해 '살아있는 학원'으로 보여줍니다</div></div></div>
+    <div class="pf"><span class="ck">✅</span><div><strong>네이버 검색까지 놓치지 않는 블로그 연동</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">블로그 URL 연동으로 검색 유입을 두 배로 늘리세요</div></div></div>
+    <div class="pf"><span class="ck">✅</span><div><strong>눈에 띄는 파란 핀으로 경쟁 학원과 차별화</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">회색 핀보다 클릭률이 높아 자연스럽게 더 많이 노출됩니다</div></div></div>
+  </div>
+  <button class="pc-btn oo" onclick="selectPlan('basic');openPayModal('basic')">베이직 시작하기 · 월 33,000원</button>
+</div>
 
-    <!-- PREMIUM -->
-    <div class="pc pro">
-      <div class="pc-ribbon pro">🏆 가장 추천</div>
-      <div class="pc-head">
-        <div>
-          <div class="pc-name">🟠 프리미엄</div>
-          <div class="pc-tl" style="font-weight:800;color:#FF5A1F;font-size:13px;">신규생 유입부터 상담 자동 예약까지 한번에</div>
-        </div>
-        <div>
-          <div class="pc-pn">55,000</div>
-          <div class="pc-pu">원/월 (VAT포함)</div>
-        </div>
-      </div>
-      <!-- 희소성 트리거 -->
-      <div style="background:#FFF0EA;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#FF5A1F;font-weight:700;display:flex;align-items:center;gap:6px;">
-        🔥 이 지역 프리미엄 자리는 선착순으로 마감됩니다
-      </div>
-      <div class="pc-feats">
-        <div class="pf"><span class="ck">✅</span><div><strong>검색 최상단 주황 핀 — 신규 유입 급증</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">우리 지역 학원 검색 시 최상단 노출, 경쟁 학원보다 먼저 보입니다</div></div></div>
-        <div class="pf"><span class="ck">✅</span><div><strong>24시간 자동 상담 예약 — 수업 중에도 문의 접수</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">퇴근 후, 수업 중에도 온라인 예약 시스템이 대신 상담을 받아줍니다</div></div></div>
-        <div class="pf"><span class="ck">✅</span><div><strong>블로그 · 인스타 · 유튜브 원클릭 자동 연동</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">콘텐츠를 한 번 올리면 에듀픽 페이지에 자동 반영, 홍보 시간이 확 줄어듭니다</div></div></div>
-        <div class="pf"><span class="ck">✅</span><div><strong>즉시 SMS 알림 — 상담 하나도 놓치지 않기</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">예약 발생 즉시 원장님 휴대폰으로 알림, 소중한 신규 문의를 절대 놓치지 마세요</div></div></div>
-        <div class="pf"><span class="ck">✅</span>베이직 전체 기능 포함</div>
-      </div>
-      <button class="pc-btn ob" onclick="selectPlan('premium');openPayModal('premium')" style="font-size:15px;padding:15px;">
-        🚀 프리미엄 시작하기 · 월 55,000원
-      </button>
-      <div style="text-align:center;font-size:11px;color:#8A94A6;margin-top:8px;">약정 없음 · 언제든 해지 가능</div>
+<!-- PREMIUM -->
+<div class="pc pro">
+  <div class="pc-ribbon pro">🏆 가장 추천</div>
+  <div class="pc-head">
+    <div>
+      <div class="pc-name">🟠 프리미엄</div>
+      <div class="pc-tl" style="font-weight:800;color:#FF5A1F;font-size:13px;">신규생 유입부터 상담 자동 예약까지 한번에</div>
     </div>
+    <div>
+      <div class="pc-pn">55,000</div>
+      <div class="pc-pu">원/월 (VAT포함)</div>
+    </div>
+  </div>
+  <!-- 희소성 트리거 -->
+  <div style="background:#FFF0EA;border-radius:10px;padding:10px 12px;margin-bottom:12px;font-size:12px;color:#FF5A1F;font-weight:700;display:flex;align-items:center;gap:6px;">
+    🔥 이 지역 프리미엄 자리는 선착순으로 마감됩니다
+  </div>
+  <div class="pc-feats">
+    <div class="pf"><span class="ck">✅</span><div><strong>검색 최상단 주황 핀 — 신규 유입 급증</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">우리 지역 학원 검색 시 최상단 노출, 경쟁 학원보다 먼저 보입니다</div></div></div>
+    <div class="pf"><span class="ck">✅</span><div><strong>24시간 자동 상담 예약 — 수업 중에도 문의 접수</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">퇴근 후, 수업 중에도 온라인 예약 시스템이 대신 상담을 받아줍니다</div></div></div>
+    <div class="pf"><span class="ck">✅</span><div><strong>블로그 · 인스타 · 유튜브 원클릭 자동 연동</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">콘텐츠를 한 번 올리면 에듀픽 페이지에 자동 반영, 홍보 시간이 확 줄어듭니다</div></div></div>
+    <div class="pf"><span class="ck">✅</span><div><strong>즉시 SMS 알림 — 상담 하나도 놓치지 않기</strong><div style="font-size:11px;color:#6B7280;margin-top:2px;">예약 발생 즉시 원장님 휴대폰으로 알림, 소중한 신규 문의를 절대 놓치지 마세요</div></div></div>
+    <div class="pf"><span class="ck">✅</span>베이직 전체 기능 포함</div>
+  </div>
+  <button class="pc-btn ob" onclick="selectPlan('premium');openPayModal('premium')" style="font-size:15px;padding:15px;">
+    🚀 프리미엄 시작하기 · 월 55,000원
+  </button>
+  <div style="text-align:center;font-size:11px;color:#8A94A6;margin-top:8px;">약정 없음 · 언제든 해지 가능</div>
+</div>
+```
 
   </div>
 </div>
 
 <!-- ════════════════ 사업자 가입 폼 ════════════════ -->
+
 <div class="page" id="page-biz-signup">
   <div class="form-hdr orange">
     <span class="form-hdr-back" onclick="go('page-home')">←</span>
@@ -1904,6 +1945,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- ════════════════ 대시보드 ════════════════ -->
+
 <div class="page" id="page-dashboard">
   <div class="db-hdr">
     <span class="db-hdr-back" onclick="go('page-home')">← 홈으로</span>
@@ -1991,6 +2033,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- ════════════════ 관리자 승인 페이지 ════════════════ -->
+
 <div class="page" id="page-admin">
   <div class="hdr" style="background:#1E293B;">
     <div style="display:flex;align-items:center;gap:8px;">
@@ -2017,28 +2060,31 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       </div>
     </div>
 
-    <!-- 섹션 탭 -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;">
-      <button class="admin-tab on" id="asec-academy" onclick="adminSection('academy')">🏫 학원 승인</button>
-      <button class="admin-tab" id="asec-review" onclick="adminSection('review')">💬 리뷰 승인</button>
-      <button class="admin-tab" id="asec-claim" onclick="adminSection('claim')">🔑 소유권</button>
-      <button class="admin-tab" id="asec-allreview" onclick="adminSection('allreview')">📋 전체 리뷰</button>
-    </div>
+```
+<!-- 섹션 탭 -->
+<div style="display:flex;gap:8px;margin-bottom:16px;">
+  <button class="admin-tab on" id="asec-academy" onclick="adminSection('academy')">🏫 학원 승인</button>
+  <button class="admin-tab" id="asec-review" onclick="adminSection('review')">💬 리뷰 승인</button>
+  <button class="admin-tab" id="asec-claim" onclick="adminSection('claim')">🔑 소유권</button>
+  <button class="admin-tab" id="asec-allreview" onclick="adminSection('allreview')">📋 전체 리뷰</button>
+</div>
 
-    <!-- 학원 필터 탭 -->
-    <div style="display:flex;gap:8px;margin-bottom:16px;" id="academy-filter-tabs">
-      <button class="admin-tab on" id="atab-pending" onclick="adminFilter('pending')">⏳ 대기중</button>
-      <button class="admin-tab" id="atab-approved" onclick="adminFilter('approved')">✅ 승인됨</button>
-      <button class="admin-tab" id="atab-all" onclick="adminFilter('all')">전체</button>
-    </div>
+<!-- 학원 필터 탭 -->
+<div style="display:flex;gap:8px;margin-bottom:16px;" id="academy-filter-tabs">
+  <button class="admin-tab on" id="atab-pending" onclick="adminFilter('pending')">⏳ 대기중</button>
+  <button class="admin-tab" id="atab-approved" onclick="adminFilter('approved')">✅ 승인됨</button>
+  <button class="admin-tab" id="atab-all" onclick="adminFilter('all')">전체</button>
+</div>
 
-    <!-- 목록 -->
-    <div id="admin-list">
-      <div style="text-align:center;padding:40px;color:#8A94A6;">
-        <div style="font-size:32px;margin-bottom:12px;">🔄</div>
-        <div>데이터 로딩 중...</div>
-      </div>
-    </div>
+<!-- 목록 -->
+<div id="admin-list">
+  <div style="text-align:center;padding:40px;color:#8A94A6;">
+    <div style="font-size:32px;margin-bottom:12px;">🔄</div>
+    <div>데이터 로딩 중...</div>
+  </div>
+</div>
+```
+
   </div>
 </div>
 
@@ -3240,23 +3286,26 @@ async function submitReview(){
   } else {
     if(sb){
       try {
-        await withRetry(async () => {
-          // 영수증 파일 업로드
-          let receiptUrl = null;
-          if(receipt && isVerified){
-            try {
-              const ext  = receipt.name.split('.').pop();
-              const path = `${currentUser.id}/${a.id}_${Date.now()}.${ext}`;
-              const { data: uploadData, error: uploadErr } = await sb.storage
-                .from('receipts')
-                .upload(path, receipt, { upsert: true });
-              if(!uploadErr && uploadData){
-                const { data: urlData } = sb.storage.from('receipts').getPublicUrl(path);
-                receiptUrl = urlData?.publicUrl || null;
-              }
-            } catch(e){ console.warn('영수증 업로드 실패:', e); }
-          }
+        // 영수증 파일 업로드 (withRetry 밖에서 먼저)
+        let receiptUrl = null;
+        if(receipt && isVerified){
+          try {
+            const ext  = receipt.name.split('.').pop();
+            const path = `${currentUser.id}/${a.id}_${Date.now()}.${ext}`;
+            const { data: uploadData, error: uploadErr } = await sb.storage
+              .from('receipts')
+              .upload(path, receipt, { upsert: true });
+            if(uploadErr){
+              console.warn('영수증 업로드 실패:', uploadErr.message);
+            } else if(uploadData){
+              const { data: urlData } = sb.storage.from('receipts').getPublicUrl(path);
+              receiptUrl = urlData?.publicUrl || null;
+              console.log('영수증 URL:', receiptUrl);
+            }
+          } catch(e){ console.warn('영수증 업로드 오류:', e); }
+        }
 
+        await withRetry(async () => {
           const { error } = await sb.from('reviews').insert({
             academy_id:   a.id,
             user_id:      currentUser?.id || null,
@@ -4455,7 +4504,9 @@ async function loadAdminReviews(){
           </div>
           <span class="admin-status pending">⏳ 대기</span>
         </div>
-        <div style="margin-top:4px;">${r.is_verified ? '<span class="rv-badge verified">✅ 인증리뷰</span>' : '<span class="rv-badge normal">📝 일반리뷰</span>'}</div><div style="font-size:13px;color:#374151;padding:8px 0;border-top:1px solid #F0F1F6;margin-top:6px;">${r.body}</div>
+        <div style="margin-top:4px;">${r.is_verified ? '<span class="rv-badge verified">✅ 인증리뷰</span>' : '<span class="rv-badge normal">📝 일반리뷰</span>'}</div>
+        ${r.receipt_url ? `<div style="margin:6px 0;"><a href="${r.receipt_url}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#176ED3;font-weight:700;background:#EEF5FF;padding:4px 10px;border-radius:8px;">📎 영수증 확인하기</a></div>` : ''}
+        <div style="font-size:13px;color:#374151;padding:8px 0;border-top:1px solid #F0F1F6;margin-top:6px;">${r.body}</div>
         <div class="admin-btns">
           <button class="admin-btn-approve" onclick="approveReview('${r.id}')">✅ 승인 · 공개</button>
           <button class="admin-btn-reject" onclick="rejectReview('${r.id}')">❌ 삭제</button>
@@ -5092,8 +5143,8 @@ function completePay(){
 }
 </script>
 
-
 <!-- ════ 관리자 학원 수정 모달 ════ -->
+
 <div class="modal-ov" id="modal-admin-edit" onclick="closeModal('admin-edit',event)">
   <div class="modal-box" style="max-height:88vh;overflow-y:auto;">
     <div class="modal-title">✏️ 학원 정보 수정 (관리자)</div>
@@ -5137,6 +5188,7 @@ function completePay(){
 </div>
 
 <!-- PWA 설치 배너 -->
+
 <div id="pwa-banner" style="display:none;">
   <span class="pwa-ico">📱</span>
   <div class="pwa-txt">
