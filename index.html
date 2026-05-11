@@ -2058,29 +2058,42 @@ async function initAuth(){
   if(typeof supabase === 'undefined'){ console.error('Supabase SDK 미로드'); return; }
   sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // 초기 세션 확인
+  // 초기 세션 확인 및 헤더 즉시 동기화
   const { data:{ session } } = await sb.auth.getSession();
-  if(session) await onLogin(session.user);
+  if(session){
+    await onLogin(session.user);
+  } else {
+    updateHeaderUI();
+  }
 
-  // 상태 변경 감지
+  // 실시간 auth 상태 감지
   sb.auth.onAuthStateChange(async(event, session)=>{
     console.log('[Auth]', event, session?.user?.email);
 
     if(event === 'SIGNED_IN' && session?.user){
-      // 이미 같은 유저로 로그인된 경우 중복 처리 방지
-      if(currentUser?.id === session.user.id) return;
+      if(currentUser?.id === session.user.id){
+        updateHeaderUI(); // 같은 유저라도 헤더 재동기화
+        return;
+      }
       const isKakao = session.user.app_metadata?.provider === 'kakao';
       await onLogin(session.user);
+      updateHeaderUI(); // 강제 헤더 동기화
       if(isKakao) showToast('✅ 카카오 로그인 완료!');
     }
 
     if(event === 'SIGNED_OUT'){
       onLogout();
+      updateHeaderUI();
     }
 
     if(event === 'TOKEN_REFRESHED' && session?.user){
-      // 토큰 갱신은 조용히 처리
       currentUser = session.user;
+      updateHeaderUI();
+    }
+
+    if(event === 'INITIAL_SESSION' && session?.user && !currentUser){
+      await onLogin(session.user);
+      updateHeaderUI();
     }
   });
 }
@@ -4844,46 +4857,53 @@ window.addEventListener('appinstalled', ()=>{
 });
 
 /* ════ INIT ════ */
-// 1단계: 카카오맵 먼저 초기화 (SDK가 head에서 동기 로드됨)
+// 상태 플래그
+let _mapReady  = false; // 카카오맵 초기화 완료
+let _dataReady = false; // 학원 데이터 로드 완료
+
+// map + data 둘 다 준비됐을 때만 마커 렌더
+function tryRenderMarkers(){
+  if(!_mapReady || !_dataReady) return;
+  try{
+    if(map){ map.relayout(); }
+    render(); // 마커 포함 전체 렌더
+    setTimeout(()=>{
+      try{ if(map) map.relayout(); if(clusterer) clusterer.redraw(); }catch(e){}
+    }, 300);
+  }catch(e){ console.error('마커 렌더 오류:', e); }
+}
+
 window.addEventListener('DOMContentLoaded', function(){
   initBanner();
   checkPaymentResult();
 
-  // Supabase 먼저 초기화
-  if(window.supabase){
-    initAuth().then(()=>{
-      kakao.maps.load(function(){
-        try { initKakaoMap(); } catch(e){ console.error('카카오맵 오류:', e); }
-        loadData().then(()=>{
-          // 데이터 로드 완료 후 지도 강제 리사이즈
-          setTimeout(()=>{
-            try{ if(map){ map.relayout(); } if(clusterer){ clusterer.redraw(); } }catch(e){}
-          }, 500);
-        });
-      });
+  function startApp(){
+    // 1. 카카오맵 초기화
+    kakao.maps.load(function(){
+      try {
+        initKakaoMap();
+        _mapReady = true;
+        tryRenderMarkers(); // 데이터가 이미 왔으면 즉시 렌더
+      } catch(e){ console.error('카카오맵 오류:', e); }
     });
+
+    // 2. 데이터 로드 (카카오맵과 병렬 실행)
+    loadData().then(()=>{
+      _dataReady = true;
+      tryRenderMarkers(); // 맵이 이미 준비됐으면 즉시 렌더
+    });
+  }
+
+  // Supabase 초기화 후 앱 시작
+  if(window.supabase){
+    initAuth().then(startApp);
   } else {
     const sbScript = document.createElement('script');
     sbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-    sbScript.onload = function(){
-      initAuth().then(()=>{
-        kakao.maps.load(function(){
-          try { initKakaoMap(); } catch(e){ console.error('카카오맵 오류:', e); }
-          loadData().then(()=>{
-            setTimeout(()=>{
-              try{ if(map){ map.relayout(); } if(clusterer){ clusterer.redraw(); } }catch(e){}
-            }, 500);
-          });
-        });
-      });
-    };
-    sbScript.onerror = function(){
-      console.warn('Supabase 로드 실패');
-      kakao.maps.load(function(){
-        try { initKakaoMap(); } catch(e){}
-        hideLoading();
-        render();
-      });
+    sbScript.onload = ()=> initAuth().then(startApp);
+    sbScript.onerror = ()=>{
+      console.warn('Supabase 로드 실패 - 오프라인 모드');
+      startApp();
     };
     document.head.appendChild(sbScript);
   }
