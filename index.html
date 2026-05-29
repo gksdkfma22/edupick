@@ -2056,32 +2056,54 @@ let currentAcademy = null; // 사업자 학원 정보
 /* Auth 초기화 */
 async function initAuth(){
   if(typeof supabase === 'undefined'){ console.error('Supabase SDK 미로드'); return; }
-  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+    auth: {
+      detectSessionInUrl: true,
+      persistSession:     true,
+      autoRefreshToken:   true,
+      storageKey:         'edupick-auth'
+    }
+  });
 
-  // 초기 세션 확인 및 헤더 즉시 동기화
+  // ① URL에 access_token 있으면 Supabase가 처리할 때까지 대기
+  const hash = window.location.hash;
+  if(hash && hash.includes('access_token')){
+    // 토큰 처리 대기 (최대 3초)
+    await new Promise(resolve => {
+      const unsub = sb.auth.onAuthStateChange((event, session)=>{
+        if(event === 'SIGNED_IN' && session){
+          unsub.data?.subscription?.unsubscribe();
+          resolve(session);
+        }
+      });
+      setTimeout(resolve, 3000); // 타임아웃 보장
+    });
+    // URL 정리
+    history.replaceState(null, '', window.location.pathname);
+  }
+
+  // ② 세션 확인 후 헤더 즉시 동기화
   const { data:{ session } } = await sb.auth.getSession();
   if(session){
     await onLogin(session.user);
-  } else {
-    updateHeaderUI();
   }
+  updateHeaderUI(); // 반드시 호출
 
-  // 실시간 auth 상태 감지
+  // ③ 이후 상태 변화 실시간 감지
   sb.auth.onAuthStateChange(async(event, session)=>{
     console.log('[Auth]', event, session?.user?.email);
 
     if(event === 'SIGNED_IN' && session?.user){
       if(currentUser?.id === session.user.id){
-        updateHeaderUI(); // 같은 유저라도 헤더 재동기화
+        updateHeaderUI();
         return;
       }
-      const isKakao = session.user.app_metadata?.provider === 'kakao';
       await onLogin(session.user);
-      updateHeaderUI(); // 강제 헤더 동기화
-      if(isKakao) showToast('✅ 카카오 로그인 완료!');
+      updateHeaderUI();
     }
 
     if(event === 'SIGNED_OUT'){
+      currentUser = null;
       onLogout();
       updateHeaderUI();
     }
@@ -2091,8 +2113,10 @@ async function initAuth(){
       updateHeaderUI();
     }
 
-    if(event === 'INITIAL_SESSION' && session?.user && !currentUser){
-      await onLogin(session.user);
+    if(event === 'INITIAL_SESSION'){
+      if(session?.user && !currentUser){
+        await onLogin(session.user);
+      }
       updateHeaderUI();
     }
   });
@@ -2102,11 +2126,30 @@ async function onLogin(user){
   currentUser = user;
   loadWishFromLocal();
 
-  // profiles에서 role 확인
+  // profiles에서 role + nickname 확인
   try {
-    const { data: profile } = await sb.from('profiles').select('role').eq('id', user.id).maybeSingle();
-    currentUser._role = profile?.role || user.user_metadata?.role || 'user';
-  } catch(e){ currentUser._role = user.user_metadata?.role || 'user'; }
+    const { data: profile } = await sb.from('profiles').select('role, nickname, name').eq('id', user.id).maybeSingle();
+    currentUser._role     = profile?.role     || user.user_metadata?.role || 'user';
+    currentUser._nickname = profile?.nickname || '';
+    currentUser._name     = profile?.name     || user.user_metadata?.full_name || user.user_metadata?.name || '';
+  } catch(e){
+    currentUser._role     = user.user_metadata?.role || 'user';
+    currentUser._nickname = '';
+    currentUser._name     = user.user_metadata?.full_name || '';
+  }
+
+  // ★ 헤더 즉시 업데이트 (onLogin 시작 직후)
+  updateHeaderUI();
+
+  // 카카오 로그인 토스트
+  const isKakaoUser = currentUser.app_metadata?.provider === 'kakao';
+  if(isKakaoUser){
+    showToast('✅ 카카오 로그인 완료!');
+    // 닉네임 없으면 설정 유도
+    if(!currentUser._nickname){
+      setTimeout(()=> openNicknameModal(), 1000);
+    }
+  }
 
   // owner면 학원 정보 불러오기
   if(currentUser._role === 'owner' || currentUser._role === 'academy'){
@@ -3197,29 +3240,29 @@ function closeSheet(e){document.getElementById('sh-ov').classList.remove('open')
 let editingReviewIdx = null; // null=신규, 숫자=수정 중인 인덱스
 
 function openReviewModal(){
-  editingReviewIdx = null;
-  currentRating = 0;
-  setStarRating(0);
+  if(!currentUser){ openLoginModal(); return; }
 
-  // 닉네임 자동 채우기 (카카오/소셜 로그인 정보 우선)
-  const nickEl = document.getElementById('rv-nick');
-  if(nickEl && currentUser){
-    const autoNick =
-      currentUser.user_metadata?.full_name ||
-      currentUser.user_metadata?.name ||
-      currentUser.user_metadata?.nickname ||
-      currentUser.user_metadata?.preferred_username ||
-      '';
-    nickEl.value = autoNick;
-    nickEl.placeholder = autoNick ? autoNick : '예) 천안맘 김○○';
-  } else if(nickEl){
-    nickEl.value = '';
-  }
+  // 닉네임 없으면 먼저 설정
+  requireNickname(()=>{
+    editingReviewIdx = null;
+    currentRating = 0;
+    setStarRating(0);
 
-  document.getElementById('rv-body').value = '';
-  document.getElementById('rv-modal-title').textContent = '✍️ 리뷰 작성';
-  document.getElementById('rv-submit-btn').textContent = '등록';
-  openModal('review');
+    // 닉네임 자동 채우기 (profiles 닉네임 우선)
+    const nickEl = document.getElementById('rv-nick');
+    if(nickEl){
+      const autoNick = currentUser._nickname ||
+        currentUser.user_metadata?.full_name ||
+        currentUser.user_metadata?.name || '';
+      nickEl.value = autoNick;
+      nickEl.placeholder = '예) 천안맘';
+    }
+
+    document.getElementById('rv-body').value = '';
+    document.getElementById('rv-modal-title').textContent = '✍️ 리뷰 작성';
+    document.getElementById('rv-submit-btn').textContent = '등록';
+    openModal('review');
+  });
 }
 
 function editReview(academyId, idx){
@@ -3755,6 +3798,57 @@ function renderReviews(a, el){
       <div class="rv-stars">${'★'.repeat(r.stars||5)}${'☆'.repeat(5-(r.stars||5))}</div>
       <div class="rv-body">${r.body||''}</div>
     </div>`).join('');
+}
+
+
+/* ════ 닉네임 시스템 ════ */
+function checkNicknameLen(){
+  const el = document.getElementById('nickname-input');
+  const len = document.getElementById('nickname-len');
+  if(el && len) len.textContent = el.value.length + '/10';
+}
+
+function openNicknameModal(callback){
+  window._nicknameCallback = callback || null;
+  const input = document.getElementById('nickname-input');
+  if(input) input.value = currentUser?._nickname || '';
+  checkNicknameLen();
+  openModal('nickname');
+}
+
+async function saveNickname(){
+  const nick = document.getElementById('nickname-input')?.value?.trim();
+  if(!nick){ showToast('닉네임을 입력해주세요'); return; }
+  if(nick.length < 2){ showToast('닉네임은 2자 이상이어야 해요'); return; }
+  if(!sb || !currentUser){ showToast('로그인이 필요해요'); return; }
+
+  try {
+    const { error } = await sb.from('profiles')
+      .upsert({ id: currentUser.id, nickname: nick }, { onConflict: 'id' });
+    if(error) throw error;
+
+    currentUser._nickname = nick;
+    showToast('✅ 닉네임이 저장됐어요!');
+    closeModal('nickname');
+
+    // 닉네임 저장 후 콜백 실행 (리뷰 작성 등)
+    if(window._nicknameCallback){
+      window._nicknameCallback();
+      window._nicknameCallback = null;
+    }
+  } catch(e){
+    showToast('저장 실패: ' + (e.message || '다시 시도해주세요'));
+  }
+}
+
+// 닉네임 있는지 확인 후 없으면 설정 팝업
+function requireNickname(callback){
+  if(!currentUser){ openLoginModal(); return; }
+  if(currentUser._nickname){
+    callback();
+  } else {
+    openNicknameModal(callback);
+  }
 }
 
 /* ════ 시간표 관리 ════ */
@@ -5080,11 +5174,11 @@ function checkPaymentResult(){
   // ⚠️ access_token이 있으면 Supabase가 처리할 때까지 URL 건드리지 않음
   const hash = window.location.hash;
   if(hash && hash.includes('access_token')){
-    // Supabase가 자동으로 세션 처리함 - URL만 나중에 정리
+    // Supabase가 토큰 처리할 때까지 충분히 기다림 (3초)
     setTimeout(()=>{
       history.replaceState(null, '', window.location.pathname);
-    }, 2000);
-    return; // 결제 체크는 건너뜀
+    }, 3000);
+    return;
   }
 
   const p = new URLSearchParams(window.location.search);
@@ -5175,6 +5269,27 @@ function completePay(){
     <div class="modal-btns">
       <button class="mb-cancel" onclick="closeModal('admin-edit')">취소</button>
       <button class="mb-save" onclick="saveAdminEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════ 닉네임 설정 모달 ════ -->
+<div class="modal-ov" id="modal-nickname" onclick="">
+  <div class="modal-box">
+    <div class="modal-title">✏️ 닉네임 설정</div>
+    <p style="font-size:13px;color:#6B7280;margin-bottom:16px;line-height:1.6;">
+      리뷰 작성 시 사용할 닉네임을 설정해주세요.<br>실명 대신 닉네임으로 표시돼요.
+    </p>
+    <div class="mfg">
+      <label>닉네임 <span style="color:#EF4444;">*</span></label>
+      <input type="text" id="nickname-input" placeholder="예) 천안맘" maxlength="10"
+        style="ime-mode:active;" oninput="checkNicknameLen()">
+      <div style="font-size:11px;color:#8A94A6;margin-top:4px;" id="nickname-len">0/10</div>
+    </div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('nickname')">나중에</button>
+      <button class="mb-save" onclick="saveNickname()">저장</button>
     </div>
   </div>
 </div>
