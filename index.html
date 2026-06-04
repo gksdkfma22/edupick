@@ -2119,42 +2119,21 @@ let currentAcademy = null; // 사업자 학원 정보
 /* Auth 초기화 */
 async function initAuth(){
   if(typeof supabase === 'undefined'){ console.error('Supabase SDK 미로드'); return; }
+
+  // ① 클라이언트 생성 즉시 URL의 토큰 자동 처리됨
   sb = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
     auth: {
       detectSessionInUrl: true,
       persistSession:     true,
       autoRefreshToken:   true,
-      storageKey:         'edupick-auth'
+      storageKey:         'edupick-auth',
+      flowType:           'implicit'  // 카카오 OAuth implicit flow
     }
   });
 
-  // ① URL에 access_token 있으면 Supabase가 처리할 때까지 대기
-  const hash = window.location.hash;
-  if(hash && hash.includes('access_token')){
-    // 토큰 처리 대기 (최대 3초)
-    await new Promise(resolve => {
-      const unsub = sb.auth.onAuthStateChange((event, session)=>{
-        if(event === 'SIGNED_IN' && session){
-          unsub.data?.subscription?.unsubscribe();
-          resolve(session);
-        }
-      });
-      setTimeout(resolve, 3000); // 타임아웃 보장
-    });
-    // URL 정리
-    history.replaceState(null, '', window.location.pathname);
-  }
-
-  // ② 세션 확인 후 헤더 즉시 동기화
-  const { data:{ session } } = await sb.auth.getSession();
-  if(session){
-    await onLogin(session.user);
-  }
-  updateHeaderUI(); // 반드시 호출
-
-  // ③ 이후 상태 변화 실시간 감지
+  // ② onAuthStateChange 먼저 등록 (이벤트 놓치지 않기 위해)
   sb.auth.onAuthStateChange(async(event, session)=>{
-    console.log('[Auth]', event, session?.user?.email);
+    console.log('[Auth Event]', event, session?.user?.email);
 
     if(event === 'SIGNED_IN' && session?.user){
       if(currentUser?.id === session.user.id){
@@ -2163,6 +2142,21 @@ async function initAuth(){
       }
       await onLogin(session.user);
       updateHeaderUI();
+      // URL 정리 (카카오 리다이렉트 후)
+      if(window.location.hash.includes('access_token')){
+        history.replaceState(null, '', window.location.pathname);
+      }
+    }
+
+    if(event === 'INITIAL_SESSION'){
+      if(session?.user && !currentUser){
+        await onLogin(session.user);
+      }
+      updateHeaderUI();
+      // URL 정리
+      if(window.location.hash.includes('access_token')){
+        history.replaceState(null, '', window.location.pathname);
+      }
     }
 
     if(event === 'SIGNED_OUT'){
@@ -2175,14 +2169,16 @@ async function initAuth(){
       currentUser = session.user;
       updateHeaderUI();
     }
-
-    if(event === 'INITIAL_SESSION'){
-      if(session?.user && !currentUser){
-        await onLogin(session.user);
-      }
-      updateHeaderUI();
-    }
   });
+
+  // ③ 기존 세션 확인 (일반 이메일 로그인 복구용)
+  const { data:{ session } } = await sb.auth.getSession();
+  if(session && !currentUser){
+    await onLogin(session.user);
+    updateHeaderUI();
+  } else if(!session){
+    updateHeaderUI(); // 비로그인 헤더
+  }
 }
 
 async function onLogin(user){
@@ -5237,10 +5233,7 @@ function checkPaymentResult(){
   // ⚠️ access_token이 있으면 Supabase가 처리할 때까지 URL 건드리지 않음
   const hash = window.location.hash;
   if(hash && hash.includes('access_token')){
-    // Supabase가 토큰 처리할 때까지 충분히 기다림 (3초)
-    setTimeout(()=>{
-      history.replaceState(null, '', window.location.pathname);
-    }, 3000);
+    // Supabase initAuth에서 처리하므로 여기선 아무것도 안 함
     return;
   }
 
