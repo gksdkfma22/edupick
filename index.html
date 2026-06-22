@@ -4996,11 +4996,30 @@ window.addEventListener('DOMContentLoaded', ()=>{
     }
   }
 
-  // 서비스 워커 등록
+  // 서비스 워커 등록 + 새 버전 감지 시 자동 새로고침
   if('serviceWorker' in navigator){
     navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('SW 등록:', reg.scope))
+      .then(reg => {
+        console.log('SW 등록:', reg.scope);
+        // 새 버전의 서비스워커가 설치되면 감지
+        reg.addEventListener('updatefound', () => {
+          const newWorker = reg.installing;
+          newWorker?.addEventListener('statechange', () => {
+            if(newWorker.state === 'activated'){
+              console.log('SW 업데이트 완료 - 캐시 갱신됨');
+            }
+          });
+        });
+      })
       .catch(err => console.log('SW 실패:', err));
+
+    // 컨트롤러가 바뀌면(=새 SW가 활성화되면) 한 번만 새로고침
+    let refreshed = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if(refreshed) return;
+      refreshed = true;
+      window.location.reload();
+    });
   }
 });
 
