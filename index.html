@@ -2299,8 +2299,16 @@ async function doLogin(){
     showToast('✅ 로그인 성공!');
     // 로그인 성공 시에만 페이지 이동
     setTimeout(()=>{
-      if(currentUser?.email === ADMIN_EMAIL) go('page-admin-dashboard');
-      else if(currentAcademy) go('page-dashboard');
+      if(currentUser?.email === ADMIN_EMAIL){
+        go('page-admin-dashboard');
+      } else if(currentAcademy){
+        // 승인 여부 반드시 확인 후 분기
+        if(currentAcademy.is_active){
+          go('page-dashboard');
+        } else {
+          go('page-pending');
+        }
+      }
       // 일반 유저는 그냥 홈 유지
     }, 600);
   } catch(e){
@@ -2385,7 +2393,7 @@ async function completeBizSignupAndPay(){
         address:    addr,
         city:       '천안시 서북구',
         subject:    subj,
-        plan:       selectedPlan || 'free',
+        plan:       'free',  // 가입 시 항상 무료로 시작 (selectedPlan 잔여값 무시)
         lat:        36.8151,
         lng:        127.1139,
         is_active:  false,  // ← 관리자 승인 전까지 지도 미노출
@@ -4120,6 +4128,10 @@ function goMyPage(){
   }
   // owner면 업체 대시보드로
   if(currentUser._role === 'owner' || currentAcademy){
+    if(currentAcademy && !currentAcademy.is_active){
+      go('page-pending');
+      return;
+    }
     go('page-dashboard');
     setTimeout(loadDashboardData, 200);
     return;
