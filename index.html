@@ -2348,17 +2348,19 @@ async function completeUserSignup(){
 
 /* 사업자 가입 + 학원 DB 저장 */
 async function completeBizSignupAndPay(){
-  const name    = document.getElementById('biz-name')?.value?.trim();
-  const owner   = document.getElementById('biz-owner')?.value?.trim();
-  const regNo   = document.getElementById('biz-reg-no')?.value?.trim();
-  const phone   = document.getElementById('biz-phone')?.value?.trim();
-  const addr    = document.getElementById('biz-addr')?.value?.trim();
-  const subj    = document.getElementById('biz-subj')?.value || '영어';
-  const price   = document.getElementById('biz-price')?.value?.trim();
-  const emailEl = document.getElementById('biz-email');
-  const pwEl    = document.getElementById('biz-pw');
-  const email   = emailEl?.value?.trim();
-  const pw      = pwEl?.value;
+  const name     = document.getElementById('biz-name')?.value?.trim();
+  const owner    = document.getElementById('biz-owner')?.value?.trim();
+  const regNo    = document.getElementById('biz-reg-no')?.value?.trim();
+  const phone    = document.getElementById('biz-phone')?.value?.trim();
+  const addr     = document.getElementById('biz-addr')?.value?.trim();
+  const subj     = document.getElementById('biz-subj')?.value || '영어';
+  const price    = document.getElementById('biz-price')?.value?.trim();
+  const emailEl  = document.getElementById('biz-email');
+  const pwEl     = document.getElementById('biz-pw');
+  const email    = emailEl?.value?.trim();
+  const pw       = pwEl?.value;
+  const fileEl   = document.getElementById('biz-reg-file');
+  const licenseFile = fileEl?.files?.[0] || null;
 
   // 필수 항목 검증
   if(!name)  { showToast('학원명을 입력해주세요'); return; }
@@ -2368,6 +2370,7 @@ async function completeBizSignupAndPay(){
   if(!addr)  { showToast('학원 주소를 입력해주세요'); return; }
   if(!email) { showToast('이메일을 입력해주세요'); return; }
   if(!pw || pw.length < 6){ showToast('비밀번호는 6자 이상이어야 해요'); return; }
+  if(!licenseFile){ showToast('사업자등록증을 첨부해주세요'); return; }
   if(!sb)    { showToast('잠시 후 다시 시도해주세요'); return; }
 
   try {
@@ -2384,23 +2387,49 @@ async function completeBizSignupAndPay(){
     const { error:loginErr } = await sb.auth.signInWithPassword({ email, password: pw });
     if(loginErr) console.warn('자동 로그인 실패:', loginErr.message);
 
-    // 3. 학원 정보 DB 저장 (is_active: false → 관리자 승인 후 노출)
     const userId = authData.user?.id || currentUser?.id;
-    if(userId){
-      const { error: dbErr } = await sb.from('academies').insert({
-        owner_id:   userId,
-        name,
-        address:    addr,
-        city:       '천안시 서북구',
-        subject:    subj,
-        plan:       'free',  // 가입 시 항상 무료로 시작 (selectedPlan 잔여값 무시)
-        lat:        36.8151,
-        lng:        127.1139,
-        is_active:  false,  // ← 관리자 승인 전까지 지도 미노출
-        phone,
-        description: `대표자: ${owner} | 사업자등록번호: ${regNo}`,
-      });
-      if(dbErr) console.error('DB 저장 오류:', dbErr);
+    if(!userId){
+      throw new Error('사용자 ID를 확인할 수 없어요. 다시 시도해주세요.');
+    }
+
+    // 3. 사업자등록증 업로드 (business-licenses 버킷)
+    let licenseUrl = null;
+    try {
+      const ext  = licenseFile.name.split('.').pop();
+      const path = `${userId}/license_${Date.now()}.${ext}`;
+      const { data: uploadData, error: uploadErr } = await sb.storage
+        .from('business-licenses')
+        .upload(path, licenseFile, { upsert: true });
+      if(uploadErr){
+        console.error('사업자등록증 업로드 실패:', uploadErr);
+        throw new Error('사업자등록증 업로드에 실패했어요: ' + uploadErr.message);
+      }
+      const { data: urlData } = sb.storage.from('business-licenses').getPublicUrl(path);
+      licenseUrl = urlData?.publicUrl || null;
+    } catch(uploadEx){
+      throw uploadEx;
+    }
+
+    // 4. 학원 정보 DB 저장 (is_active: false → 관리자 승인 후 노출)
+    const { error: dbErr } = await sb.from('academies').insert({
+      owner_id:    userId,
+      name,
+      address:     addr,
+      city:        '천안시 서북구',
+      subject:     subj,
+      plan:        'free',  // 가입 시 항상 무료로 시작 (selectedPlan 잔여값 무시)
+      lat:         36.8151,
+      lng:         127.1139,
+      is_active:   false,  // ← 관리자 승인 전까지 지도 미노출
+      phone,
+      license_url: licenseUrl,  // ← 사업자등록증 URL
+      description: `대표자: ${owner} | 사업자등록번호: ${regNo}`,
+    });
+
+    if(dbErr){
+      console.error('DB 저장 오류:', dbErr);
+      // 학원 정보 저장 실패는 가입 자체를 실패로 처리 (조용히 넘어가지 않음)
+      throw new Error('학원 정보 저장에 실패했어요: ' + dbErr.message);
     }
 
     showToast('🎉 가입 신청 완료! 승인 후 대시보드가 활성화됩니다.');
@@ -3723,22 +3752,47 @@ function loadMoreItems(){
   const oldBtn = document.getElementById('load-more-btn');
   if(oldBtn) oldBtn.remove();
 
+  const thumbBg = {영어:"#E8F4FF",수학:"#FFF8E8",국어:"#E8FFF0",논술:"#FFF8EE",입시:"#FFF0F0",예체능:"#FFE8F8",과학:"#F0E8FF",컴퓨터:"#EFF6FF"};
+
   newItems.forEach(a => {
-    const liked = wishSet.has(a.id);
+    const liked     = wishSet.has(a.id);
+    const planCls   = a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
+    const planLbl   = a.plan==='premium'?'프리미엄':a.plan==='basic'?'베이직':'무료';
+    const firstSubj = (a.subject||'기타').split(',')[0].trim();
+    const avg       = parseFloat(avgStars(a.reviews))||0;
+    const dist      = a.distKm !== undefined ? a.distKm : km(userLat, userLng, a.lat, a.lng);
+    const thumbHtml = a.image
+      ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.innerHTML='${ICONS[firstSubj]||"📚"}';">`
+      : ICONS[firstSubj]||'📚';
+    const subjBadges = (a.subject||'기타').split(',').map(s=>s.trim())
+      .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
+      .join('');
+
     const el = document.createElement('div');
-    el.className = 'acard';
-    const dist = a.distKm !== undefined ? a.distKm : km(userLat, userLng, a.lat, a.lng);
+    el.className = `acard ${planCls}`;
     el.innerHTML = `
-      <div class="ac-left">
-        <div class="ac-ico" style="background:${COLORS[(a.subject||'기타').split(',')[0].trim()]||'#f3f4f6'}">${ICONS[(a.subject||'기타').split(',')[0].trim()]||'📚'}</div>
-        <div class="ac-info">
-          <div class="ac-nm">${a.name}${a.claimed?'<span style="font-size:9px;background:#10B981;color:#fff;padding:1px 5px;border-radius:6px;margin-left:4px;font-weight:800;">✓인증</span>':''}</div>
-          <div class="ac-sub">${a.subject} · ${dist}km</div>
-          <div class="ac-pr" style="color:${a.price ? 'var(--red)' : '#8A94A6'}">${a.price ? a.price.toLocaleString('ko-KR')+'원/월' : '수강료 문의'}</div>
+      <div class="ac-inner">
+        <div class="ac-thumb" style="background:${thumbBg[firstSubj]||'#F0F2F8'}">${thumbHtml}</div>
+        <div class="ac-top">
+          <div class="ac-info">
+            <div class="ac-name-row">
+              <div class="ac-name">${a.name}</div>
+              <span class="plan-tag ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free'}">${planLbl}</span>
+            </div>
+            <div class="ac-sub">📍 ${a.city} · ${subjBadges}</div>
+            ${gradeBadgesHtml(a.grade)}
+            ${a.reviews.length
+              ?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`
+              :`<div class="ac-stars"><span class="stars-cnt" style="font-size:11px;color:#C0C8D8">리뷰 없음</span></div>`}
+          </div>
+          <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart('${a.id}',this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
         </div>
       </div>
-      <div class="ac-right">
-        <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart('${a.id}',this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
+      <div class="ac-foot">
+        <div>
+          <div class="ac-price" style="color:${a.price?'var(--red)':'#8A94A6'}">${a.price?'월 '+a.price.toLocaleString('ko-KR')+'원':'수강료 문의'}</div>
+          <div class="ac-dist">${dist}km 거리</div>
+        </div>
         <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="openSheet('${a.id}')">상세보기</button>
       </div>`;
     listEl.appendChild(el);
@@ -4771,6 +4825,9 @@ function renderAdminList(filter){
         💳 <span>${a.plan || 'free'}</span><br>
         📅 신청일: <span>${a.created_at ? a.created_at.slice(0,10) : '-'}</span>
       </div>
+      ${a.license_url
+        ? `<div style="margin:8px 0;"><a href="${a.license_url}" target="_blank" style="display:inline-flex;align-items:center;gap:4px;font-size:12px;color:#176ED3;font-weight:700;background:#EEF5FF;padding:5px 12px;border-radius:8px;">📎 사업자등록증 확인하기</a></div>`
+        : `<div style="margin:8px 0;font-size:12px;color:#EF4444;">⚠️ 사업자등록증 미첨부</div>`}
       <div class="admin-btns">
         ${!a.is_active ? `
           <button class="admin-btn-approve" onclick="approveAcademy('${a.id}')">✅ 승인</button>
