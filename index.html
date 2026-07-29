@@ -2538,7 +2538,9 @@ function saveWishToLocal(){
 }
 function loadWishFromLocal(){
   try {
+    wishSet = new Set(); // 먼저 초기화
     const key = getWishKey();
+    if(!currentUser?.id){ wishSet = new Set(); return; } // 로그인 필수
     const saved = localStorage.getItem(key);
     if(saved) wishSet = new Set(JSON.parse(saved));
     else wishSet = new Set();
@@ -3481,13 +3483,40 @@ function previewProfileImg(input){
   const file = input.files[0];
   if(!file) return;
   if(file.size > 2 * 1024 * 1024){ showToast('2MB 이하 이미지만 가능해요'); return; }
+  // 로컬 미리보기
   const reader = new FileReader();
   reader.onload = function(e){
     const preview = document.getElementById('db-profile-preview');
     preview.innerHTML = `<img src="${e.target.result}" style="width:100%;height:100%;object-fit:cover;">`;
-    showToast('✅ 사진이 변경됐어요! (저장 버튼을 눌러 적용)');
   };
   reader.readAsDataURL(file);
+  // 실제 Storage 업로드
+  uploadProfileImg(file);
+}
+
+async function uploadProfileImg(file){
+  if(!sb || !currentAcademy){ showToast('로그인이 필요해요'); return; }
+  try {
+    showToast('프로필 사진 업로드 중...');
+    const ext  = file.name.split('.').pop();
+    const path = `profiles/${currentAcademy.id}.${ext}`;
+    const { error: uploadErr } = await sb.storage
+      .from('academy-profiles')
+      .upload(path, file, { upsert: true });
+    if(uploadErr) throw uploadErr;
+    const { data: urlData } = sb.storage.from('academy-profiles').getPublicUrl(path);
+    const imageUrl = urlData?.publicUrl;
+    if(!imageUrl) throw new Error('URL 생성 실패');
+    // DB 업데이트
+    const { error: dbErr } = await sb.from('academies')
+      .update({ image: imageUrl })
+      .eq('id', currentAcademy.id);
+    if(dbErr) throw dbErr;
+    currentAcademy.image = imageUrl;
+    showToast('✅ 프로필 사진이 저장됐어요!');
+  } catch(e){
+    showToast('업로드 실패: ' + (e.message || '다시 시도해주세요'));
+  }
 }
 
 
@@ -3672,9 +3701,9 @@ async function loadDashboardData(){
   const views = parseInt(localStorage.getItem(viewKey)) || 0;
   const viewEl = document.getElementById('db-view-cnt');
   if(viewEl){
-    viewEl.textContent = views > 0 ? views : '데이터 수집 중';
-    viewEl.style.fontSize = views > 0 ? '' : '11px';
-    viewEl.style.color = views > 0 ? '' : '#8A94A6';
+    viewEl.textContent = views > 0 ? views : '0';
+    viewEl.style.fontSize = '';
+    viewEl.style.color = '';
   }
 
   // 4. 소식 목록
@@ -4205,6 +4234,7 @@ function goMyPage(){
   document.getElementById('my-schedule-section').style.display = 'none';
 
   go('page-my');
+  setTimeout(updateHeaderUI, 100);
 }
 
 async function goMyReviews(){
@@ -4291,25 +4321,20 @@ async function claimAcademy(academyId){
   if(!confirm(`"${a.name}" 학원의 원장님이신가요?\n소유권 신청 후 관리자 승인이 필요합니다.`)) return;
 
   try {
-    // claim_requests 테이블에 신청 저장
-    const { error } = await sb.from('claim_requests').insert({
-      academy_id:  academyId,
-      user_id:     currentUser.id,
-      user_email:  currentUser.email,
+    // 기존 신청 있으면 upsert (거절된 경우 재신청 가능)
+    const { error } = await sb.from('claim_requests').upsert({
+      academy_id:   academyId,
+      user_id:      currentUser.id,
+      user_email:   currentUser.email,
       academy_name: a.name,
-      status:      'pending',
-    });
+      status:       'pending',
+    }, { onConflict: 'academy_id,user_id' });
     if(error) throw error;
     showToast('✅ 소유권 신청 완료! 관리자 승인 후 대시보드가 활성화됩니다.');
-    // 버튼 업데이트
     const btn = document.getElementById('sh-claim-btn');
     if(btn) btn.innerHTML = '<div style="padding:8px 0;font-size:12px;color:#8A94A6;text-align:center;">⏳ 소유권 신청 완료 · 승인 대기중</div>';
   } catch(e){
-    if(e.message?.includes('duplicate') || e.message?.includes('unique')){
-      showToast('이미 신청하셨어요. 승인을 기다려주세요.');
-    } else {
-      showToast('오류: ' + (e.message || '다시 시도해주세요'));
-    }
+    showToast('오류: ' + (e.message || '다시 시도해주세요'));
   }
 }
 
@@ -4353,16 +4378,31 @@ async function loadClaimRequests(){
 async function approveClaim(claimId, academyId, userId){
   if(!confirm('소유권을 승인할까요?')) return;
   try {
-    // 1. 학원에 owner_id 연결
+    // 1. 해당 유저가 기존에 만든 학원(owner_id 연결된 가입 학원) 비활성화
+    const { data: existingAcademies } = await sb.from('academies')
+      .select('id')
+      .eq('owner_id', userId)
+      .neq('id', academyId); // 소유권 신청한 학원 제외
+
+    if(existingAcademies?.length){
+      await sb.from('academies')
+        .update({ owner_id: null, is_active: false })
+        .eq('owner_id', userId)
+        .neq('id', academyId);
+    }
+
+    // 2. 소유권 신청한 학원에 owner_id 연결 + 활성화
     const { error: e1 } = await sb.from('academies')
-      .update({ owner_id: userId, is_active: true })
+      .update({ owner_id: userId, is_active: true, claimed: true })
       .eq('id', academyId);
     if(e1) throw e1;
-    // 2. 신청 상태 업데이트
+
+    // 3. 신청 상태 업데이트
     const { error: e2 } = await sb.from('claim_requests')
       .update({ status: 'approved' })
       .eq('id', claimId);
     if(e2) throw e2;
+
     showToast('✅ 소유권 승인 완료!');
     loadClaimRequests();
   } catch(e){ showToast('오류: ' + e.message); }
@@ -4370,12 +4410,15 @@ async function approveClaim(claimId, academyId, userId){
 
 async function rejectClaim(claimId){
   if(!confirm('소유권 신청을 거절할까요?')) return;
-  const { error } = await sb.from('claim_requests')
-    .update({ status: 'rejected' })
-    .eq('id', claimId);
-  if(error){ showToast('오류: ' + error.message); return; }
-  showToast('❌ 거절됐습니다');
-  loadClaimRequests();
+  try {
+    // rejected로 변경 (재신청 가능하도록 academy의 owner_id는 유지)
+    const { error } = await sb.from('claim_requests')
+      .update({ status: 'rejected' })
+      .eq('id', claimId);
+    if(error) throw error;
+    showToast('❌ 거절됐습니다. 원장님이 재신청할 수 있어요.');
+    loadClaimRequests();
+  } catch(e){ showToast('오류: ' + e.message); }
 }
 
 
