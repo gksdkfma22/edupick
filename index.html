@@ -1092,7 +1092,14 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         <span onclick="setStarRating(5)">★</span>
       </div>
     </div>
-    <div class="mfg"><label>닉네임</label><input type="text" id="rv-nick" placeholder="예) 천안맘 김○○"></div>
+    <div class="mfg">
+      <label>닉네임</label>
+      <input type="text" id="rv-nick" placeholder="닉네임을 먼저 설정해주세요" readonly
+        style="background:#F8F9FB;color:#374151;cursor:not-allowed;">
+      <div style="font-size:11px;color:#8A94A6;margin-top:4px;">
+        닉네임은 MY 페이지에서 변경할 수 있어요
+      </div>
+    </div>
     <div class="mfg"><label>리뷰 내용</label><textarea id="rv-body" placeholder="학원에 대한 솔직한 후기를 남겨주세요…"></textarea></div>
     <!-- 영수증 첨부 -->
     <div class="mfg">
@@ -1360,6 +1367,16 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 
     <!-- 메뉴 리스트 -->
     <div style="background:#fff;border-radius:16px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.06);margin-bottom:16px;">
+      <div onclick="openNicknameModal()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:20px;">✏️</span>
+          <div>
+            <div style="font-size:14px;font-weight:700;color:#1A1A2E;">닉네임 설정</div>
+            <div style="font-size:12px;color:#8A94A6;margin-top:1px;" id="my-nickname-display">설정된 닉네임이 없어요</div>
+          </div>
+        </div>
+        <span style="color:#C0C8D8;font-size:18px;">›</span>
+      </div>
       <div onclick="goMyReviews()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span style="font-size:20px;">✍️</span>
@@ -3348,20 +3365,30 @@ let editingReviewIdx = null; // null=신규, 숫자=수정 중인 인덱스
 function openReviewModal(){
   if(!currentUser){ openLoginModal(); return; }
 
-  // 닉네임 없으면 먼저 설정
+  // 닉네임 없으면 먼저 설정 (필수)
+  if(!currentUser._nickname){
+    showToast('리뷰 작성 전에 닉네임을 설정해주세요!');
+    openNicknameModal(()=> openReviewModal());
+    return;
+  }
+
+  // 닉네임 있으면 바로 진행
   requireNickname(()=>{
     editingReviewIdx = null;
     currentRating = 0;
     setStarRating(0);
 
-    // 닉네임 자동 채우기 (profiles 닉네임 우선)
+    // 닉네임 자동 채우기 (profiles 닉네임만 사용 - 수정 불가)
     const nickEl = document.getElementById('rv-nick');
     if(nickEl){
-      const autoNick = currentUser._nickname ||
-        currentUser.user_metadata?.full_name ||
-        currentUser.user_metadata?.name || '';
-      nickEl.value = autoNick;
-      nickEl.placeholder = '예) 천안맘';
+      const savedNick = currentUser._nickname || '';
+      if(savedNick){
+        nickEl.value = savedNick;
+        nickEl.style.color = '#1A1A2E';
+      } else {
+        nickEl.value = '';
+        nickEl.placeholder = '닉네임을 먼저 설정해주세요';
+      }
     }
 
     document.getElementById('rv-body').value = '';
@@ -3400,7 +3427,8 @@ function setStarRating(n){
 
 async function submitReview(){
   if(!currentRating){ showToast('별점을 선택해주세요'); return; }
-  const nick    = document.getElementById('rv-nick').value.trim() || '익명';
+  const nick = currentUser?._nickname || document.getElementById('rv-nick').value.trim();
+  if(!nick){ showToast('닉네임을 먼저 설정해주세요'); openNicknameModal(); return; }
   const body    = document.getElementById('rv-body').value.trim();
   const receipt = document.getElementById('rv-receipt')?.files[0] || null;
   if(!body){ showToast('리뷰 내용을 입력해주세요'); return; }
@@ -4224,6 +4252,15 @@ function goMyPage(){
   const roleEl  = document.getElementById('my-role');
   if(emailEl) emailEl.textContent = currentUser.email || '회원';
   if(roleEl)  roleEl.textContent  = currentAcademy ? '사업자 회원 (원장님)' : '일반 회원';
+
+  // 닉네임 표시 업데이트
+  const nickDisplay = document.getElementById('my-nickname-display');
+  if(nickDisplay){
+    nickDisplay.textContent = currentUser._nickname
+      ? `현재: ${currentUser._nickname}`
+      : '닉네임을 설정해주세요 (리뷰 작성 필수)';
+    nickDisplay.style.color = currentUser._nickname ? '#8A94A6' : '#EF4444';
+  }
 
   // 사업자 대시보드 버튼
   const bizBtn = document.getElementById('my-biz-btn');
