@@ -976,9 +976,17 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 </div>
 
 <!-- Detail Sheet -->
-<div class="sh-ov" id="sh-ov" onclick="closeSheet(event)">
+<div class="sh-ov" id="sh-ov">
   <div class="sheet" id="sheet-content">
     <div class="sh-hdl"></div>
+    <!-- X 닫기 버튼 -->
+    <button onclick="closeSheet()" style="
+      position:absolute;top:12px;right:12px;z-index:10;
+      width:32px;height:32px;border-radius:50%;
+      border:none;background:rgba(0,0,0,.08);
+      font-size:16px;cursor:pointer;display:flex;
+      align-items:center;justify-content:center;
+      color:#374151;font-weight:700;line-height:1;">✕</button>
     <div class="sh-hero">
       <div class="sh-hero-top">
         <div class="sh-ico" id="sh-ico"></div>
@@ -3418,7 +3426,10 @@ function ctaClick(){
   if(sheetAcademy?.plan==='premium'&&sheetAcademy?.blog) window.open(sheetAcademy.blog,'_blank');
   else showToast('학원에 직접 문의해 주세요');
 }
-function closeSheet(e){document.getElementById('sh-ov').classList.remove('open');}
+function closeSheet(e){
+  if(e && e.target !== document.getElementById('sh-ov')) return;
+  document.getElementById('sh-ov').classList.remove('open');
+}
 
 /* ════ REVIEW ════ */
 let editingReviewIdx = null; // null=신규, 숫자=수정 중인 인덱스
