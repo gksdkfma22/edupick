@@ -1042,6 +1042,12 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 
         <div class="sh-cta-wrap">
           <button class="sh-cta" id="sh-cta" onclick="ctaClick()">블로그 / 상세보기</button>
+          <button id="sh-consult-btn" onclick="openConsultModal()" style="
+            display:none;width:100%;padding:14px;border-radius:13px;
+            border:1.5px solid #176ED3;background:#fff;color:#176ED3;
+            font-size:15px;font-weight:800;font-family:inherit;cursor:pointer;margin-top:8px;">
+            📅 상담 예약하기
+          </button>
         </div>
       </div>
       <!-- 비로그인 오버레이 -->
@@ -2114,9 +2120,9 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   <!-- 예약 (프리미엄 전용) -->
   <div class="db-sec">
     <div class="db-sh">📅 상담 문의 <span class="pro-tag">프리미엄</span></div>
-    <div class="locked" id="rsv-sec" style="min-height:80px;">
+    <div id="rsv-sec" style="min-height:80px;">
       <div id="db-rsv-list" style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">
-        아직 들어온 문의가 없어요
+        아직 들어온 상담 예약이 없어요
       </div>
     </div>
   </div>
@@ -3343,6 +3349,9 @@ function openSheet(id){
   if(a.plan==='premium'&&a.blog){cta.textContent='블로그 / 상세보기';cta.className='sh-cta o';}
   else if(a.plan==='basic'){cta.textContent='학원 문의하기';cta.className='sh-cta';}
   else{cta.textContent='정보 준비 중';cta.className='sh-cta';}
+  // 프리미엄 학원만 상담 예약 버튼 표시
+  const consultBtn = document.getElementById('sh-consult-btn');
+  if(consultBtn) consultBtn.style.display = a.plan==='premium' ? 'block' : 'none';
   // 관심수 표시
   const wishCountEl = document.getElementById('sh-wish-count');
   if(wishCountEl){
@@ -3807,29 +3816,44 @@ async function loadDashboardData(){
     }
   } catch(e){ console.error('소식 로딩 오류:', e); }
 
-  // 5. 문의 목록 (reservations)
+  // 5. 상담 예약 목록
   try {
     const { data: rsvs } = await sb.from('reservations')
       .select('*')
       .eq('academy_id', aid)
-      .order('created_at', { ascending: false })
-      .limit(10);
+      .order('desired_at', { ascending: true })
+      .limit(20);
     const rsvEl = document.getElementById('db-rsv-list');
     if(rsvEl){
       if(!rsvs?.length){
-        rsvEl.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">아직 들어온 문의가 없어요</div>';
+        rsvEl.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;font-size:13px;">아직 들어온 상담 예약이 없어요</div>';
       } else {
-        rsvEl.innerHTML = rsvs.map(r=>`
-          <div class="rsv-c">
-            <div>
-              <div class="rsv-nm">${r.name||'익명'}</div>
-              <div class="rsv-tm">${r.created_at?.slice(0,10)||''}</div>
+        rsvEl.innerHTML = rsvs.map(r => {
+          const dt = r.desired_at ? new Date(r.desired_at).toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : '-';
+          const isDone = r.status === 'done';
+          return `
+          <div style="padding:12px 0;border-bottom:1px solid #F0F1F6;display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">
+            <div style="flex:1;">
+              <div style="font-size:14px;font-weight:800;color:#1A1A2E;">${r.parent_name||'익명'} ${r.child_grade?`(${r.child_grade})`:''}</div>
+              <div style="font-size:12px;color:#6B7280;margin-top:2px;">📞 ${r.phone||'-'}</div>
+              <div style="font-size:12px;color:#176ED3;font-weight:700;margin-top:2px;">📅 희망일시: ${dt}</div>
+              ${r.memo ? `<div style="font-size:12px;color:#374151;margin-top:4px;background:#F8F9FB;padding:6px 8px;border-radius:6px;">💬 ${r.memo}</div>` : ''}
             </div>
-            <span class="rsv-b ${r.status==='done'?'done':'new'}">${r.status==='done'?'완료':'신규'}</span>
-          </div>`).join('');
+            <div style="flex-shrink:0;display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+              <span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:8px;
+                background:${isDone?'#D1FAE5':'#FEF3C7'};color:${isDone?'#065F46':'#92400E'};">
+                ${isDone?'✅ 완료':'🆕 신규'}
+              </span>
+              ${!isDone ? `<button onclick="markRsvDone('${r.id}')" style="
+                font-size:11px;padding:4px 8px;border-radius:6px;
+                border:1px solid #E0E4EF;background:#fff;cursor:pointer;
+                font-family:inherit;color:#374151;">완료처리</button>` : ''}
+            </div>
+          </div>`;
+        }).join('');
       }
     }
-  } catch(e){ console.error('문의 로딩 오류:', e); }
+  } catch(e){ console.error('예약 로딩 오류:', e); }
 
   // 6. 학원 정보 표시
   const ac = currentAcademy;
@@ -4139,6 +4163,74 @@ async function submitInfoRequest(){
   } catch(e){
     showToast('전송 실패: ' + (e.message || '다시 시도해주세요'));
   }
+}
+
+
+/* ════ 상담 예약 ════ */
+function openConsultModal(){
+  if(!currentUser){ openLoginModal(); return; }
+  const a = sheetAcademy;
+  if(!a){ showToast('학원 정보를 먼저 선택해주세요'); return; }
+  const nameEl = document.getElementById('consult-academy-name');
+  if(nameEl) nameEl.textContent = `📍 ${a.name}에 상담을 신청해요`;
+  // 날짜 기본값: 내일
+  const dt = document.getElementById('consult-datetime');
+  if(dt){
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    tomorrow.setHours(10, 0, 0, 0);
+    dt.value = tomorrow.toISOString().slice(0, 16);
+  }
+  document.getElementById('consult-name').value = '';
+  document.getElementById('consult-phone').value = '';
+  document.getElementById('consult-memo').value = '';
+  openModal('consult');
+}
+
+async function submitConsult(){
+  const a       = sheetAcademy;
+  const name    = document.getElementById('consult-name')?.value?.trim();
+  const phone   = document.getElementById('consult-phone')?.value?.trim();
+  const dt      = document.getElementById('consult-datetime')?.value;
+  const grade   = document.getElementById('consult-grade')?.value;
+  const memo    = document.getElementById('consult-memo')?.value?.trim();
+
+  if(!name)  { showToast('성함을 입력해주세요'); return; }
+  if(!phone) { showToast('연락처를 입력해주세요'); return; }
+  if(!dt)    { showToast('희망 상담 일시를 선택해주세요'); return; }
+  if(!sb || !a){ showToast('다시 시도해주세요'); return; }
+
+  try {
+    const { error } = await sb.from('reservations').insert({
+      academy_id:   a.id,
+      user_id:      currentUser?.id || null,
+      parent_name:  name,
+      phone,
+      desired_at:   new Date(dt).toISOString(),
+      child_grade:  grade || '',
+      memo:         memo  || '',
+      status:       'pending',
+    });
+    if(error) throw error;
+    showToast('✅ 상담 예약이 신청됐어요! 학원에서 연락드릴 거예요.');
+    closeModal('consult');
+  } catch(e){
+    showToast('신청 실패: ' + (e.message || '다시 시도해주세요'));
+  }
+}
+
+
+/* ════ 예약 완료 처리 ════ */
+async function markRsvDone(rsvId){
+  if(!sb) return;
+  try {
+    const { error } = await sb.from('reservations')
+      .update({ status: 'done' })
+      .eq('id', rsvId);
+    if(error) throw error;
+    showToast('✅ 완료 처리됐어요!');
+    loadDashboardData();
+  } catch(e){ showToast('오류: ' + e.message); }
 }
 
 /* ════ 시간표 관리 ════ */
@@ -5722,6 +5814,47 @@ function completePay(){
     <div class="modal-btns">
       <button class="mb-cancel" onclick="closeModal('nickname')">나중에</button>
       <button class="mb-save" onclick="saveNickname()">저장</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ════ 상담 예약 모달 ════ -->
+<div class="modal-ov" id="modal-consult" onclick="closeModal('consult',event)">
+  <div class="modal-box" style="max-height:85vh;overflow-y:auto;">
+    <div class="modal-title">📅 상담 예약</div>
+    <p style="font-size:13px;color:#6B7280;margin-bottom:16px;line-height:1.6;" id="consult-academy-name">
+      학원에 상담을 신청해요
+    </p>
+    <div class="mfg"><label>학부모 성함 *</label>
+      <input type="text" id="consult-name" placeholder="홍길동"></div>
+    <div class="mfg"><label>연락처 *</label>
+      <input type="tel" id="consult-phone" placeholder="010-0000-0000"></div>
+    <div class="mfg"><label>희망 상담 일시 *</label>
+      <input type="datetime-local" id="consult-datetime"></div>
+    <div class="mfg"><label>자녀 학년</label>
+      <select id="consult-grade">
+        <option value="">선택해주세요</option>
+        <option>유아</option>
+        <option>초등 1-2학년</option>
+        <option>초등 3-4학년</option>
+        <option>초등 5-6학년</option>
+        <option>중등 1학년</option>
+        <option>중등 2학년</option>
+        <option>중등 3학년</option>
+        <option>고등 1학년</option>
+        <option>고등 2학년</option>
+        <option>고등 3학년</option>
+      </select>
+    </div>
+    <div class="mfg"><label>문의 내용</label>
+      <textarea id="consult-memo" placeholder="궁금한 점이나 요청사항을 적어주세요"
+        style="width:100%;padding:10px;border:1.5px solid #E0E4EF;border-radius:10px;
+        font-size:14px;font-family:inherit;resize:none;height:80px;"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('consult')">취소</button>
+      <button class="mb-save" onclick="submitConsult()">예약 신청</button>
     </div>
   </div>
 </div>
