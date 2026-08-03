@@ -1546,6 +1546,16 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         </div>
         <span style="color:#C0C8D8;font-size:18px;">›</span>
       </div>
+      <div onclick="goAdminInfoRequests()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:22px;">📝</span>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:#1A1A2E;">정보 수정 요청</div>
+            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">원장님 학원 정보 수정 요청 처리</div>
+          </div>
+        </div>
+        <span style="color:#C0C8D8;font-size:18px;">›</span>
+      </div>
       <div onclick="goAdminUsers()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;cursor:pointer;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span style="font-size:22px;">👥</span>
@@ -1583,9 +1593,21 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         </div>
       </div>
     </div>
-    <p style="font-size:13px;color:#8A94A6;margin-bottom:20px;">
-      승인 완료 시 가입 이메일로 알려드려요
-    </p>
+
+    <!-- 학원 정보 수정 요청 안내 -->
+    <div style="background:#EEF5FF;border-radius:14px;padding:16px;width:100%;max-width:320px;margin-bottom:16px;text-align:left;">
+      <div style="font-size:13px;font-weight:800;color:#176ED3;margin-bottom:6px;">💡 학원 정보가 다른가요?</div>
+      <div style="font-size:12px;color:#374151;line-height:1.6;">
+        등록된 학원명, 과목, 주소가 실제와 다르다면 아래 버튼으로 수정을 요청해주세요. 관리자가 확인 후 반영해드립니다.
+      </div>
+    </div>
+
+    <button onclick="openInfoRequestModal()" style="
+      padding:13px 28px;border-radius:12px;border:none;
+      background:#176ED3;color:#fff;font-size:14px;font-weight:800;
+      cursor:pointer;font-family:inherit;margin-bottom:12px;width:100%;max-width:320px;">
+      📝 학원 정보 수정 요청하기
+    </button>
     <button onclick="checkApprovalStatus()" style="
       padding:13px 28px;border-radius:12px;border:1.5px solid #176ED3;
       background:#fff;color:#176ED3;font-size:14px;font-weight:800;
@@ -1598,6 +1620,36 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       cursor:pointer;font-family:inherit;width:100%;max-width:320px;">
       로그아웃
     </button>
+  </div>
+</div>
+
+<!-- ════ 학원 정보 수정 요청 모달 ════ -->
+<div class="modal-ov" id="modal-info-request" onclick="closeModal('info-request',event)">
+  <div class="modal-box" style="max-height:85vh;overflow-y:auto;">
+    <div class="modal-title">📝 학원 정보 수정 요청</div>
+    <p style="font-size:13px;color:#6B7280;margin-bottom:16px;line-height:1.6;">
+      실제 학원 정보를 입력해주세요.<br>관리자가 확인 후 수정해드립니다.
+    </p>
+    <div class="mfg"><label>학원명 *</label><input type="text" id="ir-name" placeholder="실제 학원명을 입력해주세요"></div>
+    <div class="mfg"><label>과목</label>
+      <select id="ir-subject">
+        <option value="">선택해주세요</option>
+        <option>영어</option><option>수학</option><option>국어</option>
+        <option>논술</option><option>입시</option><option>과학</option>
+        <option>컴퓨터</option><option>예체능</option><option>기타</option>
+      </select>
+    </div>
+    <div class="mfg"><label>학원 주소</label><input type="text" id="ir-address" placeholder="정확한 주소를 입력해주세요"></div>
+    <div class="mfg"><label>연락처</label><input type="tel" id="ir-phone" placeholder="010-0000-0000"></div>
+    <div class="mfg"><label>월 수강료 (원)</label><input type="number" id="ir-price" placeholder="예) 180000"></div>
+    <div class="mfg"><label>추가 요청사항</label>
+      <textarea id="ir-memo" placeholder="기타 수정 요청사항을 자유롭게 적어주세요"
+        style="width:100%;padding:10px;border:1.5px solid #E0E4EF;border-radius:10px;font-size:14px;font-family:inherit;resize:none;height:80px;"></textarea>
+    </div>
+    <div class="modal-btns">
+      <button class="mb-cancel" onclick="closeModal('info-request')">취소</button>
+      <button class="mb-save" onclick="submitInfoRequest()">요청 보내기</button>
+    </div>
   </div>
 </div>
 
@@ -4037,6 +4089,58 @@ function requireNickname(callback){
   }
 }
 
+
+/* ════ 학원 정보 수정 요청 ════ */
+function openInfoRequestModal(){
+  // 현재 학원 정보로 미리 채우기
+  const a = currentAcademy;
+  if(a){
+    const nameEl = document.getElementById('ir-name');
+    const addrEl = document.getElementById('ir-address');
+    const phoneEl = document.getElementById('ir-phone');
+    const priceEl = document.getElementById('ir-price');
+    if(nameEl)  nameEl.value  = a.name    || '';
+    if(addrEl)  addrEl.value  = a.address || '';
+    if(phoneEl) phoneEl.value = a.phone   || '';
+    if(priceEl) priceEl.value = a.price   || '';
+  }
+  openModal('info-request');
+}
+
+async function submitInfoRequest(){
+  if(!sb || !currentUser){ showToast('로그인이 필요해요'); return; }
+
+  const name    = document.getElementById('ir-name')?.value?.trim();
+  const subject = document.getElementById('ir-subject')?.value;
+  const address = document.getElementById('ir-address')?.value?.trim();
+  const phone   = document.getElementById('ir-phone')?.value?.trim();
+  const price   = document.getElementById('ir-price')?.value?.trim();
+  const memo    = document.getElementById('ir-memo')?.value?.trim();
+
+  if(!name){ showToast('학원명을 입력해주세요'); return; }
+
+  try {
+    const { error } = await sb.from('info_requests').insert({
+      user_id:      currentUser.id,
+      user_email:   currentUser.email,
+      academy_id:   currentAcademy?.id || null,
+      academy_name: name,
+      subject:      subject || '',
+      address:      address || '',
+      phone:        phone   || '',
+      price:        price ? parseInt(price) : null,
+      memo:         memo   || '',
+      status:       'pending',
+    });
+    if(error) throw error;
+
+    showToast('✅ 수정 요청이 전송됐어요! 관리자가 확인 후 반영해드립니다.');
+    closeModal('info-request');
+  } catch(e){
+    showToast('전송 실패: ' + (e.message || '다시 시도해주세요'));
+  }
+}
+
 /* ════ 시간표 관리 ════ */
 let timetableList = []; // 수업 목록
 
@@ -4747,6 +4851,102 @@ async function saveAdminEdit(){
   } catch(e){
     showToast('저장 실패: ' + (e.message || '다시 시도해주세요'));
   }
+}
+
+
+/* ════ 관리자: 정보 수정 요청 처리 ════ */
+async function goAdminInfoRequests(){
+  if(!requireRole(['admin'])) return;
+  go('page-admin');
+  setTimeout(async()=>{
+    const list = document.getElementById('admin-list');
+    const tabs = document.getElementById('academy-filter-tabs');
+    if(tabs) tabs.style.display = 'none';
+    list.innerHTML = '<div style="text-align:center;padding:20px;color:#8A94A6;">로딩 중...</div>';
+
+    try {
+      const { data, error } = await sb.from('info_requests')
+        .select('*')
+        .eq('status', 'pending')
+        .order('created_at', { ascending: false });
+
+      if(error) throw error;
+      if(!data?.length){
+        list.innerHTML = '<div style="text-align:center;padding:40px;color:#8A94A6;"><div style="font-size:32px;margin-bottom:12px;">📭</div><div>대기중인 수정 요청이 없어요</div></div>';
+        return;
+      }
+
+      list.innerHTML = data.map(r => `
+        <div class="admin-card" style="border-left:3px solid #176ED3;">
+          <div class="admin-card-top">
+            <div>
+              <div class="admin-name">${r.academy_name || '-'}</div>
+              <div style="font-size:11px;color:#6B7280;margin-top:2px;">
+                📧 ${r.user_email || '-'} · ${r.created_at?.slice(0,10)||''}
+              </div>
+            </div>
+            <span class="admin-status pending">⏳ 대기중</span>
+          </div>
+          <div class="admin-info" style="margin-top:8px;line-height:2;">
+            ${r.subject ? `📚 과목: <strong>${r.subject}</strong><br>` : ''}
+            ${r.address ? `📍 주소: <strong>${r.address}</strong><br>` : ''}
+            ${r.phone   ? `📞 연락처: <strong>${r.phone}</strong><br>` : ''}
+            ${r.price   ? `💰 수강료: <strong>${Number(r.price).toLocaleString()}원</strong><br>` : ''}
+            ${r.memo    ? `💬 요청사항: <strong>${r.memo}</strong>` : ''}
+          </div>
+          <div class="admin-btns" style="margin-top:10px;">
+            <button class="admin-btn-approve" onclick="applyInfoRequest('${r.id}','${r.academy_id||''}','${r.academy_name}','${r.subject||''}','${r.address||''}','${r.phone||''}',${r.price||0})">
+              ✅ 반영 및 승인
+            </button>
+            <button class="admin-btn-reject" onclick="rejectInfoRequest('${r.id}')">
+              ❌ 거절
+            </button>
+          </div>
+        </div>
+      `).join('');
+    } catch(e){
+      list.innerHTML = `<div style="text-align:center;padding:30px;color:#EF4444;">오류: ${e.message}</div>`;
+    }
+  }, 150);
+}
+
+async function applyInfoRequest(reqId, academyId, name, subject, address, phone, price){
+  if(!confirm('수정 내용을 학원 정보에 반영하고 승인할까요?')) return;
+  try {
+    // academyId가 있으면 해당 학원 정보 업데이트
+    if(academyId && academyId !== 'null'){
+      const updateData = {};
+      if(name)    updateData.name    = name;
+      if(subject) updateData.subject = subject;
+      if(address) updateData.address = address;
+      if(phone)   updateData.phone   = phone;
+      if(price)   updateData.price   = parseInt(price);
+
+      const { error: updateErr } = await sb.from('academies')
+        .update(updateData)
+        .eq('id', academyId);
+      if(updateErr) throw updateErr;
+    }
+
+    // 요청 상태 완료로 변경
+    const { error } = await sb.from('info_requests')
+      .update({ status: 'approved' })
+      .eq('id', reqId);
+    if(error) throw error;
+
+    showToast('✅ 정보가 반영됐어요!');
+    goAdminInfoRequests();
+  } catch(e){ showToast('오류: ' + e.message); }
+}
+
+async function rejectInfoRequest(reqId){
+  if(!confirm('수정 요청을 거절할까요?')) return;
+  const { error } = await sb.from('info_requests')
+    .update({ status: 'rejected' })
+    .eq('id', reqId);
+  if(error){ showToast('오류: ' + error.message); return; }
+  showToast('거절됐습니다.');
+  goAdminInfoRequests();
 }
 
 /* ════ 관리자 페이지 ════ */
