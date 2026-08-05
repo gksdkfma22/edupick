@@ -1064,8 +1064,8 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
           <div class="bl-ico">🔒</div>
           <h4>로그인 후 확인하세요</h4>
           <p>수강료·연락처·상세 정보는<br>가입 회원에게만 공개됩니다</p>
-          <button class="bl-btn" onclick="closeSheet(event);go('page-user-signup')">무료 가입하기</button>
-          <button class="bl-btn2" onclick="closeSheet(event);openLoginModal()">이미 계정이 있어요</button>
+          <button class="bl-btn" onclick="closeSheet();go('page-user-signup')">무료 가입하기</button>
+          <button class="bl-btn2" onclick="closeSheet();openLoginModal()">이미 계정이 있어요</button>
         </div>
       </div>
     </div>
@@ -2794,6 +2794,12 @@ function go(id){
   if(id==='page-admin-dashboard') loadAdminDashboard();
 }
 function goBack(){
+  // 시트가 열려있으면 먼저 닫기
+  const shOv = document.getElementById('sh-ov');
+  if(shOv && shOv.classList.contains('open')){
+    closeSheet();
+    return;
+  }
   const prev=pageHistory.pop();
   go(prev||'page-home');
 }
@@ -3426,8 +3432,7 @@ function ctaClick(){
   if(sheetAcademy?.plan==='premium'&&sheetAcademy?.blog) window.open(sheetAcademy.blog,'_blank');
   else showToast('학원에 직접 문의해 주세요');
 }
-function closeSheet(e){
-  if(e && e.target !== document.getElementById('sh-ov')) return;
+function closeSheet(){
   document.getElementById('sh-ov').classList.remove('open');
 }
 
