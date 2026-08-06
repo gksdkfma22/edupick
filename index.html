@@ -3193,10 +3193,13 @@ function updateWishCount(id){
   if(a) a.wish_count = next;
 }
 function updateWishBadge(){
-  const cnt=wishSet.size;
-  const badge=document.getElementById('wish-badge');
-  badge.style.display=cnt?'block':'none';
-  badge.textContent=cnt;
+  const cnt = wishSet.size;
+  ['wish-badge','wish-badge2'].forEach(id => {
+    const badge = document.getElementById(id);
+    if(!badge) return;
+    badge.style.display = cnt ? 'block' : 'none';
+    badge.textContent = cnt;
+  });
 }
 function goWish(){
   if(wishSet.size===0){showToast('관심 학원이 없어요 ❤️');return;}
@@ -3246,6 +3249,7 @@ function renderWishList(){
 }
 function removeWish(id,btn){
   wishSet.delete(id);
+  saveWishToLocal(); // ← 이게 없어서 새로고침 시 복구됐던 문제
   updateWishBadge();
   renderWishList();
   showToast('관심을 취소했습니다');
