@@ -890,6 +890,18 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   <div id="map-wrap">
     <div id="map"></div>
     <button class="gps-fab" onclick="getGPS()">🛰</button>
+    <!-- 내 주변 학원 수 칩 (지도 상단 중앙) -->
+    <div id="nearby-chip" onclick="switchView('list')" style="
+      display:none;position:absolute;top:12px;left:50%;transform:translateX(-50%);
+      z-index:500;background:#fff;border-radius:20px;
+      padding:8px 16px;box-shadow:0 2px 12px rgba(0,0,0,.18);
+      font-size:13px;font-weight:800;color:#176ED3;
+      cursor:pointer;white-space:nowrap;
+      display:flex;align-items:center;gap:6px;">
+      <span>📍</span>
+      <span id="nearby-chip-text">내 주변 학원 목록보기</span>
+      <span style="font-size:11px;color:#8A94A6;">›</span>
+    </div>
     <!-- 지도 하단 배너 슬라이더 -->
     <div class="map-banner-wrap" id="map-banner">
       <div class="map-banner-track" id="banner-track">
@@ -2666,6 +2678,7 @@ async function loadData(){
         if(map){ map.relayout(); }
         if(clusterer){ clusterer.redraw(); }
       }catch(e){}
+      updateNearbyChip(); // 칩 업데이트
     }, 300);
     return Promise.resolve();
   }
@@ -3131,7 +3144,33 @@ function getGPS(){
     userMarker.setMap(map);
     if(map){ map.setCenter(locPos); map.setLevel(5); }
     render();
+    // 내 주변 학원 칩 표시
+    updateNearbyChip();
   },()=>alert('위치 권한을 허용해 주세요.'));
+}
+
+
+/* ════ 내 주변 학원 칩 ════ */
+function updateNearbyChip(){
+  if(!userLat || !userLng || !DATA.length) return;
+
+  // 5km 이내 학원 수 계산
+  const radius = 5;
+  const nearbyCount = DATA.filter(a => {
+    const d = km(userLat, userLng, a.lat, a.lng);
+    return d <= radius;
+  }).length;
+
+  const chip = document.getElementById('nearby-chip');
+  const chipText = document.getElementById('nearby-chip-text');
+  if(!chip || !chipText) return;
+
+  if(nearbyCount > 0){
+    chipText.textContent = `내 주변 ${radius}km · ${nearbyCount}개 학원`;
+    chip.style.display = 'flex';
+  } else {
+    chip.style.display = 'none';
+  }
 }
 
 /* ════ 찜 기능 ════ */
