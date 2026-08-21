@@ -837,28 +837,28 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
       <div class="chip-ico" style="background:#EEF4FF;font-size:22px;">📚</div><div class="chip-lbl">전체</div>
     </button>
     <button class="chip" onclick="setFilter('영어',this)">
-      <div class="chip-ico" style="background:#EEF6FF;font-size:22px;font-weight:900;color:#2563EB;font-family:serif;"><img src="${ICONS[\'영어\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">영어</div>
+      <div class="chip-ico" style="background:#EEF6FF;display:flex;align-items:center;justify-content:center;"><img id="cico-영어" width="28" height="28" style="object-fit:contain;" alt="영어"></div><div class="chip-lbl">영어</div>
     </button>
     <button class="chip" onclick="setFilter('수학',this)">
-      <div class="chip-ico" style="background:#FFFBEB;font-size:22px;font-weight:900;color:#D97706;"><img src="${ICONS[\'수학\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">수학</div>
+      <div class="chip-ico" style="background:#FFFBEB;display:flex;align-items:center;justify-content:center;"><img id="cico-수학" width="28" height="28" style="object-fit:contain;" alt="수학"></div><div class="chip-lbl">수학</div>
     </button>
     <button class="chip" onclick="setFilter('국어',this)">
-      <div class="chip-ico" style="background:#F0FDF4;font-size:22px;font-weight:900;color:#16A34A;"><img src="${ICONS[\'국어\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">국어</div>
+      <div class="chip-ico" style="background:#F0FDF4;display:flex;align-items:center;justify-content:center;"><img id="cico-국어" width="28" height="28" style="object-fit:contain;" alt="국어"></div><div class="chip-lbl">국어</div>
     </button>
     <button class="chip" onclick="setFilter('논술',this)">
-      <div class="chip-ico" style="background:#FFF8EE;font-size:22px;"><img src="${ICONS[\'논술\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">논술</div>
+      <div class="chip-ico" style="background:#FFF8EE;display:flex;align-items:center;justify-content:center;"><img id="cico-논술" width="28" height="28" style="object-fit:contain;" alt="논술"></div><div class="chip-lbl">논술</div>
     </button>
     <button class="chip" onclick="setFilter('입시',this)">
-      <div class="chip-ico" style="background:#FFF0F0;font-size:22px;"><img src="${ICONS[\'입시\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">입시</div>
+      <div class="chip-ico" style="background:#FFF0F0;display:flex;align-items:center;justify-content:center;"><img id="cico-입시" width="28" height="28" style="object-fit:contain;" alt="입시"></div><div class="chip-lbl">입시</div>
     </button>
     <button class="chip" onclick="setFilter('과학',this)">
-      <div class="chip-ico" style="background:#F5F3FF;font-size:22px;font-weight:900;color:#7C3AED;"><img src="${ICONS[\'과학\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">과학</div>
+      <div class="chip-ico" style="background:#F5F3FF;display:flex;align-items:center;justify-content:center;"><img id="cico-과학" width="28" height="28" style="object-fit:contain;" alt="과학"></div><div class="chip-lbl">과학</div>
     </button>
     <button class="chip" onclick="setFilter('컴퓨터',this)">
-      <div class="chip-ico" style="background:#EFF6FF;font-size:22px;"><img src="${ICONS[\'컴퓨터\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">컴퓨터</div>
+      <div class="chip-ico" style="background:#EFF6FF;display:flex;align-items:center;justify-content:center;"><img id="cico-컴퓨터" width="28" height="28" style="object-fit:contain;" alt="컴퓨터"></div><div class="chip-lbl">컴퓨터</div>
     </button>
     <button class="chip" onclick="setFilter('예체능',this)">
-      <div class="chip-ico" style="background:#FFF0F9;font-size:22px;"><img src="${ICONS[\'예체능\']}" style="width:28px;height:28px;object-fit:contain;" onerror="this.style.display=\'none\'"></div><div class="chip-lbl">예체능</div>
+      <div class="chip-ico" style="background:#FFF0F9;display:flex;align-items:center;justify-content:center;"><img id="cico-예체능" width="28" height="28" style="object-fit:contain;" alt="예체능"></div><div class="chip-lbl">예체능</div>
     </button>
     <button class="chip" onclick="setFilter('기타',this)">
       <div class="chip-ico" style="background:#F8F9FA;font-size:20px;font-weight:900;color:#6B7280;">···</div><div class="chip-lbl">기타</div>
@@ -2609,7 +2609,7 @@ async function saveReviewToDB(academyId, stars, nick, body){
 const GAS_URL = '여기에_Apps_Script_URL_붙여넣기';
 
 /* ════ 상수 ════ */
-const ICONS  = {영어:"A",수학:"π",국어:"가",음악:"♪",미술:"✏",체육:"⚽",예체능:"🎨",과학:"⚗",논술:"✍️",컴퓨터:"💻",입시:"🎯",입시:"🎯",기타:"···"};
+const ICONS = {"영어":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%2010C8%208.3%209.3%207%2011%207H49C50.7%207%2052%208.3%2052%2010V36C52%2037.7%2050.7%2039%2049%2039H36L30%2046L24%2039H11C9.3%2039%208%2037.7%208%2036V10Z%22%20stroke%3D%22%237C3AED%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Ctext%20x%3D%2222%22%20y%3D%2230%22%20font-size%3D%2220%22%20font-weight%3D%22bold%22%20fill%3D%22%237C3AED%22%20font-family%3D%22sans-serif%22%3EA%3C/text%3E%3C/svg%3E","수학":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M8%2046%20L22%2016%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M22%2016%20H52%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22/%3E%3Ctext%20x%3D%2230%22%20y%3D%2244%22%20font-size%3D%2218%22%20font-weight%3D%22bold%22%20fill%3D%22%232563EB%22%20font-family%3D%22sans-serif%22%3Ex%3C/text%3E%3C/svg%3E","국어":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M10%2012C10%2010.3%2011.3%209%2013%209H47C48.7%209%2050%2010.3%2050%2012V42C50%2043.7%2048.7%2045%2047%2045H13C11.3%2045%2010%2043.7%2010%2042V12Z%22%20stroke%3D%22%23F05A28%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M30%209V45%22%20stroke%3D%22%23F05A28%22%20stroke-width%3D%223%22/%3E%3Ctext%20x%3D%2214%22%20y%3D%2232%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20fill%3D%22%23F05A28%22%20font-family%3D%22sans-serif%22%3E%EA%B0%80%3C/text%3E%3C/svg%3E","논술":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20x%3D%228%22%20y%3D%226%22%20width%3D%2234%22%20height%3D%2242%22%20rx%3D%223%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M16%2018H34%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M16%2026H34%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M16%2034H26%22%20stroke%3D%22%232563EB%22%20stroke-width%3D%222.5%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M36%2036L50%2022L54%2026L40%2040L34%2042L36%2036Z%22%20fill%3D%22%232563EB%22/%3E%3C/svg%3E","입시":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20x%3D%2210%22%20y%3D%2226%22%20width%3D%2240%22%20height%3D%2210%22%20rx%3D%225%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M30%208L8%2026H52L30%208Z%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M44%2036V46%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M38%2046H50%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E","과학":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cpath%20d%3D%22M24%208H36V26L46%2046H14L24%2026V8Z%22%20stroke%3D%22%2310B981%22%20stroke-width%3D%223%22%20stroke-linejoin%3D%22round%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M20%2036H40%22%20stroke%3D%22%2310B981%22%20stroke-width%3D%222%22/%3E%3Ccircle%20cx%3D%2226%22%20cy%3D%2216%22%20r%3D%222%22%20fill%3D%22%2310B981%22/%3E%3Ccircle%20cx%3D%2234%22%20cy%3D%2211%22%20r%3D%221.5%22%20fill%3D%22%2310B981%22/%3E%3C/svg%3E","사회":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2224%22%20r%3D%2216%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Cellipse%20cx%3D%2230%22%20cy%3D%2224%22%20rx%3D%228%22%20ry%3D%2216%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%222.5%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M14%2024H46%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%222.5%22/%3E%3Cpath%20d%3D%22M30%2044V50%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22/%3E%3Cpath%20d%3D%22M18%2050H42%22%20stroke%3D%22%23F59E0B%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E","컴퓨터":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Crect%20x%3D%226%22%20y%3D%228%22%20width%3D%2248%22%20height%3D%2234%22%20rx%3D%224%22%20stroke%3D%22%230D9488%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Cpath%20d%3D%22M30%2042V52%22%20stroke%3D%22%230D9488%22%20stroke-width%3D%223%22/%3E%3Cpath%20d%3D%22M18%2052H42%22%20stroke%3D%22%230D9488%22%20stroke-width%3D%223%22%20stroke-linecap%3D%22round%22/%3E%3Ctext%20x%3D%2214%22%20y%3D%2232%22%20font-size%3D%2214%22%20font-weight%3D%22bold%22%20fill%3D%22%230D9488%22%20font-family%3D%22monospace%22%3E%26lt%3B/%26gt%3B%3C/text%3E%3C/svg%3E","예체능":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%2226%22%20cy%3D%2230%22%20r%3D%2218%22%20stroke%3D%22%23F43F5E%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Ccircle%20cx%3D%2220%22%20cy%3D%2224%22%20r%3D%223%22%20fill%3D%22%23F43F5E%22/%3E%3Ccircle%20cx%3D%2232%22%20cy%3D%2222%22%20r%3D%223%22%20fill%3D%22%23F43F5E%22/%3E%3Ccircle%20cx%3D%2218%22%20cy%3D%2234%22%20r%3D%223%22%20fill%3D%22%23F43F5E%22/%3E%3Cpath%20d%3D%22M38%2018L52%2032%22%20stroke%3D%22%23F43F5E%22%20stroke-width%3D%223.5%22%20stroke-linecap%3D%22round%22/%3E%3C/svg%3E","기타":"data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2060%2060%22%20fill%3D%22none%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Ccircle%20cx%3D%2230%22%20cy%3D%2230%22%20r%3D%2222%22%20stroke%3D%22%2394A3B8%22%20stroke-width%3D%223%22%20fill%3D%22none%22/%3E%3Ctext%20x%3D%2216%22%20y%3D%2237%22%20font-size%3D%2216%22%20font-weight%3D%22bold%22%20fill%3D%22%2394A3B8%22%20font-family%3D%22sans-serif%22%3E%C2%B7%C2%B7%C2%B7%3C/text%3E%3C/svg%3E"};
 const COLORS = {영어:"#EEF6FF",수학:"#FFFBEB",국어:"#F0FDF4",음악:"#FFF0F9",미술:"#FFF7ED",체육:"#ECFDF5",예체능:"#FCE7F3",과학:"#F5F3FF",논술:"#FFF8EE",컴퓨터:"#EFF6FF",입시:"#FFF0F0",입시:"#FFF0F0",기타:"#F8F9FA"};
 const PLAN_LABELS = {free:"무료",basic:"베이직",premium:"⭐ 프리미엄"};
 const CACHE_KEY  = 'edupick_data';
@@ -2832,7 +2832,7 @@ function getSubjectIcon(subject, size){
 function initChipIcons(){
   const subjects = ['영어','수학','국어','논술','입시','과학','컴퓨터','예체능'];
   subjects.forEach(s => {
-    const el = document.getElementById('chip-icon-' + s);
+    const el = document.getElementById('cico-' + s);
     if(el && ICONS[s]) el.src = ICONS[s];
   });
 }
@@ -2853,7 +2853,7 @@ function initKakaoMap(){
       map: map,
       averageCenter: true,
       minLevel: 5,
-      disableClickZoom: false,
+      disableClickZoom: true,
       styles: [{
         width:'40px', height:'40px',
         background:'rgba(23,110,211,.85)',
