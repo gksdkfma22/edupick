@@ -891,15 +891,15 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
     <div id="map"></div>
     <button class="gps-fab" onclick="getGPS()">🛰</button>
     <!-- 내 주변 학원 수 칩 (지도 상단 중앙) -->
-    <div id="nearby-chip" onclick="switchView('list')" style="
+    <div id="nearby-chip" onclick="showBoundsAcademies()" style="
       display:none;position:absolute;top:12px;left:50%;transform:translateX(-50%);
       z-index:500;background:#fff;border-radius:20px;
       padding:8px 16px;box-shadow:0 2px 12px rgba(0,0,0,.18);
       font-size:13px;font-weight:800;color:#176ED3;
       cursor:pointer;white-space:nowrap;
-      display:flex;align-items:center;gap:6px;">
+      align-items:center;gap:6px;">
       <span>📍</span>
-      <span id="nearby-chip-text">내 주변 학원 목록보기</span>
+      <span id="nearby-chip-text">현재 화면 내 학원 보기</span>
       <span style="font-size:11px;color:#8A94A6;">›</span>
     </div>
     <!-- 지도 하단 배너 슬라이더 -->
@@ -2890,6 +2890,11 @@ function initKakaoMap(){
       }]
     });
 
+    // 지도 이동/줌 시 칩 카운트 자동 업데이트
+    kakao.maps.event.addListener(map, 'idle', function(){
+      updateNearbyChip();
+    });
+
     // 클러스터 클릭 → 해당 클러스터 학원만 목록 표시
     kakao.maps.event.addListener(clusterer, 'clusterclick', function(cluster){
       const markers = cluster.getMarkers();
@@ -3263,27 +3268,149 @@ function getGPS(){
 
 /* ════ 내 주변 학원 칩 ════ */
 function updateNearbyChip(){
-  if(!userLat || !userLng || !DATA.length) return;
-
-  // 5km 이내 학원 수 계산
-  const radius = 5;
-  const nearbyCount = DATA.filter(a => {
-    const d = km(userLat, userLng, a.lat, a.lng);
-    return d <= radius;
-  }).length;
+  if(!DATA.length) return;
 
   const chip = document.getElementById('nearby-chip');
   const chipText = document.getElementById('nearby-chip-text');
   if(!chip || !chipText) return;
 
-  if(nearbyCount > 0){
-    chipText.textContent = `내 주변 ${radius}km · ${nearbyCount}개 학원`;
+  let count = 0;
+
+  // 지도가 있으면 현재 화면 영역(bounds) 기준으로 계산
+  if(map){
+    try {
+      const bounds = map.getBounds();
+      const sw = bounds.getSouthWest();
+      const ne = bounds.getNorthEast();
+      count = DATA.filter(a =>
+        a.lat >= sw.getLat() && a.lat <= ne.getLat() &&
+        a.lng >= sw.getLng() && a.lng <= ne.getLng()
+      ).length;
+    } catch(e) {
+      count = DATA.length;
+    }
+  } else if(userLat && userLng) {
+    // 지도 없으면 GPS 5km 반경
+    count = DATA.filter(a => km(userLat, userLng, a.lat, a.lng) <= 5).length;
+  } else {
+    return;
+  }
+
+  if(count > 0){
+    chipText.textContent = `현재 화면 내 ${count}개 학원 보기`;
     chip.style.display = 'flex';
   } else {
     chip.style.display = 'none';
   }
 }
 
+
+
+/* ════ 현재 지도 화면 학원 목록 표시 ════ */
+function showBoundsAcademies(){
+  if(!map || !DATA.length){ switchView('list'); return; }
+
+  try {
+    const bounds = map.getBounds();
+    const sw = bounds.getSouthWest();
+    const ne = bounds.getNorthEast();
+
+    const boundsItems = DATA
+      .filter(a =>
+        a.lat >= sw.getLat() && a.lat <= ne.getLat() &&
+        a.lng >= sw.getLng() && a.lng <= ne.getLng()
+      )
+      .map(a => ({...a,
+        distKm: km(userLat, userLng, a.lat, a.lng),
+        avg: parseFloat(avgStars(a.reviews))||0
+      }))
+      .sort((a,b) => a.distKm - b.distKm);
+
+    // 목록으로 전환
+    switchView('list');
+
+    // 전체 데이터 대신 bounds 내 데이터만 표시
+    window._allItems = boundsItems;
+    curPage = 1;
+
+    const cntEl = document.getElementById('cnt');
+    if(cntEl) cntEl.textContent = boundsItems.length;
+
+    const listEl = document.getElementById('list');
+    if(!listEl) return;
+    listEl.innerHTML = '';
+
+    // 안내 배너
+    const banner = document.createElement('div');
+    banner.id = 'cluster-filter-banner';
+    banner.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#EEF5FF;border-radius:10px;margin-bottom:8px;';
+    banner.innerHTML = `
+      <div style="font-size:13px;font-weight:700;color:#176ED3;">📍 현재 화면 내 ${boundsItems.length}개 학원</div>
+      <button onclick="clearClusterFilter()" style="font-size:12px;color:#8A94A6;background:none;border:none;cursor:pointer;font-family:inherit;">전체 보기 ✕</button>
+    `;
+    listEl.appendChild(banner);
+
+    const PAGE = PAGE_SIZE || 20;
+    const paged = boundsItems.slice(0, PAGE);
+    const hasMore = boundsItems.length > PAGE;
+
+    const thumbBg = {영어:"#E8F4FF",수학:"#FFF8E8",국어:"#E8FFF0",논술:"#FFF8EE",입시:"#FFF0F0",예체능:"#FFE8F8",과학:"#F0E8FF",컴퓨터:"#EFF6FF"};
+
+    paged.forEach(a => {
+      const liked = wishSet.has(a.id);
+      const planCls = a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
+      const planLbl = a.plan==='premium'?'프리미엄':a.plan==='basic'?'베이직':'무료';
+      const firstSubj = (a.subject||'기타').split(',')[0].trim();
+      const avg = parseFloat(avgStars(a.reviews))||0;
+      const iconSrc = ICONS[firstSubj]||'';
+      const thumbHtml = a.image
+        ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.textContent='📚';">`
+        : (iconSrc ? `<img src="${iconSrc}" style="width:32px;height:32px;object-fit:contain;">` : '📚');
+      const subjBadges = (a.subject||'기타').split(',').map(s=>s.trim())
+        .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
+        .join('');
+      const el = document.createElement('div');
+      el.className = `acard ${planCls}`;
+      el.innerHTML = `
+        <div class="ac-inner">
+          <div class="ac-thumb" style="background:${thumbBg[firstSubj]||'#F0F2F8'}">${thumbHtml}</div>
+          <div class="ac-top">
+            <div class="ac-info">
+              <div class="ac-name-row">
+                <div class="ac-name">${a.name}</div>
+                <span class="plan-tag ${a.plan==='premium'?'prem':a.plan==='basic'?'basic':'free'}">${planLbl}</span>
+              </div>
+              <div class="ac-sub">📍 ${a.city} · ${subjBadges}</div>
+              ${gradeBadgesHtml(a.grade)}
+              ${a.reviews.length
+                ?`<div class="ac-stars"><span class="stars-ico">${starsHtml(avg)}</span><span class="stars-num">${avg}</span><span class="stars-cnt">(${a.reviews.length})</span></div>`
+                :`<div class="ac-stars"><span class="stars-cnt" style="font-size:11px;color:#C0C8D8">리뷰 없음</span></div>`}
+            </div>
+            <button class="heart-btn ${liked?'liked':''}" onclick="toggleHeart('${a.id}',this)" style="color:${liked?'#EF4444':'#CBD5E1'}">${liked?'❤️':'🤍'}</button>
+          </div>
+        </div>
+        <div class="ac-foot">
+          <div>
+            <div class="ac-price" style="color:${a.price?'var(--red)':'#8A94A6'}">${a.price?'월 '+a.price.toLocaleString('ko-KR')+'원':'수강료 문의'}</div>
+            <div class="ac-dist">${a.distKm}km 거리</div>
+          </div>
+          <button class="ac-btn ${a.plan==='premium'?'p':''}" onclick="openSheet('${a.id}')">상세보기</button>
+        </div>`;
+      listEl.appendChild(el);
+    });
+
+    if(hasMore){
+      const moreBtn = document.createElement('div');
+      moreBtn.id = 'load-more-btn';
+      moreBtn.style.cssText = 'text-align:center;padding:16px;';
+      moreBtn.innerHTML = `<button onclick="loadMoreItems()" style="padding:11px 28px;border-radius:12px;border:1.5px solid #E0E4EF;background:#fff;font-size:13px;font-weight:700;color:#374151;cursor:pointer;font-family:inherit;">📋 더 보기 (${boundsItems.length - PAGE}개 남음)</button>`;
+      listEl.appendChild(moreBtn);
+    }
+  } catch(e){
+    console.error('bounds 학원 표시 오류:', e);
+    switchView('list');
+  }
+}
 
 /* ════ 클러스터 필터 초기화 ════ */
 function clearClusterFilter(){
