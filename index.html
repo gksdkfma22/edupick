@@ -947,7 +947,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   </div>
   <div id="list-wrap">
     <div class="lstat">
-  총 <strong id="cnt">0</strong>개 학원
+  총 <strong id="cnt" onclick="showBoundsAcademies()" style="cursor:pointer;color:#176ED3;text-decoration:underline;text-underline-offset:2px;" title="클릭하면 현재 지도 화면 학원만 보여요">0</strong>개 학원
   <div style="display:flex;gap:4px;">
     <button class="sort-btn" id="sort-dist" onclick="setSort('dist')" style="background:#176ED3;color:#fff;padding:3px 8px;border-radius:6px;font-size:11px;">📍 가까운순</button>
     <button class="sort-btn" id="sort-rating" onclick="setSort('rating')" style="padding:3px 8px;border-radius:6px;font-size:11px;">⭐ 별점순</button>
