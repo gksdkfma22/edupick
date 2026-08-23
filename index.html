@@ -2944,7 +2944,7 @@ function initKakaoMap(){
           .join('');
         const thumbHtml = a.image
           ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.textContent='📚';">`
-          : ICONS[firstSubj]||'📚';
+          : (ICONS[firstSubj] ? `<img src="${ICONS[firstSubj]}" style="width:34px;height:34px;object-fit:contain;" alt="">` : '📚');
         const el = document.createElement('div');
         el.className = `acard ${planCls}`;
         el.innerHTML = `
@@ -3094,7 +3094,7 @@ function render(){
     const firstSubj = (a.subject||'기타').split(',')[0].trim();
     const thumbHtml = a.image
       ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.innerHTML='${ICONS[firstSubj]||"📚"}';">`
-      : ICONS[firstSubj]||'📚';
+      : (ICONS[firstSubj] ? `<img src="${ICONS[firstSubj]}" style="width:34px;height:34px;object-fit:contain;" alt="">` : '📚');
     // 과목 뱃지 HTML
     const subjBadges = (a.subject||'기타').split(',').map(s=>s.trim())
       .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
@@ -3365,7 +3365,7 @@ function showBoundsAcademies(){
       const iconSrc = ICONS[firstSubj]||'';
       const thumbHtml = a.image
         ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.textContent='📚';">`
-        : (iconSrc ? `<img src="${iconSrc}" style="width:32px;height:32px;object-fit:contain;">` : '📚');
+        : (iconSrc ? `<img src="${iconSrc}" style="width:34px;height:34px;object-fit:contain;" alt="">` : '📚');
       const subjBadges = (a.subject||'기타').split(',').map(s=>s.trim())
         .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
         .join('');
@@ -4207,7 +4207,7 @@ function loadMoreItems(){
     const dist      = a.distKm !== undefined ? a.distKm : km(userLat, userLng, a.lat, a.lng);
     const thumbHtml = a.image
       ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.innerHTML='${ICONS[firstSubj]||"📚"}';">`
-      : ICONS[firstSubj]||'📚';
+      : (ICONS[firstSubj] ? `<img src="${ICONS[firstSubj]}" style="width:34px;height:34px;object-fit:contain;" alt="">` : '📚');
     const subjBadges = (a.subject||'기타').split(',').map(s=>s.trim())
       .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
       .join('');
