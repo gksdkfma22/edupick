@@ -2916,7 +2916,7 @@ function initKakaoMap(){
       `;
       listEl.appendChild(filterBanner);
 
-      const thumbBg = {영어:"#E8F4FF",수학:"#FFF8E8",국어:"#E8FFF0",논술:"#FFF8EE",입시:"#FFF0F0",예체능:"#FFE8F8",과학:"#F0E8FF",컴퓨터:"#EFF6FF"};
+      const thumbBg = {};  // deprecated - 이제 thumbHtml에서 직접 처리
       pagedItems.forEach(a => {
         const liked = wishSet.has(a.id);
         const planCls = a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
@@ -2926,9 +2926,11 @@ function initKakaoMap(){
         const subjBadges = (a.subject||'기타').split(',').map(s=>s.trim())
           .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
           .join('');
+        const _thumbBg = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'}[firstSubj]||'#F1F5F9';
+        const _thumbEm = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
         const thumbHtml = a.image
-          ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.textContent='📚';">`
-          : (ICONS[firstSubj] ? `<img src="${ICONS[firstSubj]}" style="width:34px;height:34px;object-fit:contain;" alt="">` : '📚');
+          ? `<img src="${a.image}" alt="${a.name}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none';this.parentNode.style.background='${_thumbBg}';this.parentNode.innerHTML='<span style=\'font-size:28px;\'>${_thumbEm}</span>';">`
+          : `<div style="width:72px;height:72px;border-radius:12px;background:${_thumbBg};display:flex;align-items:center;justify-content:center;font-size:28px;">${_thumbEm}</div>`;
         const el = document.createElement('div');
         el.className = `acard ${planCls}`;
         el.innerHTML = `
@@ -3445,10 +3447,11 @@ function showBoundsAcademies(){
       const planLbl = a.plan==='premium'?'프리미엄':a.plan==='basic'?'베이직':'무료';
       const firstSubj = (a.subject||'기타').split(',')[0].trim();
       const avg = parseFloat(avgStars(a.reviews))||0;
-      const iconSrc = ICONS[firstSubj]||'';
+      const _thumbBg2 = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'}[firstSubj]||'#F1F5F9';
+      const _thumbEm2 = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
       const thumbHtml = a.image
-        ? `<img src="${a.image}" alt="${a.name}" onerror="this.parentNode.textContent='📚';">`
-        : (iconSrc ? `<img src="${iconSrc}" style="width:34px;height:34px;object-fit:contain;" alt="">` : '📚');
+        ? `<img src="${a.image}" alt="${a.name}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none';this.parentNode.style.background='${_thumbBg2}';this.parentNode.innerHTML='<span style=\'font-size:28px;\'>${_thumbEm2}</span>';">`
+        : `<div style="width:72px;height:72px;border-radius:12px;background:${_thumbBg2};display:flex;align-items:center;justify-content:center;font-size:28px;">${_thumbEm2}</div>`;
       const subjBadges = (a.subject||'기타').split(',').map(s=>s.trim())
         .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
         .join('');
@@ -3661,12 +3664,11 @@ function openSheet(id){
   const firstSubj = subjects[0];
   document.getElementById('sh-ico').style.background = COLORS[firstSubj]||'#f3f4f6';
   const shIcoEl = document.getElementById('sh-ico');
-  const shIconSrc = ICONS[firstSubj];
-  if(shIconSrc && shIconSrc.startsWith('data:')){
-    shIcoEl.innerHTML = `<img src="${shIconSrc}" style="width:36px;height:36px;object-fit:contain;" alt="${firstSubj}">`;
-  } else {
-    shIcoEl.textContent = shIconSrc || '📚';
-  }
+  const _shBg = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'}[firstSubj]||'#F1F5F9';
+  const _shEm = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
+  shIcoEl.style.background = _shBg;
+  shIcoEl.style.borderRadius = '12px';
+  shIcoEl.innerHTML = `<span style="font-size:28px;">${_shEm}</span>`;
 
   // 과목 뱃지 (복수 표시)
   const subjEl = document.getElementById('sh-subj');
