@@ -830,54 +830,35 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   <!-- 과목 필터 -->
   <div class="fbar">
     <button class="chip on" onclick="setFilter('전체',this)">
-      <div class="chip-ico" style="background:#EEF4FF;font-size:22px;">📚</div><div class="chip-lbl">전체</div>
+전체
     </button>
-    <button class="chip" onclick="setFilter('영어',this)">
-      <div class="chip-ico" style="background:#EEF6FF;display:flex;align-items:center;justify-content:center;"><img id="cico-영어" width="28" height="28" style="object-fit:contain;" alt="영어"></div><div class="chip-lbl">영어</div>
+    <button class="chip" onclick="setFilter('영어',this)">영어
     </button>
-    <button class="chip" onclick="setFilter('수학',this)">
-      <div class="chip-ico" style="background:#FFFBEB;display:flex;align-items:center;justify-content:center;"><img id="cico-수학" width="28" height="28" style="object-fit:contain;" alt="수학"></div><div class="chip-lbl">수학</div>
+    <button class="chip" onclick="setFilter('수학',this)">수학
     </button>
-    <button class="chip" onclick="setFilter('국어',this)">
-      <div class="chip-ico" style="background:#F0FDF4;display:flex;align-items:center;justify-content:center;"><img id="cico-국어" width="28" height="28" style="object-fit:contain;" alt="국어"></div><div class="chip-lbl">국어</div>
+    <button class="chip" onclick="setFilter('국어',this)">국어
     </button>
-    <button class="chip" onclick="setFilter('논술',this)">
-      <div class="chip-ico" style="background:#FFF8EE;display:flex;align-items:center;justify-content:center;"><img id="cico-논술" width="28" height="28" style="object-fit:contain;" alt="논술"></div><div class="chip-lbl">논술</div>
+    <button class="chip" onclick="setFilter('논술',this)">논술
     </button>
-    <button class="chip" onclick="setFilter('입시',this)">
-      <div class="chip-ico" style="background:#FFF0F0;display:flex;align-items:center;justify-content:center;"><img id="cico-입시" width="28" height="28" style="object-fit:contain;" alt="입시"></div><div class="chip-lbl">입시</div>
+    <button class="chip" onclick="setFilter('입시',this)">입시
     </button>
-    <button class="chip" onclick="setFilter('과학',this)">
-      <div class="chip-ico" style="background:#F5F3FF;display:flex;align-items:center;justify-content:center;"><img id="cico-과학" width="28" height="28" style="object-fit:contain;" alt="과학"></div><div class="chip-lbl">과학</div>
+    <button class="chip" onclick="setFilter('과학',this)">과학
     </button>
-    <button class="chip" onclick="setFilter('컴퓨터',this)">
-      <div class="chip-ico" style="background:#EFF6FF;display:flex;align-items:center;justify-content:center;"><img id="cico-컴퓨터" width="28" height="28" style="object-fit:contain;" alt="컴퓨터"></div><div class="chip-lbl">컴퓨터</div>
+    <button class="chip" onclick="setFilter('컴퓨터',this)">컴퓨터
     </button>
-    <button class="chip" onclick="setFilter('예체능',this)">
-      <div class="chip-ico" style="background:#FFF0F9;display:flex;align-items:center;justify-content:center;"><img id="cico-예체능" width="28" height="28" style="object-fit:contain;" alt="예체능"></div><div class="chip-lbl">예체능</div>
+    <button class="chip" onclick="setFilter('예체능',this)">예체능
     </button>
-    <button class="chip" onclick="setFilter('기타',this)">
-      <div class="chip-ico" style="background:#F8F9FA;font-size:20px;font-weight:900;color:#6B7280;">···</div><div class="chip-lbl">기타</div>
+    <button class="chip" onclick="setFilter('기타',this)">기타
     </button>
   </div>
   <!-- 학급 필터 -->
   <div class="fbar2">
     <span class="fbar2-label">학급</span>
-    <button class="chip sm on" id="gchip-전체" onclick="setGrade('전체',this)">
-      <div class="chip-ico">📋</div><div class="chip-lbl">전체</div>
-    </button>
-    <button class="chip sm" id="gchip-유아" onclick="setGrade('유아',this)">
-      <div class="chip-ico">🍼</div><div class="chip-lbl">유아</div>
-    </button>
-    <button class="chip sm" id="gchip-초등" onclick="setGrade('초등',this)">
-      <div class="chip-ico">🟡</div><div class="chip-lbl">초등</div>
-    </button>
-    <button class="chip sm" id="gchip-중등" onclick="setGrade('중등',this)">
-      <div class="chip-ico">🟣</div><div class="chip-lbl">중등</div>
-    </button>
-    <button class="chip sm" id="gchip-고등" onclick="setGrade('고등',this)">
-      <div class="chip-ico">🔴</div><div class="chip-lbl">고등</div>
-    </button>
+    <button class="chip sm on" id="gchip-전체" onclick="setGrade('전체',this)">전체</button>
+    <button class="chip sm" id="gchip-유아" onclick="setGrade('유아',this)">유아</button>
+    <button class="chip sm" id="gchip-초등" onclick="setGrade('초등',this)">초등</button>
+    <button class="chip sm" id="gchip-중등" onclick="setGrade('중등',this)">중등</button>
+    <button class="chip sm" id="gchip-고등" onclick="setGrade('고등',this)">고등</button>
   </div>
   <div class="vtabs">
     <button class="vtab on" id="vtmap" onclick="switchView('map')">🗺 지도</button>
