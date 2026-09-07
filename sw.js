@@ -1,5 +1,5 @@
 /* 에듀픽 Service Worker v1.1 — 캐시 강제 갱신 */
-const CACHE_NAME = 'edupick-v6';
+const CACHE_NAME = 'edupick-v7';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
