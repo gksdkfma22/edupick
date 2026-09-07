@@ -210,27 +210,23 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 
 /* 원형 아이콘 칩 */
 .chip{
-  display:flex;flex-direction:column;align-items:center;gap:5px;
-  min-width:62px;padding:0 5px;
-  border:none;background:transparent;
-  cursor:pointer;font-family:inherit;flex-shrink:0;transition:.15s;
+  display:inline-flex;align-items:center;justify-content:center;
+  padding:7px 16px;border-radius:999px;border:none;
+  background:#F1F5F9;color:#334155;
+  font-size:14px;font-weight:600;font-family:inherit;
+  cursor:pointer;flex-shrink:0;white-space:nowrap;
+  transition:all 0.2s ease;
 }
-.chip .chip-ico{
-  width:54px;height:54px;border-radius:16px;
-  background:#F4F6FB;border:2px solid transparent;
-  display:flex;align-items:center;justify-content:center;
-  font-size:28px;transition:.2s;
-}
-.chip .chip-lbl{font-size:11px;font-weight:700;color:#8A94A6;transition:.15s;white-space:nowrap;}
-.chip.on .chip-ico{background:#EBF3FF;border-color:#4A90E2;box-shadow:0 4px 12px rgba(74,144,226,.25);}
-.chip.on .chip-lbl{color:#2563EB;font-weight:900;}
-.chip:active .chip-ico{transform:scale(.88);}
-.chip.grade-on.초등 .chip-ico{background:#FFFBE6;border-color:#F6C90E;}
-.chip.grade-on.초등 .chip-lbl{color:#B07D00;font-weight:900;}
-.chip.grade-on.중등 .chip-ico{background:#F0EEFF;border-color:#9B7FE8;}
-.chip.grade-on.중등 .chip-lbl{color:#6D3FD6;font-weight:900;}
-.chip.grade-on.고등 .chip-ico{background:#FFF0F0;border-color:#F06060;}
-.chip.grade-on.고등 .chip-lbl{color:#C41A1A;font-weight:900;}
+.chip:hover{background:#E2E8F0;}
+.chip.on{background:#2563EB;color:#fff;}
+.chip.on:hover{background:#1D4ED8;}
+.chip:active{transform:scale(.95);}
+.chip .chip-ico{display:none;}
+.chip .chip-lbl{font-size:14px;font-weight:600;white-space:nowrap;}
+.chip.on .chip-lbl{color:#fff;font-weight:700;}
+.chip.grade-on.초등{background:#FEF9C3;color:#854D0E;}
+.chip.grade-on.중등{background:#EDE9FE;color:#6D28D9;}
+.chip.grade-on.고등{background:#FEE2E2;color:#991B1B;}
 
 /* 학급필터: top=186, h=40 */
 .fbar2{position:fixed;top:186px;left:0;right:0;z-index:579;
@@ -247,9 +243,9 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   background:#F4F6FB;border-radius:13px;transition:.15s;
 }
 .chip.sm .chip-ico{display:none;}
-.chip.sm .chip-lbl{font-size:12px;font-weight:700;color:#6B7280;white-space:nowrap;text-align:center;}
+.chip.sm .chip-lbl{font-size:13px;font-weight:600;white-space:nowrap;}
 .chip.sm.on{background:#2563EB;}
-.chip.sm.on .chip-lbl{color:#fff;font-weight:800;}
+.chip.sm.on .chip-lbl{color:#fff;font-weight:700;}
 .chip.sm.grade-on.유아{background:#10B981;}
 .chip.sm.grade-on.유아 .chip-lbl{color:#fff;font-weight:800;}
 .chip.sm.grade-on.초등{background:#F59E0B;}
