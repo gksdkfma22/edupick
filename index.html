@@ -395,7 +395,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   display:flex;align-items:center;justify-content:center;font-size:28px;
   border:1px solid #F0F2F8;
 }
-.ac-thumb img{width:100%;height:100%;object-fit:cover;}
+.ac-thumb img{width:72px;height:72px;object-fit:contain;border-radius:12px;}
 .ac-top{display:flex;align-items:flex-start;gap:0;flex:1;min-width:0;}
 .ac-ico{display:none;}
 .ac-info{flex:1;min-width:0;}
@@ -471,7 +471,7 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
 .sh-hdl{width:36px;height:4px;border-radius:2px;background:#D1D5DB;margin:14px auto 0;}
 .sh-hero{padding:18px 20px 0;}
 .sh-hero-top{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
-.sh-ico{width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;}
+.sh-ico{width:58px;height:58px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;background:transparent !important;overflow:hidden;}
 .sh-nm{font-size:19px;font-weight:900;line-height:1.2;}
 .sh-plan-tag{display:inline-block;font-size:11px;font-weight:800;padding:3px 9px;border-radius:7px;margin-top:4px;}
 .sh-plan-tag.prem{background:var(--orange);color:#fff;}
@@ -2953,7 +2953,7 @@ function initKakaoMap(){
         el.className = `acard ${planCls}`;
         el.innerHTML = `
           <div class="ac-inner">
-            <div class="ac-thumb" style="background:${thumbBg[firstSubj]||'#F0F2F8'}">${thumbHtml}</div>
+            <div class="ac-thumb" >${thumbHtml}</div>
             <div class="ac-top">
               <div class="ac-info">
                 <div class="ac-name-row">
@@ -3108,7 +3108,7 @@ function render(){
     el.style.animationDelay=(i*0.04)+'s';
     el.innerHTML=`
       <div class="ac-inner">
-        <div class="ac-thumb" style="background:${thumbBg[firstSubj]||'#F0F2F8'}">${thumbHtml}</div>
+        <div class="ac-thumb" >${thumbHtml}</div>
         <div class="ac-top">
           <div class="ac-info">
             <div class="ac-name-row">
@@ -3377,7 +3377,7 @@ function showBoundsAcademies(){
       el.className = `acard ${planCls}`;
       el.innerHTML = `
         <div class="ac-inner">
-          <div class="ac-thumb" style="background:${thumbBg[firstSubj]||'#F0F2F8'}">${thumbHtml}</div>
+          <div class="ac-thumb" >${thumbHtml}</div>
           <div class="ac-top">
             <div class="ac-info">
               <div class="ac-name-row">
@@ -4220,7 +4220,7 @@ function loadMoreItems(){
     el.className = `acard ${planCls}`;
     el.innerHTML = `
       <div class="ac-inner">
-        <div class="ac-thumb" style="background:${thumbBg[firstSubj]||'#F0F2F8'}">${thumbHtml}</div>
+        <div class="ac-thumb" >${thumbHtml}</div>
         <div class="ac-top">
           <div class="ac-info">
             <div class="ac-name-row">
