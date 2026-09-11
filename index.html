@@ -5478,59 +5478,37 @@ async function recordVisit(){
 async function loadAdminStats(){
   if(!sb) return;
   const today = new Date().toISOString().slice(0,10);
+  const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = val !== null ? (val||0).toLocaleString() : '오류'; };
 
+  // site_visits 쿼리
   try {
-    // 오늘 방문자
-    const { count: todayCount } = await sb.from('site_visits')
-      .select('id', { count: 'exact', head: true })
-      .eq('date', today);
+    const [todayRes, totalRes, weekRes] = await Promise.all([
+      sb.from('site_visits').select('id', { count: 'exact', head: true }).eq('date', today),
+      sb.from('site_visits').select('id', { count: 'exact', head: true }),
+      sb.from('site_visits').select('id', { count: 'exact', head: true })
+        .gte('date', new Date(Date.now()-7*864e5).toISOString().slice(0,10)),
+    ]);
+    set('stat-today', todayRes.error ? null : todayRes.count);
+    set('stat-total', totalRes.error ? null : totalRes.count);
+    set('stat-week',  weekRes.error  ? null : weekRes.count);
+    if(todayRes.error) console.warn('site_visits 오류:', todayRes.error.message);
+  } catch(e){ console.error('방문자 통계 오류:', e); set('stat-today','오류'); set('stat-total','오류'); set('stat-week','오류'); }
 
-    // 누적 방문자
-    const { count: totalCount } = await sb.from('site_visits')
-      .select('id', { count: 'exact', head: true });
-
-    // 총 가입자
-    const { count: userCount } = await sb.from('profiles')
-      .select('id', { count: 'exact', head: true });
-
-    // 학원 원장 수
-    const { count: ownerCount } = await sb.from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .eq('role', 'owner');
-
-    // 일반 회원 수
-    const { count: normalCount } = await sb.from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .eq('role', 'user');
-
-    // 총 학원 수
-    const { count: academyCount } = await sb.from('academies')
-      .select('id', { count: 'exact', head: true })
-      .eq('is_active', true);
-
-    // 리뷰 수
-    const { count: reviewCount } = await sb.from('reviews')
-      .select('id', { count: 'exact', head: true });
-
-    // 이번주 방문자
-    const weekAgo = new Date();
-    weekAgo.setDate(weekAgo.getDate() - 7);
-    const { count: weekCount } = await sb.from('site_visits')
-      .select('id', { count: 'exact', head: true })
-      .gte('date', weekAgo.toISOString().slice(0,10));
-
-    // UI 업데이트
-    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = (val||0).toLocaleString(); };
-    set('stat-today', todayCount);
-    set('stat-total', totalCount);
-    set('stat-week', weekCount);
-    set('stat-users', userCount);
-    set('stat-owners', ownerCount);
-    set('stat-normals', normalCount);
-    set('stat-academies', academyCount);
-    set('stat-reviews', reviewCount);
-
-  } catch(e){ console.error('통계 로딩 실패:', e); }
+  // profiles / academies / reviews 쿼리
+  try {
+    const [usersRes, ownersRes, normalsRes, academiesRes, reviewsRes] = await Promise.all([
+      sb.from('profiles').select('id', { count: 'exact', head: true }),
+      sb.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'owner'),
+      sb.from('profiles').select('id', { count: 'exact', head: true }).eq('role', 'user'),
+      sb.from('academies').select('id', { count: 'exact', head: true }).eq('is_active', true),
+      sb.from('reviews').select('id', { count: 'exact', head: true }),
+    ]);
+    set('stat-users',     usersRes.error     ? null : usersRes.count);
+    set('stat-owners',    ownersRes.error    ? null : ownersRes.count);
+    set('stat-normals',   normalsRes.error   ? null : normalsRes.count);
+    set('stat-academies', academiesRes.error ? null : academiesRes.count);
+    set('stat-reviews',   reviewsRes.error   ? null : reviewsRes.count);
+  } catch(e){ console.error('회원/학원 통계 오류:', e); }
 }
 
 
@@ -6093,7 +6071,7 @@ window.addEventListener('DOMContentLoaded', function(){
   } else {
     const sbScript = document.createElement('script');
     sbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
-    sbScript.onload = ()=> initAuth().then(startApp);
+    sbScript.onload = ()=> initAuth().then(()=>{ startApp(); setTimeout(recordVisit, 2000); });
     sbScript.onerror = ()=>{
       console.warn('Supabase 로드 실패 - 오프라인 모드');
       startApp();
