@@ -1555,6 +1555,18 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
         </div>
         <span style="color:#C0C8D8;font-size:18px;">›</span>
       </div>
+
+      <!-- 통계 섹션 -->
+      <div onclick="loadAdminStatsSection()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="font-size:22px;">📊</span>
+          <div>
+            <div style="font-size:14px;font-weight:800;color:#1A1A2E;">사이트 통계</div>
+            <div style="font-size:12px;color:#8A94A6;margin-top:1px;">방문자 · 가입자 · 학원 현황</div>
+          </div>
+        </div>
+        <span style="color:#C0C8D8;font-size:18px;">›</span>
+      </div>
       <div onclick="goAdminInfoRequests()" style="display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-bottom:1px solid #F0F1F6;cursor:pointer;">
         <div style="display:flex;align-items:center;gap:12px;">
           <span style="font-size:22px;">📝</span>
@@ -5441,6 +5453,165 @@ async function rejectInfoRequest(reqId){
   goAdminInfoRequests();
 }
 
+
+/* ════ 방문자 카운팅 ════ */
+async function recordVisit(){
+  if(!sb) return;
+  try {
+    // 오늘 날짜
+    const today = new Date().toISOString().slice(0,10);
+    // 세션당 1회만 기록 (새로고침 중복 방지)
+    const key = 'edupick_visit_' + today;
+    if(sessionStorage.getItem(key)) return;
+    sessionStorage.setItem(key, '1');
+
+    await sb.from('site_visits').insert({
+      visited_at: new Date().toISOString(),
+      date: today,
+      user_id: currentUser?.id || null,
+      user_agent: navigator.userAgent.slice(0,100),
+    });
+  } catch(e){ console.warn('방문 기록 실패:', e.message); }
+}
+
+/* ════ 관리자 통계 로딩 ════ */
+async function loadAdminStats(){
+  if(!sb) return;
+  const today = new Date().toISOString().slice(0,10);
+
+  try {
+    // 오늘 방문자
+    const { count: todayCount } = await sb.from('site_visits')
+      .select('id', { count: 'exact', head: true })
+      .eq('date', today);
+
+    // 누적 방문자
+    const { count: totalCount } = await sb.from('site_visits')
+      .select('id', { count: 'exact', head: true });
+
+    // 총 가입자
+    const { count: userCount } = await sb.from('profiles')
+      .select('id', { count: 'exact', head: true });
+
+    // 학원 원장 수
+    const { count: ownerCount } = await sb.from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'owner');
+
+    // 일반 회원 수
+    const { count: normalCount } = await sb.from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .eq('role', 'user');
+
+    // 총 학원 수
+    const { count: academyCount } = await sb.from('academies')
+      .select('id', { count: 'exact', head: true })
+      .eq('is_active', true);
+
+    // 리뷰 수
+    const { count: reviewCount } = await sb.from('reviews')
+      .select('id', { count: 'exact', head: true });
+
+    // 이번주 방문자
+    const weekAgo = new Date();
+    weekAgo.setDate(weekAgo.getDate() - 7);
+    const { count: weekCount } = await sb.from('site_visits')
+      .select('id', { count: 'exact', head: true })
+      .gte('date', weekAgo.toISOString().slice(0,10));
+
+    // UI 업데이트
+    const set = (id, val) => { const el = document.getElementById(id); if(el) el.textContent = (val||0).toLocaleString(); };
+    set('stat-today', todayCount);
+    set('stat-total', totalCount);
+    set('stat-week', weekCount);
+    set('stat-users', userCount);
+    set('stat-owners', ownerCount);
+    set('stat-normals', normalCount);
+    set('stat-academies', academyCount);
+    set('stat-reviews', reviewCount);
+
+  } catch(e){ console.error('통계 로딩 실패:', e); }
+}
+
+
+/* ════ 관리자 통계 섹션 ════ */
+async function loadAdminStatsSection(){
+  if(!requireRole(['admin'])) return;
+  go('page-admin');
+  setTimeout(async()=>{
+    const list = document.getElementById('admin-list');
+    const tabs = document.getElementById('academy-filter-tabs');
+    if(tabs) tabs.style.display = 'none';
+
+    list.innerHTML = `
+    <div style="padding:8px 0;">
+      <div style="font-size:16px;font-weight:900;color:#1A1A2E;margin-bottom:16px;">📊 사이트 통계</div>
+
+      <!-- 방문자 -->
+      <div style="background:#EFF8FF;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#0284C7;margin-bottom:12px;">🧭 방문자 현황</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <div style="text-align:center;">
+            <div id="stat-today" style="font-size:26px;font-weight:900;color:#0284C7;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">오늘</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="stat-week" style="font-size:26px;font-weight:900;color:#0284C7;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">이번주</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="stat-total" style="font-size:26px;font-weight:900;color:#0284C7;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">누적</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 가입자 -->
+      <div style="background:#F0FDF4;border-radius:14px;padding:16px;margin-bottom:12px;">
+        <div style="font-size:12px;font-weight:700;color:#059669;margin-bottom:12px;">👥 가입자 현황</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <div style="text-align:center;">
+            <div id="stat-users" style="font-size:26px;font-weight:900;color:#059669;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">총 가입자</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="stat-owners" style="font-size:26px;font-weight:900;color:#059669;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">원장님</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="stat-normals" style="font-size:26px;font-weight:900;color:#059669;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">학부모</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 콘텐츠 -->
+      <div style="background:#FEF9C3;border-radius:14px;padding:16px;margin-bottom:16px;">
+        <div style="font-size:12px;font-weight:700;color:#D97706;margin-bottom:12px;">🏫 콘텐츠 현황</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="text-align:center;">
+            <div id="stat-academies" style="font-size:26px;font-weight:900;color:#D97706;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">등록 학원</div>
+          </div>
+          <div style="text-align:center;">
+            <div id="stat-reviews" style="font-size:26px;font-weight:900;color:#D97706;">-</div>
+            <div style="font-size:11px;color:#64748B;margin-top:2px;">총 리뷰</div>
+          </div>
+        </div>
+      </div>
+
+      <button onclick="loadAdminStats()" style="
+        width:100%;padding:12px;border-radius:12px;border:none;
+        background:#1A1A2E;color:#fff;font-size:14px;font-weight:700;
+        cursor:pointer;font-family:inherit;">
+        🔄 새로고침
+      </button>
+    </div>`;
+
+    await loadAdminStats();
+  }, 150);
+}
+
 /* ════ 관리자 페이지 ════ */
 
 /* ════ 관리자 섹션 전환 ════ */
@@ -5918,7 +6089,7 @@ window.addEventListener('DOMContentLoaded', function(){
 
   // Supabase 초기화 후 앱 시작
   if(window.supabase){
-    initAuth().then(startApp);
+    initAuth().then(()=>{ startApp(); setTimeout(recordVisit, 2000); });
   } else {
     const sbScript = document.createElement('script');
     sbScript.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js';
