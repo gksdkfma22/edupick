@@ -295,16 +295,22 @@ html,body{height:100%;font-family:'Noto Sans KR',sans-serif;background:var(--bg)
   position:absolute;bottom:0;left:0;right:0;z-index:200;height:72px;
   background:var(--white);border-top:1px solid var(--border);overflow:hidden;
 }
+@media(max-width:480px){
+  .map-banner-wrap{height:64px;}
+  .banner-slide{height:64px;}
+  .banner-ph-txt h4{font-size:13px;}
+  .banner-ph-txt p{font-size:10px;}
+}
 .map-banner-track{display:flex;height:100%;transition:transform .45s cubic-bezier(.4,0,.2,1);}
 .banner-slide{min-width:100%;height:72px;cursor:pointer;position:relative;overflow:hidden;display:flex;align-items:center;}
-.banner-slide img{width:100%;height:100%;object-fit:cover;}
+.banner-slide img{width:100%;height:100%;object-fit:cover;object-position:center;max-width:100%;}
 /* 기본 플레이스홀더 배너 */
 .banner-ph{width:100%;height:100%;display:flex;align-items:center;padding:0 18px;gap:14px;}
 .banner-ph.b1{background:linear-gradient(120deg,#0A3D91,#1658D6);}
 .banner-ph.b2{background:linear-gradient(120deg,var(--orange),#FF8A3D);}
 .banner-ph.b3{background:linear-gradient(120deg,#059669,#10B981);}
 .banner-ph-ico{font-size:32px;flex-shrink:0;}
-.banner-ph-txt h4{font-size:14px;font-weight:800;color:#fff;}
+.banner-ph-txt h4{font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px;}
 .banner-ph-txt p{font-size:11px;color:rgba(255,255,255,.8);margin-top:2px;}
 .banner-ph-arr{margin-left:auto;font-size:20px;color:rgba(255,255,255,.7);flex-shrink:0;}
 .banner-ad-tag{position:absolute;top:5px;right:8px;background:rgba(0,0,0,.3);
