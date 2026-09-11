@@ -3672,15 +3672,13 @@ function openSheet(id){
 
   // 과목 뱃지 (복수 표시)
   const subjEl = document.getElementById('sh-subj');
-  if(subjects.length > 1){
-    subjEl.innerHTML = subjects.map(s => `
-      <span style="display:inline-flex;align-items:center;gap:3px;background:${COLORS[s]||'#F4F6FB'};
-        padding:3px 8px;border-radius:8px;font-size:12px;font-weight:700;margin:2px 2px 2px 0;">
-        ${ICONS[s]||'📚'} ${s}
-      </span>`).join('');
-  } else {
-    subjEl.textContent = a.subject;
-  }
+  const _subjectEmoji = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'};
+  const _subjectColors = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'};
+  subjEl.innerHTML = subjects.map(s => `
+    <span style="display:inline-flex;align-items:center;gap:4px;background:${_subjectColors[s]||'#F4F6FB'};
+      padding:4px 10px;border-radius:20px;font-size:12px;font-weight:700;margin:2px 3px 2px 0;color:#374151;">
+      ${_subjectEmoji[s]||'📌'} ${s}
+    </span>`).join('');
   document.getElementById('sh-nm').textContent=a.name;
   // plan tag
   const pt=document.getElementById('sh-plan-tag');
