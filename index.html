@@ -2808,7 +2808,7 @@ function goBack(){
 
 
 function getSubjectIcon(subject, size){
-  const _em = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'};
+  const _em = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'⭐','사회':'🌍','기타':'📌'};
   return _em[(subject||'기타').split(',')[0].trim()] || '📌';
 }
 
@@ -2931,7 +2931,7 @@ function initKakaoMap(){
           .map(s=>`<span style="background:${COLORS[s]||'#F4F6FB'};color:#374151;font-size:10px;font-weight:700;padding:2px 6px;border-radius:6px;margin-right:3px;">${s}</span>`)
           .join('');
         const _thumbBg = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'}[firstSubj]||'#F1F5F9';
-        const _thumbEm = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
+        const _thumbEm = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'⭐','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
         const thumbHtml = a.image
           ? `<img src="${a.image}" alt="${a.name}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none';this.parentNode.style.background='${_thumbBg}';this.parentNode.innerHTML='<span style=\'font-size:28px;\'>${_thumbEm}</span>';">`
           : `<div style="width:72px;height:72px;border-radius:12px;background:${_thumbBg};display:flex;align-items:center;justify-content:center;font-size:28px;">${_thumbEm}</div>`;
@@ -3080,7 +3080,7 @@ function render(){
     const planCls=a.plan==='premium'?'prem':a.plan==='basic'?'basic':'';
     const planLbl=a.plan==='premium'?'프리미엄':a.plan==='basic'?'베이직':'무료';
     const firstSubj = (a.subject||'기타').split(',')[0].trim();
-    const _emMap = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'};
+    const _emMap = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'⭐','사회':'🌍','기타':'📌'};
     const _bgMap = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'};
     const _em = _emMap[firstSubj]||'📌';
     const _bg = _bgMap[firstSubj]||'#F1F5F9';
@@ -3454,7 +3454,7 @@ function showBoundsAcademies(){
       const firstSubj = (a.subject||'기타').split(',')[0].trim();
       const avg = parseFloat(avgStars(a.reviews))||0;
       const _thumbBg2 = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'}[firstSubj]||'#F1F5F9';
-      const _thumbEm2 = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
+      const _thumbEm2 = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'⭐','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
       const thumbHtml = a.image
         ? `<img src="${a.image}" alt="${a.name}" style="width:72px;height:72px;object-fit:cover;border-radius:12px;" onerror="this.style.display='none';this.parentNode.style.background='${_thumbBg2}';this.parentNode.innerHTML='<span style=\'font-size:28px;\'>${_thumbEm2}</span>';">`
         : `<div style="width:72px;height:72px;border-radius:12px;background:${_thumbBg2};display:flex;align-items:center;justify-content:center;font-size:28px;">${_thumbEm2}</div>`;
@@ -3670,13 +3670,13 @@ function openSheet(id){
   const firstSubj = subjects[0];
   const shIcoEl = document.getElementById('sh-ico');
   const _shBg = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'}[firstSubj]||'#F1F5F9';
-  const _shEm = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
+  const _shEm = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'⭐','사회':'🌍','기타':'📌'}[firstSubj]||'📌';
   shIcoEl.style.cssText = `background:${_shBg};border-radius:12px;display:flex;align-items:center;justify-content:center;`;
   shIcoEl.innerHTML = `<span style="font-size:28px;">${_shEm}</span>`;
 
   // 과목 뱃지 (복수 표시)
   const subjEl = document.getElementById('sh-subj');
-  const _subjectEmoji = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'};
+  const _subjectEmoji = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'⭐','사회':'🌍','기타':'📌'};
   const _subjectColors = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'};
   subjEl.innerHTML = subjects.map(s => `
     <span style="display:inline-flex;align-items:center;gap:4px;background:${_subjectColors[s]||'#F4F6FB'};
@@ -4292,7 +4292,7 @@ function loadMoreItems(){
     const firstSubj = (a.subject||'기타').split(',')[0].trim();
     const avg       = parseFloat(avgStars(a.reviews))||0;
     const dist      = a.distKm !== undefined ? a.distKm : km(userLat, userLng, a.lat, a.lng);
-    const _emM = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'🎨','사회':'🌍','기타':'📌'};
+    const _emM = {'영어':'🔤','수학':'📐','국어':'📖','과학':'🔬','논술':'✏️','입시':'🎓','컴퓨터':'💻','예체능':'⭐','사회':'🌍','기타':'📌'};
     const _bgM = {'영어':'#EDE9FE','수학':'#DBEAFE','국어':'#FEE6D8','논술':'#E0E7FF','입시':'#FEF3C7','예체능':'#FFE4EE','과학':'#DCFCE7','컴퓨터':'#CCFBF1','사회':'#BAE6FD','기타':'#E2E8F0'};
     const _emV = _emM[firstSubj]||'📌';
     const _bgV = _bgM[firstSubj]||'#F1F5F9';
