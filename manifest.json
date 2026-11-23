@@ -2,7 +2,9 @@
   "name": "에듀픽 — 우리동네 학원찾기",
   "short_name": "에듀픽",
   "description": "천안·아산 학원 지도 검색 플랫폼",
+  "id": "/",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#176ED3",
@@ -20,14 +22,6 @@
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
-    }
-  ],
-  "screenshots": [
-    {
-      "src": "screenshot.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow"
     }
   ],
   "categories": ["education", "lifestyle"],

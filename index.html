@@ -5986,7 +5986,7 @@ window.addEventListener('DOMContentLoaded', ()=>{
 
   // 서비스 워커 등록 + 새 버전 감지 시 자동 새로고침
   if('serviceWorker' in navigator){
-    navigator.serviceWorker.register('sw.js?v=5')
+    navigator.serviceWorker.register('sw.js?v=6')
       .then(reg => {
         console.log('SW 등록:', reg.scope);
         // 새 버전의 서비스워커가 설치되면 감지
@@ -6009,6 +6009,13 @@ window.addEventListener('DOMContentLoaded', ()=>{
       window.location.reload();
     });
   }
+});
+
+// 홈 화면 아이콘 길게 누르기 바로가기 (manifest shortcuts)
+window.addEventListener('load', ()=>{
+  const action = new URLSearchParams(location.search).get('action');
+  if(action === 'wish' && typeof goWish === 'function') goWish();
+  if(action === 'search') document.getElementById('search')?.focus();
 });
 
 window.addEventListener('appinstalled', ()=>{

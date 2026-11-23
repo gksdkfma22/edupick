@@ -1,12 +1,13 @@
 /* 에듀픽 Service Worker v1.1 — 캐시 강제 갱신 */
-const CACHE_NAME = 'edupick-v8';
+const CACHE_NAME = 'edupick-v9';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/icon-192.png',
-  '/icon-512.png',
+  '/icon-192x192.png',
+  '/icon-512x512.png',
   '/logo.png',
+  '/privacy.html',
 ];
 
 const EXTERNAL_CACHE = [
@@ -80,6 +81,25 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  /* 외부 도메인(토스 결제 등) · GET 이외 요청 - 서비스워커가 건드리지 않음 */
+  if(url.origin !== self.location.origin || e.request.method !== 'GET') return;
+
+  /* 페이지(HTML) - 네트워크 우선: 사이트를 수정하면 앱에도 바로 반영, 오프라인이면 캐시 */
+  if(e.request.mode === 'navigate' || e.request.destination === 'document'){
+    e.respondWith(
+      fetch(e.request)
+        .then(res => {
+          if(res && res.status === 200){
+            const clone = res.clone();
+            caches.open(CACHE_NAME).then(cache => cache.put('/index.html', clone));
+          }
+          return res;
+        })
+        .catch(() => caches.match(e.request).then(c => c || caches.match('/index.html')))
+    );
+    return;
+  }
+
   /* 정적 자산 - 캐시 우선, 없으면 네트워크 */
   e.respondWith(
     caches.match(e.request).then(cached => {
@@ -113,8 +133,8 @@ self.addEventListener('push', (e) => {
   e.waitUntil(
     self.registration.showNotification(data.title || '에듀픽', {
       body:  data.body  || '새 알림이 있어요',
-      icon:  '/icon-192.png',
-      badge: '/icon-192.png',
+      icon:  '/icon-192x192.png',
+      badge: '/icon-192x192.png',
       data:  data.url ? { url: data.url } : {},
     })
   );
